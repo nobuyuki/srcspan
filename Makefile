@@ -24,11 +24,13 @@ vet:
 
 # Sample files.
 #
-samples: simple example
+samples: simple example term
 
 simple:
 	go build -o ./bin/simple  ./examples/simple
 example:
 	go build -o ./bin/example ./examples/example
+term:
+	go build -o ./bin/term    ./examples/codespan/term
 
 # (EOF)
