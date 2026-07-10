@@ -24,10 +24,8 @@ vet:
 
 # Sample files.
 #
-samples: simple example term
+samples: example term
 
-simple:
-	go build -o ./bin/simple  ./examples/simple
 example:
 	go build -o ./bin/example ./examples/example
 term:
