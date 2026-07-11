@@ -12,40 +12,35 @@ import (
 	"fmt"
 	"os"
 
-	"golang.org/x/term"
-
 	"srcspan/srcspan"
-	srcspanterm "srcspan/srcspan/term"
+	term "srcspan/srcspan/term"
 )
 
 var colorChoice string
-var styles *srcspanterm.Styles
+var styles *term.Styles
 
 func init() {
 	flag.StringVar(&colorChoice, "color", "auto", "none|auto|color")
 	flag.Parse()
 }
 
-func parseArgs() {
+func parseArgs() term.ColorOutput{
 	switch colorChoice {
 	case "none":
-		styles = srcspanterm.NoColor()
+		return term.ColorOutputNone
 	case "auto":
-		if term.IsTerminal(int(os.Stderr.Fd())) {
-			styles = srcspanterm.DefaultColor()
-		} else {
-			styles = srcspanterm.NoColor()
-		}
+		return term.ColorOutputAuto
 	case "color":
-		styles = srcspanterm.DefaultColor()
+		return term.ColorOutputForce
 	default:
 		fmt.Printf("--color value should be one of 'none', 'auto', 'color'.")
 		os.Exit(1)
+		return term.ColorOutputAuto
 	}
 }
 
 func main() {
-	parseArgs()
+	colorOutput := parseArgs()
 
 	files := srcspan.NewFiles()
 
@@ -160,11 +155,13 @@ fizz₂ num =
 			}),
 	}
 
-	writer := srcspanterm.NewStylesWriter(os.Stderr, styles)
-	config := srcspanterm.DefaultConfig()
+	styles := term.DefaultColor()
+	styles.ColorOutput = colorOutput
+	writer := term.NewStylesWriter(os.Stderr, styles)
+	config := term.DefaultConfig()
 
 	for _, diagnostic := range diagnostics {
-		err := srcspanterm.EmitToWriteStyle(writer, &config, &files, diagnostic)
+		err := term.EmitToWriteStyle(writer, &config, &files, diagnostic)
 		if err != nil {
 			os.Exit(1)
 		}

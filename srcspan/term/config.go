@@ -107,7 +107,17 @@ const (
 	Short
 )
 
+type ColorOutput int
+
+const (
+	ColorOutputNone  ColorOutput = 1
+	ColorOutputAuto  ColorOutput = 0
+	ColorOutputForce ColorOutput = 2
+)
+
 type Styles struct {
+	ColorOutput ColorOutput
+
 	/// The style to use when rendering bug headers.
 	/// Defaults to `fg:red bold intense`.
 	HeaderBug *color.Color
@@ -233,6 +243,8 @@ func NoColor() *Styles {
 	c := color.New()
 
 	return &Styles{
+		ColorOutput: ColorOutputNone,
+
 		HeaderBug:     c,
 		HeaderError:   c,
 		HeaderWarning: c,
@@ -257,6 +269,8 @@ func DefaultColor() *Styles {
 	// Default style
 
 	return &Styles{
+		ColorOutput: ColorOutputAuto,
+
 		HeaderBug:     color.New(color.FgHiRed),
 		HeaderError:   color.New(color.FgHiRed),
 		HeaderWarning: color.New(color.FgHiYellow),
@@ -306,37 +320,107 @@ func (sw StylesWriter) Flush() error {
 }
 
 func (sw StylesWriter) SetHeader(severity srcspan.Severity) error {
+	switch sw.style.ColorOutput {
+	case ColorOutputNone:
+		color.NoColor = true
+		return nil
+	case ColorOutputAuto:
+	case ColorOutputForce:
+		color.NoColor = false
+	default:
+		panic("")
+	}
 	sw.style.Header(severity).Set()
 	return nil
 }
 
 func (sw StylesWriter) SetHeaderMessage() error {
+	switch sw.style.ColorOutput {
+	case ColorOutputNone:
+		color.NoColor = true
+		return nil
+	case ColorOutputAuto:
+	case ColorOutputForce:
+		color.NoColor = false
+	default:
+		panic("")
+	}
 	color.Unset() // nobuyuki
 	sw.style.HeaderMessage.Set()
 	return nil
 }
 
 func (sw StylesWriter) SetLineNumber() error {
+	switch sw.style.ColorOutput {
+	case ColorOutputNone:
+		color.NoColor = true
+		return nil
+	case ColorOutputAuto:
+	case ColorOutputForce:
+		color.NoColor = false
+	default:
+		panic("")
+	}
 	sw.style.LineNumber.Set()
 	return nil
 }
 
 func (sw StylesWriter) SetNoteBullet() error {
+	switch sw.style.ColorOutput {
+	case ColorOutputNone:
+		color.NoColor = true
+		return nil
+	case ColorOutputAuto:
+	case ColorOutputForce:
+		color.NoColor = false
+	default:
+		panic("")
+	}
 	sw.style.NoteBullet.Set()
 	return nil
 }
 
 func (sw StylesWriter) SetSourceBorder() error {
+	switch sw.style.ColorOutput {
+	case ColorOutputNone:
+		color.NoColor = true
+		return nil
+	case ColorOutputAuto:
+	case ColorOutputForce:
+		color.NoColor = false
+	default:
+		panic("")
+	}
 	sw.style.SourceBorder.Set()
 	return nil
 }
 
 func (sw StylesWriter) SetLabel(severity srcspan.Severity, label_style srcspan.LabelStyle) error {
+	switch sw.style.ColorOutput {
+	case ColorOutputNone:
+		color.NoColor = true
+		return nil
+	case ColorOutputAuto:
+	case ColorOutputForce:
+		color.NoColor = false
+	default:
+		panic("")
+	}
 	sw.style.Label(severity, label_style).Set()
 	return nil
 }
 
 func (sw StylesWriter) Reset() error {
+	switch sw.style.ColorOutput {
+	case ColorOutputNone:
+		color.NoColor = true
+		return nil
+	case ColorOutputAuto:
+	case ColorOutputForce:
+		color.NoColor = false
+	default:
+		panic("")
+	}
 	color.Unset()
 	return nil
 }
