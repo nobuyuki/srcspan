@@ -29,7 +29,7 @@ func (f *Files) Name(id int) (string, error) {
 	return f.files[id].Name(), nil
 }
 
-func (fs *Files) LineSpan(file_id int, line_index int) (Span, error) {
+func (fs *Files) LineSpan(file_id, line_index int) (Span, error) {
 	f, err := fs.Get(file_id)
 	if err != nil {
 		return Span{}, nil
@@ -37,7 +37,7 @@ func (fs *Files) LineSpan(file_id int, line_index int) (Span, error) {
 	return f.LineSpan(line_index)
 }
 
-func (fs *Files) LineRange(file_id int, line_index int) (Range, error) {
+func (fs *Files) LineRange(file_id, line_index int) (Range, error) {
 	f, err := fs.Get(file_id)
 	if err != nil {
 		return Range{}, nil
@@ -64,16 +64,16 @@ func (fs *Files) SourceSlice(file_id int, span Span) (string, error) {
 	return f.SourceSlice(span)
 }
 
-func (fs *Files) LineIndex(id int, byte_index int) (int, error) {
+func (fs *Files) LineIndex(id, byte_index int) (int, error) {
 	// file_idのエラーがいるかもね〜
 	return fs.files[id].LineIndex(byte_index), nil
 }
 
-func (*Files) LineNumber(_ int, line_index int) (int, error) {
+func (*Files) LineNumber(_, line_index int) (int, error) {
 	return line_index + 1, nil
 }
 
-func (fs *Files) ColumnNumber(id int, line_index, byte_index int) (int, error) {
+func (fs *Files) ColumnNumber(id, line_index, byte_index int) (int, error) {
 	f, err := fs.Get(id)
 	if err != nil {
 		return 0, err
@@ -91,7 +91,7 @@ func (fs *Files) ColumnNumber(id int, line_index, byte_index int) (int, error) {
 	return column_index + 1, nil
 }
 
-func (fs *Files) Location(id int, byte_index int) (Location, error) {
+func (fs *Files) Location(id, byte_index int) (Location, error) {
 	f, _ := fs.Get(id)
 	return f.Location(byte_index)
 }

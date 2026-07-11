@@ -9,7 +9,7 @@ type Location struct {
 }
 
 // Construct a new location from a line index and a column index.
-func NewLocation(line int, column int) Location {
+func NewLocation(line, column int) Location {
 	return Location{
 		Line:   line,
 		Column: column,
