@@ -7,6 +7,8 @@ import (
 	"github.com/tidwall/btree"
 
 	"srcspan/srcspan"
+	"srcspan/srcspan/diagnostic"
+	"srcspan/srcspan/files"
 )
 
 // Calculate the number of decimal digits in `n`.
@@ -18,17 +20,17 @@ func countDigits(n int) int {
 }
 
 type Diagnostic interface {
-	Render(files srcspan.Files, renderer Renderer)
-	Diagnostic() *srcspan.Diagnostic
+	Render(files files.Files, renderer Renderer)
+	Diagnostic() *diagnostic.Diagnostic
 }
 
 // Output a richly formatted diagnostic, with source code previews.
 type RichDiagnostic struct {
-	diagnostic *srcspan.Diagnostic
+	diagnostic *diagnostic.Diagnostic
 	config     *Config
 }
 
-func NewRichDiagnostic(diagnostic *srcspan.Diagnostic, config *Config) *RichDiagnostic {
+func NewRichDiagnostic(diagnostic *diagnostic.Diagnostic, config *Config) *RichDiagnostic {
 	return &RichDiagnostic{
 		diagnostic: diagnostic,
 		config:     config,
@@ -36,7 +38,7 @@ func NewRichDiagnostic(diagnostic *srcspan.Diagnostic, config *Config) *RichDiag
 }
 
 func (d *RichDiagnostic) Render(
-	files *srcspan.Files,
+	files *files.Files,
 	renderer Renderer,
 ) (err error) {
 	// TODO: Make this data structure external, to allow for allocation reuse
@@ -237,7 +239,7 @@ func (d *RichDiagnostic) Render(
 				start_line.MultiLabels,
 				struct {
 					LabelIndex int
-					LabelStyle srcspan.LabelStyle
+					LabelStyle diagnostic.LabelStyle
 					MultiLabel MultiLabel
 				}{
 					LabelIndex: label_index,
@@ -273,7 +275,7 @@ func (d *RichDiagnostic) Render(
 					line.MultiLabels,
 					struct {
 						LabelIndex int
-						LabelStyle srcspan.LabelStyle
+						LabelStyle diagnostic.LabelStyle
 						MultiLabel MultiLabel
 					}{
 						LabelIndex: label_index,
@@ -308,7 +310,7 @@ func (d *RichDiagnostic) Render(
 				end_line.MultiLabels,
 				struct {
 					LabelIndex int
-					LabelStyle srcspan.LabelStyle
+					LabelStyle diagnostic.LabelStyle
 					MultiLabel MultiLabel
 				}{
 					LabelIndex: label_index,
@@ -380,7 +382,7 @@ func (d *RichDiagnostic) Render(
 				labeled_file.NumMultiLabels,
 				[]struct {
 					LabelIndex int
-					LabelStyle srcspan.LabelStyle
+					LabelStyle diagnostic.LabelStyle
 					MultiLabel MultiLabel
 				}{},
 			)
@@ -444,7 +446,7 @@ func (d *RichDiagnostic) Render(
 					// To render the line right, we have to get back the original labels.
 					labels := []struct {
 						LabelIndex int
-						LabelStyle srcspan.LabelStyle
+						LabelStyle diagnostic.LabelStyle
 						MultiLabel MultiLabel
 					}{}
 
@@ -516,7 +518,7 @@ func (d *RichDiagnostic) Render(
 				labeled_file.NumMultiLabels,
 				[]struct {
 					LabelIndex int
-					LabelStyle srcspan.LabelStyle
+					LabelStyle diagnostic.LabelStyle
 					MultiLabel MultiLabel
 				}{},
 			)
@@ -555,7 +557,7 @@ type LabeledFile struct {
 	Location       srcspan.Location
 	NumMultiLabels int
 	Lines          *btree.Map[int, *Line]
-	MaxLabelStyle  srcspan.LabelStyle
+	MaxLabelStyle  diagnostic.LabelStyle
 }
 
 func (lf *LabeledFile) GetOrInsertLine(
@@ -570,7 +572,7 @@ func (lf *LabeledFile) GetOrInsertLine(
 			SingleLabels: []SingleLabel{},
 			MultiLabels: []struct {
 				LabelIndex int
-				LabelStyle srcspan.LabelStyle
+				LabelStyle diagnostic.LabelStyle
 				MultiLabel MultiLabel
 			}{},
 			// This has to be false by default so we know if it must be rendered by another condition already.
@@ -589,7 +591,7 @@ type Line struct {
 	SingleLabels []SingleLabel
 	MultiLabels  []struct {
 		LabelIndex int
-		LabelStyle srcspan.LabelStyle
+		LabelStyle diagnostic.LabelStyle
 		MultiLabel MultiLabel
 	}
 	MustRender bool
@@ -597,11 +599,11 @@ type Line struct {
 
 // Output a short diagnostic, with a line number, severity, and message.
 type ShortDiagnostic struct {
-	diagnostic *srcspan.Diagnostic
+	diagnostic *diagnostic.Diagnostic
 	showNotes  bool
 }
 
-func NewShortDiagnostic(diagnostic *srcspan.Diagnostic, showNotes bool) *ShortDiagnostic {
+func NewShortDiagnostic(diagnostic *diagnostic.Diagnostic, showNotes bool) *ShortDiagnostic {
 	return &ShortDiagnostic{
 		diagnostic: diagnostic,
 		showNotes:  showNotes,
@@ -609,7 +611,7 @@ func NewShortDiagnostic(diagnostic *srcspan.Diagnostic, showNotes bool) *ShortDi
 }
 
 func (d *ShortDiagnostic) Render(
-	files *srcspan.Files,
+	files *files.Files,
 	renderer Renderer,
 ) error {
 	// Located headers
@@ -620,7 +622,7 @@ func (d *ShortDiagnostic) Render(
 	primary_labels_encountered := 0
 
 	for _, label := range d.diagnostic.Labels {
-		if label.Style == srcspan.Primary {
+		if label.Style == diagnostic.Primary {
 			primary_labels_encountered += 1
 		}
 

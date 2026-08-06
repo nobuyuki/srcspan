@@ -1,4 +1,4 @@
-package srcspan
+package diagnostic
 
 import (
 	"testing"

@@ -7,10 +7,11 @@ import (
 	"io"
 	"strings"
 
-	"srcspan/srcspan"
+	"srcspan/srcspan/diagnostic"
+	"srcspan/srcspan/files"
 )
 
-func EmitIntoString(config *Config, files *srcspan.Files, diagnostic *srcspan.Diagnostic) (string, error) {
+func EmitIntoString(config *Config, files *files.Files, diagnostic *diagnostic.Diagnostic) (string, error) {
 	var writer strings.Builder
 
 	err := EmitToString(&writer, config, files, diagnostic)
@@ -21,7 +22,7 @@ func EmitIntoString(config *Config, files *srcspan.Files, diagnostic *srcspan.Di
 	return writer.String(), nil
 }
 
-func EmitToString(writer io.Writer, config *Config, files *srcspan.Files, diagnostic *srcspan.Diagnostic) error {
+func EmitToString(writer io.Writer, config *Config, files *files.Files, diagnostic *diagnostic.Diagnostic) error {
 	return EmitWithStyle(
 		NewPlainWriter(writer),
 		config,
@@ -30,11 +31,11 @@ func EmitToString(writer io.Writer, config *Config, files *srcspan.Files, diagno
 	)
 }
 
-func EmitToIoWriter(writer WriteStyle, config *Config, files *srcspan.Files, diagnostic *srcspan.Diagnostic) error {
+func EmitToIoWriter(writer WriteStyle, config *Config, files *files.Files, diagnostic *diagnostic.Diagnostic) error {
 	return EmitWithStyle(writer, config, files, diagnostic)
 }
 
-func EmitToWriteStyle(writer WriteStyle, config *Config, files *srcspan.Files, diagnostic *srcspan.Diagnostic) error {
+func EmitToWriteStyle(writer WriteStyle, config *Config, files *files.Files, diagnostic *diagnostic.Diagnostic) error {
 	return EmitWithStyle(writer, config, files, diagnostic)
 }
 
@@ -50,11 +51,11 @@ func EmitToWriteStyle(writer WriteStyle, config *Config, files *srcspan.Files, d
 // * a file was removed from the file database.
 // * a file was changed so that it is too small to have an index
 // * IO fails
-func Emit(writer io.Writer, config *Config, files *srcspan.Files, diagnostic *srcspan.Diagnostic) error {
+func Emit(writer io.Writer, config *Config, files *files.Files, diagnostic *diagnostic.Diagnostic) error {
 	return EmitWithStyle(NewPlainWriter(writer), config, files, diagnostic)
 }
 
-func EmitWithStyle(writer WriteStyle, config *Config, files *srcspan.Files, diagnostic *srcspan.Diagnostic) error {
+func EmitWithStyle(writer WriteStyle, config *Config, files *files.Files, diagnostic *diagnostic.Diagnostic) error {
 	renderer := NewRenderer(writer, *config)
 
 	switch config.DisplayStyle {

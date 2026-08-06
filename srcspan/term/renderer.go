@@ -10,6 +10,7 @@ import (
 	"github.com/mattn/go-runewidth"
 
 	"srcspan/srcspan"
+	"srcspan/srcspan/diagnostic"
 )
 
 // A writer that can apply styling for different parts of a diagnostic renderer.
@@ -22,12 +23,12 @@ import (
 type WriteStyle interface {
 	io.Writer
 
-	SetHeader(severity srcspan.Severity) error
+	SetHeader(severity diagnostic.Severity) error
 	SetHeaderMessage() error
 	SetLineNumber() error
 	SetNoteBullet() error
 	SetSourceBorder() error
-	SetLabel(severity srcspan.Severity, label_style srcspan.LabelStyle) error
+	SetLabel(severity diagnostic.Severity, label_style diagnostic.LabelStyle) error
 	Reset() error
 }
 
@@ -60,7 +61,7 @@ func (w PlainWriter) Flush() error {
 	return nil
 }
 
-func (w PlainWriter) SetHeader(_severity srcspan.Severity) error {
+func (w PlainWriter) SetHeader(_severity diagnostic.Severity) error {
 	return nil
 }
 
@@ -80,7 +81,7 @@ func (w PlainWriter) SetSourceBorder() error {
 	return nil
 }
 
-func (w PlainWriter) SetLabel(_severity srcspan.Severity, _label_style srcspan.LabelStyle) error {
+func (w PlainWriter) SetLabel(_severity diagnostic.Severity, _label_style diagnostic.LabelStyle) error {
 	return nil
 }
 
@@ -185,7 +186,7 @@ type Locus struct {
 // ^^^^^^^^^ blah blah
 // ```
 type SingleLabel struct {
-	LabelStyle srcspan.LabelStyle
+	LabelStyle diagnostic.LabelStyle
 	Range      srcspan.Range
 	Message    string
 }
@@ -309,7 +310,7 @@ const (
 )
 
 type Underline struct {
-	LabelStyle    srcspan.LabelStyle
+	LabelStyle    diagnostic.LabelStyle
 	VerticalBound VerticalBound
 }
 
@@ -384,7 +385,7 @@ func (r *Renderer) Chars() Chars {
 // ```
 func (r *Renderer) RenderHeader(
 	locus *Locus,
-	severity srcspan.Severity,
+	severity diagnostic.Severity,
 	code *string,
 	message string,
 ) (err error) {
@@ -414,33 +415,33 @@ func (r *Renderer) RenderHeader(
 		return err
 	} else {
 		switch severity {
-		case srcspan.Bug:
+		case diagnostic.Bug:
 			_, err = fmt.Fprintf(r, "bug")
 			if err != nil {
 				return
 			}
-		case srcspan.Error:
+		case diagnostic.Error:
 			_, err = fmt.Fprintf(r, "error")
 			if err != nil {
 				return
 			}
-		case srcspan.Warning:
+		case diagnostic.Warning:
 			_, err = fmt.Fprintf(r, "warning")
 			if err != nil {
 				return
 			}
-		case srcspan.Help:
+		case diagnostic.Help:
 			_, err = fmt.Fprintf(r, "help")
 			if err != nil {
 				return
 			}
-		case srcspan.Note:
+		case diagnostic.Note:
 			_, err = fmt.Fprintf(r, "note")
 			if err != nil {
 				return
 			}
 		default:
-			panic(fmt.Sprintf("Unknown srcspan.Severity: %v", severity))
+			panic(fmt.Sprintf("Unknown diagnostic.Severity: %v", severity))
 		}
 	}
 
@@ -546,12 +547,12 @@ func (r *Renderer) RenderSnippetSource(
 	outer_padding int,
 	line_number int,
 	source string,
-	severity srcspan.Severity,
+	severity diagnostic.Severity,
 	single_labels []SingleLabel,
 	num_multi_labels int,
 	multi_labels []struct {
 		LabelIndex int
-		LabelStyle srcspan.LabelStyle
+		LabelStyle diagnostic.LabelStyle
 		MultiLabel MultiLabel
 	},
 ) (err error) {
@@ -630,12 +631,12 @@ func (r *Renderer) RenderSnippetSource(
 			// Check if we are overlapping a primary label
 			var is_primary bool
 			for _, sl := range single_labels {
-				if sl.LabelStyle == srcspan.Primary && isOverlapping(sl.Range, column_range) {
+				if sl.LabelStyle == diagnostic.Primary && isOverlapping(sl.Range, column_range) {
 					is_primary = true
 				}
 			}
 			for _, ml := range multi_labels {
-				if ml.LabelStyle == srcspan.Primary {
+				if ml.LabelStyle == diagnostic.Primary {
 					if start, ok := ml.MultiLabel.asTop(); ok {
 						is_primary = is_primary || column_range.Start >= start
 					} else if ml.MultiLabel.isLeft() {
@@ -648,7 +649,7 @@ func (r *Renderer) RenderSnippetSource(
 
 			// Set the source color if we are in a primary label
 			if is_primary && !in_primary {
-				err = r.SetLabel(severity, srcspan.Primary)
+				err = r.SetLabel(severity, diagnostic.Primary)
 				if err != nil {
 					return
 				}
@@ -814,7 +815,7 @@ func (r *Renderer) RenderSnippetSource(
 			return err
 		}
 
-		var previous_label_style *srcspan.LabelStyle
+		var previous_label_style *diagnostic.LabelStyle
 		placeholder_metrics := Metrics{
 			byte_index:    len(source),
 			unicode_width: 1,
@@ -841,7 +842,7 @@ func (r *Renderer) RenderSnippetSource(
 			// Find the current label style at this column
 			column_range := srcspan.NewRange(metrics.byte_index, metrics.byte_index+runewidth.RuneWidth(ch))
 
-			var current_label_style *srcspan.LabelStyle
+			var current_label_style *diagnostic.LabelStyle
 			var max_priority int
 			for _, sl := range single_labels {
 				if isOverlapping(sl.Range, column_range) {
@@ -870,14 +871,14 @@ func (r *Renderer) RenderSnippetSource(
 			var caret_ch *rune
 			if current_label_style != nil {
 				switch *current_label_style {
-				case srcspan.Primary:
+				case diagnostic.Primary:
 					ch := r.Chars().SinglePrimaryCaret
 					caret_ch = &ch
-				case srcspan.Secondary:
+				case diagnostic.Secondary:
 					ch := r.Chars().SingleSecondaryCaret
 					caret_ch = &ch
 				default:
-					panic(fmt.Sprintf("Unknown srcspan.LabelStyle: %v", *current_label_style))
+					panic(fmt.Sprintf("Unknown diagnostic.LabelStyle: %v", *current_label_style))
 				}
 			} else {
 				// Only print padding if we are before the end of the last single line caret
@@ -1076,7 +1077,7 @@ func (r *Renderer) RenderSnippetSource(
 	//     │ ╰───│──────────────────^ woops
 	//     │   ╭─│─────────^
 	// ```
-	var label_style srcspan.LabelStyle
+	var label_style diagnostic.LabelStyle
 	var range_ int
 	var bottom_message *string
 
@@ -1205,11 +1206,11 @@ func (r *Renderer) RenderSnippetSource(
 // ```
 func (r *Renderer) RenderSnippetEmpty(
 	outer_padding int,
-	severity srcspan.Severity,
+	severity diagnostic.Severity,
 	num_multi_labels int,
 	multi_labels []struct {
 		LabelIndex int
-		LabelStyle srcspan.LabelStyle
+		LabelStyle diagnostic.LabelStyle
 		MultiLabel MultiLabel
 	},
 ) (err error) {
@@ -1237,11 +1238,11 @@ func (r *Renderer) RenderSnippetEmpty(
 // ```
 func (r *Renderer) RenderSnippetBreak(
 	outer_padding int,
-	severity srcspan.Severity,
+	severity diagnostic.Severity,
 	num_multi_labels int,
 	multi_labels []struct {
 		LabelIndex int
-		LabelStyle srcspan.LabelStyle
+		LabelStyle diagnostic.LabelStyle
 		MultiLabel MultiLabel
 	},
 ) (err error) {
@@ -1441,7 +1442,7 @@ func (r *Renderer) BorderLeftBreak() (err error) {
 
 // Write vertical lines pointing to carets.
 func (r *Renderer) CaretPointers(
-	severity srcspan.Severity,
+	severity diagnostic.Severity,
 	max_label_start int,
 	single_labels []SingleLabel,
 	trailing_label *struct {
@@ -1460,7 +1461,7 @@ func (r *Renderer) CaretPointers(
 		column_range_start := metrics.byte_index
 		column_range_end := metrics.byte_index + runewidth.RuneWidth(ch)
 
-		var label_style *srcspan.LabelStyle
+		var label_style *diagnostic.LabelStyle
 		var max_priority int
 		for _, sl := range HangingLabels(single_labels, trailing_label) {
 			if column_range_start <= sl.Range.Start && sl.Range.Start < column_range_end {
@@ -1516,9 +1517,9 @@ func (r *Renderer) CaretPointers(
 //
 // ```
 func (r *Renderer) LabelMultiLeft(
-	severity srcspan.Severity,
-	label_style srcspan.LabelStyle,
-	underline *srcspan.LabelStyle,
+	severity diagnostic.Severity,
+	label_style diagnostic.LabelStyle,
+	underline *diagnostic.LabelStyle,
 ) (err error) {
 	if underline == nil {
 		_, err = fmt.Fprintf(r, " ")
@@ -1570,8 +1571,8 @@ func (r *Renderer) LabelMultiLeft(
 //
 // ```
 func (r *Renderer) LabelMultiTopLeft(
-	severity srcspan.Severity,
-	label_style srcspan.LabelStyle,
+	severity diagnostic.Severity,
+	label_style diagnostic.LabelStyle,
 ) (err error) {
 	fmt.Fprintf(r, " ")
 	if err != nil {
@@ -1604,8 +1605,8 @@ func (r *Renderer) LabelMultiTopLeft(
 //
 // ```
 func (r *Renderer) LabelMultiBottomLeft(
-	severity srcspan.Severity,
-	label_style srcspan.LabelStyle,
+	severity diagnostic.Severity,
+	label_style diagnostic.LabelStyle,
 ) (err error) {
 	fmt.Fprintf(r, " ")
 	if err != nil {
@@ -1636,8 +1637,8 @@ func (r *Renderer) LabelMultiBottomLeft(
 // ─────────────^
 // ```
 func (r *Renderer) LabelMultiTopCaret(
-	severity srcspan.Severity,
-	label_style srcspan.LabelStyle,
+	severity diagnostic.Severity,
+	label_style diagnostic.LabelStyle,
 	source string,
 	start int,
 ) (err error) {
@@ -1661,12 +1662,12 @@ func (r *Renderer) LabelMultiTopCaret(
 
 	var caret_start rune
 	switch label_style {
-	case srcspan.Primary:
+	case diagnostic.Primary:
 		caret_start = r.config.Chars.MultiPrimaryCaretStart
-	case srcspan.Secondary:
+	case diagnostic.Secondary:
 		caret_start = r.config.Chars.MultiSecondaryCaretStart
 	default:
-		panic(fmt.Sprintf("Unknown srcspan.LabelStyle: %v", label_style))
+		panic(fmt.Sprintf("Unknown diagnostic.LabelStyle: %v", label_style))
 	}
 
 	_, err = fmt.Fprintf(r, "%c", caret_start)
@@ -1691,8 +1692,8 @@ func (r *Renderer) LabelMultiTopCaret(
 // ─────────────^ expected `Int` but found `String`
 // ```
 func (r *Renderer) LabelMultiBottomCaret(
-	severity srcspan.Severity,
-	label_style srcspan.LabelStyle,
+	severity diagnostic.Severity,
+	label_style diagnostic.LabelStyle,
 	source string,
 	start int,
 	message string,
@@ -1717,12 +1718,12 @@ func (r *Renderer) LabelMultiBottomCaret(
 
 	var caret_end rune
 	switch label_style {
-	case srcspan.Primary:
+	case diagnostic.Primary:
 		caret_end = r.config.Chars.MultiPrimaryCaretStart
-	case srcspan.Secondary:
+	case diagnostic.Secondary:
 		caret_end = r.config.Chars.MultiSecondaryCaretStart
 	default:
-		panic(fmt.Sprintf("Unknown srcspan.LabelStyle: %v", label_style))
+		panic(fmt.Sprintf("Unknown diagnostic.LabelStyle: %v", label_style))
 	}
 
 	_, err = fmt.Fprintf(r, "%c", caret_end)
@@ -1752,7 +1753,7 @@ func (r *Renderer) LabelMultiBottomCaret(
 
 // Writes an empty gutter space, or continues an underline horizontally.
 func (r *Renderer) InnerGutterColumn(
-	severity srcspan.Severity,
+	severity diagnostic.Severity,
 	underline *Underline,
 ) (err error) {
 	if underline == nil {
@@ -1797,11 +1798,11 @@ func (r *Renderer) InnerGutterSpace() (err error) {
 
 // Writes an inner gutter, with the left lines if necessary.
 func (r *Renderer) InnerGutter(
-	severity srcspan.Severity,
+	severity diagnostic.Severity,
 	num_multi_labels int,
 	multi_labels []struct {
 		LabelIndex int
-		LabelStyle srcspan.LabelStyle
+		LabelStyle diagnostic.LabelStyle
 		MultiLabel MultiLabel
 	},
 ) (err error) {
@@ -1842,7 +1843,7 @@ func (r *Renderer) InnerGutter(
 	return
 }
 
-func (r *Renderer) SetHeader(severity srcspan.Severity) error {
+func (r *Renderer) SetHeader(severity diagnostic.Severity) error {
 	return r.writer.SetHeader(severity)
 }
 
@@ -1862,7 +1863,7 @@ func (r *Renderer) SetSourceBorder() error {
 	return r.writer.SetSourceBorder()
 }
 
-func (r *Renderer) SetLabel(severity srcspan.Severity, label_style srcspan.LabelStyle) error {
+func (r *Renderer) SetLabel(severity diagnostic.Severity, label_style diagnostic.LabelStyle) error {
 	return r.writer.SetLabel(severity, label_style)
 }
 
@@ -1883,14 +1884,14 @@ func isOverlapping(r0, r1 srcspan.Range) bool {
 }
 
 // For prioritizing primary labels over secondary labels when rendering carets.
-func labelPriorityKey(label_style *srcspan.LabelStyle) int {
+func labelPriorityKey(label_style *diagnostic.LabelStyle) int {
 	switch *label_style {
-	case srcspan.Secondary:
+	case diagnostic.Secondary:
 		return 0
-	case srcspan.Primary:
+	case diagnostic.Primary:
 		return 1
 	default:
-		panic(fmt.Sprintf("Unknown srcspan.LabelStyle: %v", *label_style))
+		panic(fmt.Sprintf("Unknown diagnostic.LabelStyle: %v", *label_style))
 	}
 }
 

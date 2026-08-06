@@ -1,4 +1,4 @@
-package srcspan
+package files
 
 import (
 	"testing"
@@ -7,10 +7,12 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const TEST_SOURCE1 = "foo\nbar\r\n\nbaz"
+const TEST_SOURCE = "foo\nbar\r\n\nbaz"
 
-func TestLineStart1(t *testing.T) {
-	file := NewFile("test", TEST_SOURCE1)
+func TestLineStart(t *testing.T) {
+	files := NewFiles()
+	file_id := files.Add("test", TEST_SOURCE)
+	file, _ := files.Get(file_id)
 
 	assert.Equal(t,
 		[]int{
@@ -19,20 +21,21 @@ func TestLineStart1(t *testing.T) {
 			9,  // ""
 			10, // "baz"
 		},
-		file.line_starts,
+		file.LineStarts(),
 	)
 }
 
-func TestLineSpanSources1(t *testing.T) {
-	file := NewFile("test", TEST_SOURCE1)
+func TestLineSpanSources(t *testing.T) {
+	files := NewFiles()
+	file_id := files.Add("test", TEST_SOURCE)
 
 	line_sources := []string{}
 
 	for line := range 4 {
-		line_span, err := file.LineSpan(line)
+		line_span, err := files.LineSpan(file_id, line)
 		require.NoError(t, err)
 
-		slice, err1 := file.SourceSlice(line_span)
+		slice, err1 := files.SourceSlice(file_id, line_span)
 		require.NoError(t, err1)
 
 		line_sources = append(line_sources, slice)

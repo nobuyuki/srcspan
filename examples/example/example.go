@@ -4,6 +4,8 @@ import (
 	"os"
 
 	"srcspan/srcspan"
+	"srcspan/srcspan/diagnostic"
+	"srcspan/srcspan/files"
 	"srcspan/srcspan/term"
 )
 
@@ -26,20 +28,20 @@ fizz₂ num =
 `)
 
 func main() {
-	files := srcspan.NewFiles()
+	files := files.NewFiles()
 	file_id := files.Add("FizzBuzz.fun", string(content))
 
 	// We normally recommend creating a custom diagnostic data type for your
 	// application, and then converting that to `codespan-reporting`'s diagnostic
 	// type, but for the sake of this example we construct it directly.
 
-	diagnostic := srcspan.NewError().WithMessage("`case` clauses have incompatible types").WithCode("E0308").WithLabels([]srcspan.Label{
-		*srcspan.NewPrimary(file_id, srcspan.NewSpan(328, 331)).WithMessage("expected `String`, found `Nat`"),
-		*srcspan.NewSecondary(file_id, srcspan.NewSpan(211, 331)).WithMessage("`case` clauses have incompatible types"),
-		*srcspan.NewSecondary(file_id, srcspan.NewSpan(258, 268)).WithMessage("this is found to be of type `String`"),
-		*srcspan.NewSecondary(file_id, srcspan.NewSpan(284, 290)).WithMessage("this is found to be of type `String`"),
-		*srcspan.NewSecondary(file_id, srcspan.NewSpan(306, 312)).WithMessage("this is found to be of type `String`"),
-		*srcspan.NewSecondary(file_id, srcspan.NewSpan(186, 192)).WithMessage("expected type `String` found here"),
+	diagnostic := diagnostic.NewError().WithMessage("`case` clauses have incompatible types").WithCode("E0308").WithLabels([]diagnostic.Label{
+		*diagnostic.NewPrimary(file_id, srcspan.NewSpan(328, 331)).WithMessage("expected `String`, found `Nat`"),
+		*diagnostic.NewSecondary(file_id, srcspan.NewSpan(211, 331)).WithMessage("`case` clauses have incompatible types"),
+		*diagnostic.NewSecondary(file_id, srcspan.NewSpan(258, 268)).WithMessage("this is found to be of type `String`"),
+		*diagnostic.NewSecondary(file_id, srcspan.NewSpan(284, 290)).WithMessage("this is found to be of type `String`"),
+		*diagnostic.NewSecondary(file_id, srcspan.NewSpan(306, 312)).WithMessage("this is found to be of type `String`"),
+		*diagnostic.NewSecondary(file_id, srcspan.NewSpan(186, 192)).WithMessage("expected type `String` found here"),
 	}).WithNotes([]string{
 		`expected type 'String'
    found type 'Nat'`})

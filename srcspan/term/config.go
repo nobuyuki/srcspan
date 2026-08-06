@@ -6,7 +6,7 @@ import (
 
 	"github.com/fatih/color"
 
-	"srcspan/srcspan"
+	"srcspan/srcspan/diagnostic"
 )
 
 // Configures how a diagnostic is rendered.
@@ -180,20 +180,20 @@ type Styles struct {
 }
 
 // The style used to mark a header at a given severity.
-func (s *Styles) Header(severity srcspan.Severity) *color.Color {
+func (s *Styles) Header(severity diagnostic.Severity) *color.Color {
 	switch severity {
-	case srcspan.Bug:
+	case diagnostic.Bug:
 		return s.HeaderBug
-	case srcspan.Error:
+	case diagnostic.Error:
 		return s.HeaderError
-	case srcspan.Warning:
+	case diagnostic.Warning:
 		return s.HeaderWarning
-	case srcspan.Note:
+	case diagnostic.Note:
 		return s.HeaderNote
-	case srcspan.Help:
+	case diagnostic.Help:
 		return s.HeaderHelp
 	default:
-		panic(fmt.Sprintf("Unknown srcspan.Severity: %v", severity))
+		panic(fmt.Sprintf("Unknown diagnostic.Severity: %v", severity))
 	}
 }
 
@@ -214,27 +214,27 @@ func (s *Styles) SourceBorder_() *color.Color {
 }
 
 // The style used to mark a primary or secondary label at a given severity.
-func (s *Styles) Label(severity srcspan.Severity, label_style srcspan.LabelStyle) *color.Color {
+func (s *Styles) Label(severity diagnostic.Severity, label_style diagnostic.LabelStyle) *color.Color {
 	switch label_style {
-	case srcspan.Primary:
+	case diagnostic.Primary:
 		switch severity {
-		case srcspan.Bug:
+		case diagnostic.Bug:
 			return s.PrimaryLabelBug
-		case srcspan.Error:
+		case diagnostic.Error:
 			return s.PrimaryLabelError
-		case srcspan.Warning:
+		case diagnostic.Warning:
 			return s.PrimaryLabelWarning
-		case srcspan.Note:
+		case diagnostic.Note:
 			return s.PrimaryLabelNote
-		case srcspan.Help:
+		case diagnostic.Help:
 			return s.PrimaryLabelHelp
 		default:
-			panic(fmt.Sprintf("Unknown srcspan.Severity: %v", severity))
+			panic(fmt.Sprintf("Unknown diagnostic.Severity: %v", severity))
 		}
-	case srcspan.Secondary:
+	case diagnostic.Secondary:
 		return s.SecondaryLabel
 	default:
-		panic(fmt.Sprintf("Unknown srcspan.LabelStyle: %v", label_style))
+		panic(fmt.Sprintf("Unknown diagnostic.LabelStyle: %v", label_style))
 
 	}
 }
@@ -319,7 +319,7 @@ func (sw StylesWriter) Flush() error {
 	return nil
 }
 
-func (sw StylesWriter) SetHeader(severity srcspan.Severity) error {
+func (sw StylesWriter) SetHeader(severity diagnostic.Severity) error {
 	switch sw.style.ColorOutput {
 	case ColorOutputNone:
 		color.NoColor = true
@@ -395,7 +395,7 @@ func (sw StylesWriter) SetSourceBorder() error {
 	return nil
 }
 
-func (sw StylesWriter) SetLabel(severity srcspan.Severity, label_style srcspan.LabelStyle) error {
+func (sw StylesWriter) SetLabel(severity diagnostic.Severity, label_style diagnostic.LabelStyle) error {
 	switch sw.style.ColorOutput {
 	case ColorOutputNone:
 		color.NoColor = true

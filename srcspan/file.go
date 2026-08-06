@@ -65,6 +65,11 @@ func (f *File) LineStart(line_index int) (int, error) {
 	}
 }
 
+// / exported just for unit testing...
+func (f *File) LineStarts() []int {
+	return f.line_starts
+}
+
 func (f *File) LastLineIndex() int {
 	return len(f.line_starts)
 }

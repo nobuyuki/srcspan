@@ -13,6 +13,8 @@ import (
 	"os"
 
 	"srcspan/srcspan"
+	"srcspan/srcspan/files"
+	"srcspan/srcspan/diagnostic"
 	term "srcspan/srcspan/term"
 )
 
@@ -42,7 +44,7 @@ func parseArgs() term.ColorOutput{
 func main() {
 	colorOutput := parseArgs()
 
-	files := srcspan.NewFiles()
+	files := files.NewFiles()
 
 	file_id1 := files.Add(
 		"Data/Nat.fun",
@@ -97,25 +99,25 @@ fizz₂ num =
 `,
 	)
 
-	diagnostics := []*srcspan.Diagnostic{
+	diagnostics := []*diagnostic.Diagnostic{
 		// Unknown builtin error
-		srcspan.NewError().WithMessage("unknown builtin: `NATRAL`").
-			WithLabel(*srcspan.NewPrimary(file_id1, srcspan.NewSpan(96, 102)).WithMessage("unknown builtin")).
+		diagnostic.NewError().WithMessage("unknown builtin: `NATRAL`").
+			WithLabel(*diagnostic.NewPrimary(file_id1, srcspan.NewSpan(96, 102)).WithMessage("unknown builtin")).
 			WithNotes([]string{"there is a builtin with a similar name: `NATURAL`"}),
 
 		// Unused parameter warning
-		srcspan.NewWarning().
+		diagnostic.NewWarning().
 			WithMessage("unused parameter pattern: `n₂`").
-			WithLabel(*srcspan.NewPrimary(file_id1, srcspan.NewSpan(285, 289)).WithMessage("unused parameter")).
+			WithLabel(*diagnostic.NewPrimary(file_id1, srcspan.NewSpan(285, 289)).WithMessage("unused parameter")).
 			WithNotes([]string{"consider using a wildcard pattern: `_`"}),
 
 		// Unexpected type error
-		srcspan.NewError().
+		diagnostic.NewError().
 			WithMessage("unexpected type in application of `_+_`").
 			WithCode("E0001").
-			WithLabels([]srcspan.Label{
-				*srcspan.NewPrimary(file_id2, srcspan.NewSpan(37, 44)).WithMessage("expected `Nat`, found `String`"),
-				*srcspan.NewSecondary(file_id1, srcspan.NewSpan(130, 155)).WithMessage("based on the definition of `_+_`"),
+			WithLabels([]diagnostic.Label{
+				*diagnostic.NewPrimary(file_id2, srcspan.NewSpan(37, 44)).WithMessage("expected `Nat`, found `String`"),
+				*diagnostic.NewSecondary(file_id1, srcspan.NewSpan(130, 155)).WithMessage("based on the definition of `_+_`"),
 			}).
 			WithNotes([]string{`expected type 'Nat'
    found type 'String'
@@ -123,13 +125,13 @@ fizz₂ num =
 			}),
 
 		// Incompatible match clause error
-		srcspan.NewError().
+		diagnostic.NewError().
 			WithMessage("`case` clauses have incompatible types").
 			WithCode("E0308").
-			WithLabels([]srcspan.Label{
-				*srcspan.NewPrimary(file_id3, srcspan.NewSpan(163, 166)).WithMessage("expected `String`, found `Nat`"),
-				*srcspan.NewSecondary(file_id3, srcspan.NewSpan(62, 166)).WithMessage("`case` clauses have incompatible types"),
-				*srcspan.NewSecondary(file_id3, srcspan.NewSpan(41, 47)).WithMessage("expected type `String` found here"),
+			WithLabels([]diagnostic.Label{
+				*diagnostic.NewPrimary(file_id3, srcspan.NewSpan(163, 166)).WithMessage("expected `String`, found `Nat`"),
+				*diagnostic.NewSecondary(file_id3, srcspan.NewSpan(62, 166)).WithMessage("`case` clauses have incompatible types"),
+				*diagnostic.NewSecondary(file_id3, srcspan.NewSpan(41, 47)).WithMessage("expected type `String` found here"),
 			}).
 			WithNotes([]string{
 				`expected type 'String'
@@ -137,16 +139,16 @@ fizz₂ num =
                 `,
 			}),
 		// Incompatible match clause error
-		srcspan.NewError().
+		diagnostic.NewError().
 			WithMessage("`case` clauses have incompatible types").
 			WithCode("E0308").
-			WithLabels([]srcspan.Label{
-				*srcspan.NewPrimary(file_id3, srcspan.NewSpan(328, 331)).WithMessage("expected `String`, found `Nat`"),
-				*srcspan.NewSecondary(file_id3, srcspan.NewSpan(211, 331)).WithMessage("`case` clauses have incompatible types"),
-				*srcspan.NewSecondary(file_id3, srcspan.NewSpan(258, 268)).WithMessage("this is found to be of type `String`"),
-				*srcspan.NewSecondary(file_id3, srcspan.NewSpan(284, 290)).WithMessage("this is found to be of type `String`"),
-				*srcspan.NewSecondary(file_id3, srcspan.NewSpan(306, 312)).WithMessage("this is found to be of type `String`"),
-				*srcspan.NewSecondary(file_id3, srcspan.NewSpan(186, 192)).WithMessage("expected type `String` found here"),
+			WithLabels([]diagnostic.Label{
+				*diagnostic.NewPrimary(file_id3, srcspan.NewSpan(328, 331)).WithMessage("expected `String`, found `Nat`"),
+				*diagnostic.NewSecondary(file_id3, srcspan.NewSpan(211, 331)).WithMessage("`case` clauses have incompatible types"),
+				*diagnostic.NewSecondary(file_id3, srcspan.NewSpan(258, 268)).WithMessage("this is found to be of type `String`"),
+				*diagnostic.NewSecondary(file_id3, srcspan.NewSpan(284, 290)).WithMessage("this is found to be of type `String`"),
+				*diagnostic.NewSecondary(file_id3, srcspan.NewSpan(306, 312)).WithMessage("this is found to be of type `String`"),
+				*diagnostic.NewSecondary(file_id3, srcspan.NewSpan(186, 192)).WithMessage("expected type `String` found here"),
 			}).
 			WithNotes([]string{
 				`expected type 'String'
