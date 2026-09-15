@@ -8,18 +8,18 @@ import (
 type Severity int
 
 const (
-	Bug     Severity = 4
-	Error   Severity = 3
-	Warning Severity = 2
-	Note    Severity = 1
 	Help    Severity = 0
+	Note    Severity = 1
+	Warning Severity = 2
+	Error   Severity = 3
+	Bug     Severity = 4
 )
 
 type LabelStyle int
 
 const (
-	Primary   LabelStyle = 1
-	Secondary LabelStyle = 0
+	Primary   LabelStyle = 0
+	Secondary LabelStyle = 1
 )
 
 // A label describing an underlined region of code associated with a
