@@ -23,6 +23,14 @@ func (e IndexTooLargeError) Error() string {
 	return fmt.Sprintf("Index too large: given=%d, max=%d", e.Given, e.Max)
 }
 
+type NegativeIndexError struct {
+	Given int
+}
+
+func (e NegativeIndexError) Error() string {
+	return fmt.Sprintf("Index is negative: given=%d", e.Given)
+}
+
 // The file is present, but does not contain the specified line index.
 type LineTooLargeError struct {
 	Given int
@@ -32,6 +40,14 @@ type LineTooLargeError struct {
 func (e LineTooLargeError) Error() string {
 	// write!(f, "invalid line {}, maximum line is {}", given, max)
 	return fmt.Sprintf("Line too large: given=%d, max=%d", e.Given, e.Max)
+}
+
+type NegativeLineError struct {
+	Given int
+}
+
+func (e NegativeLineError) Error() string {
+	return fmt.Sprintf("Line is negative: given=%d", e.Given)
 }
 
 // The file is present and contains the specified line index, but the

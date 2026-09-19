@@ -46,12 +46,15 @@ func (f *File) Update(s Source) {
 // Return the starting byte index of the line with the specified line index.
 // Convenience method that already generates errors if necessary.
 func (f *File) LineStart(line_index int) (int, error) {
+	if line_index < 0 {
+		return 0, NegativeLineError{
+			Given: line_index,
+		}
+	}
+
 	v := cmp.Compare(line_index, len(f.line_starts))
 	switch v {
 	case -1:
-		if line_index < 0 || len(f.line_starts) <= line_index {
-			panic("failed despite previous check")
-		}
 		return f.line_starts[line_index], nil
 	case 0:
 		return len(*f.Source()), nil
@@ -98,6 +101,10 @@ func (f *File) LineIndex(byte_index int) int {
 }
 
 func (f *File) Location(byte_index int) (Location, error) {
+	if byte_index < 0 {
+		return Location{}, NegativeIndexError{Given: byte_index}
+	}
+
 	line_index := f.LineIndex(byte_index)
 	line_start_index, err := f.LineStart(line_index)
 	if err != nil {
@@ -144,11 +151,21 @@ func (f *File) SourceSlice(span Span) (string, error) {
 			Max:   source_len,
 		}
 	}
+	if s < 0 {
+		return "", NegativeIndexError{
+			Given: s,
+		}
+	}
 
 	if e >= source_len+1 {
 		return "", IndexTooLargeError{
 			Given: e,
 			Max:   source_len,
+		}
+	}
+	if e < 0 {
+		return "", NegativeIndexError{
+			Given: e,
 		}
 	}
 
