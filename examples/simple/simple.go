@@ -5,7 +5,7 @@ import (
 
 	"srcspan/srcspan"
 	"srcspan/srcspan/diagnostic"
-	"srcspan/srcspan/files"	
+	"srcspan/srcspan/files"
 	"srcspan/srcspan/term"
 )
 
@@ -85,7 +85,6 @@ func main() {
 		*diagnostic.NewSecondary(file_id, srcspan.NewSpan(534, 568)).WithMessage("Whole array."),
 	}).WithNote("You can also add the final ',' at the end of the last item.")
 
-
 	diagnostics := []*diagnostic.Diagnostic{
 		d0,
 		d1,
@@ -94,7 +93,6 @@ func main() {
 		d4,
 		d5,
 	}
-
 
 	// We now set up the writer and configuration, and then finally render the
 	// diagnostic to standard error.

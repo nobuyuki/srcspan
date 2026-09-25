@@ -13,20 +13,19 @@ import (
 	"os"
 
 	"srcspan/srcspan"
-	"srcspan/srcspan/files"
 	"srcspan/srcspan/diagnostic"
+	"srcspan/srcspan/files"
 	term "srcspan/srcspan/term"
 )
 
 var colorChoice string
-var styles *term.Styles
 
 func init() {
 	flag.StringVar(&colorChoice, "color", "auto", "none|auto|color")
 	flag.Parse()
 }
 
-func parseArgs() term.ColorOutput{
+func parseArgs() term.ColorOutput {
 	switch colorChoice {
 	case "none":
 		return term.ColorOutputNone

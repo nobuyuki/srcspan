@@ -40,7 +40,7 @@ func NewRichDiagnostic(diagnostic *diagnostic.Diagnostic, config *Config) *RichD
 func (d *RichDiagnostic) Render(
 	files *files.Files,
 	renderer Renderer,
-) (err error) {
+) error {
 	// TODO: Make this data structure external, to allow for allocation reuse
 	labeled_files := []*LabeledFile{}
 
@@ -50,6 +50,7 @@ func (d *RichDiagnostic) Render(
 
 	// Group labels by file
 	for _, label := range d.diagnostic.Labels {
+		//nolint:shadow // to avoid var decls of the the first vars.
 		start_line_index, err := files.LineIndex(label.FileId, label.Span.Start())
 		if err != nil {
 			return err
@@ -322,7 +323,6 @@ func (d *RichDiagnostic) Render(
 			// The last line has to be rendered so the end of the label is visible.
 			end_line.MustRender = true
 		}
-
 	}
 
 	// Header and message
@@ -331,14 +331,14 @@ func (d *RichDiagnostic) Render(
 	// error[E0001]: unexpected type in `+` application
 	// ```
 	code := d.diagnostic.Code
-	err = renderer.RenderHeader(
+	err := renderer.RenderHeader(
 		nil,
 		d.diagnostic.Severity,
 		&code,
 		d.diagnostic.Message,
 	)
 	if err != nil {
-		return
+		return err
 	}
 
 	// Source snippets
@@ -357,7 +357,7 @@ func (d *RichDiagnostic) Render(
 		var source *srcspan.Source
 		source, err = files.Source(labeled_file.FileId)
 		if err != nil {
-			return
+			return err
 		}
 
 		// Top left border and locus.
@@ -366,7 +366,7 @@ func (d *RichDiagnostic) Render(
 		// ┌─ test:2:9
 		// ```
 		if labeled_file.Lines.Len() != 0 {
-			err := renderer.RenderSnippetStart(
+			err = renderer.RenderSnippetStart(
 				outer_padding,
 				&Locus{
 					Name:     labeled_file.Name,
@@ -453,22 +453,20 @@ func (d *RichDiagnostic) Render(
 					if line_info.LineIndex+1 < labeled_file.Lines.Len() {
 						line, _ := labeled_file.Lines.Get(line_info.LineIndex + 1)
 						if line != nil {
-							for _, ml := range line.MultiLabels {
-								labels = append(labels, ml)
-							}
+							labels = append(labels, line.MultiLabels...)
 						}
 					}
 
 					var ln int
 					ln, err = files.LineNumber(file_id, line_info.LineIndex+1)
 					if err != nil {
-						return
+						return err
 					}
 
 					var lr srcspan.Range
 					lr, err = files.LineRange(file_id, line_info.LineIndex+1)
 					if err != nil {
-						return
+						return err
 					}
 					err = renderer.RenderSnippetSource(
 						outer_padding,
@@ -480,7 +478,7 @@ func (d *RichDiagnostic) Render(
 						labels,
 					)
 					if err != nil {
-						return
+						return err
 					}
 
 				default:
@@ -496,7 +494,7 @@ func (d *RichDiagnostic) Render(
 						next_line.Line.MultiLabels,
 					)
 					if err != nil {
-						return
+						return err
 					}
 				}
 			}
@@ -523,7 +521,7 @@ func (d *RichDiagnostic) Render(
 				}{},
 			)
 			if err != nil {
-				return
+				return err
 			}
 		}
 
@@ -539,15 +537,15 @@ func (d *RichDiagnostic) Render(
 	for _, note := range d.diagnostic.Notes {
 		err = renderer.RenderSnippetNote(outer_padding, note)
 		if err != nil {
-			return
+			return err
 		}
 	}
 	err = renderer.RenderEmpty()
 	if err != nil {
-		return
+		return err
 	}
 
-	return
+	return err
 }
 
 type LabeledFile struct {
@@ -565,6 +563,7 @@ func (lf *LabeledFile) GetOrInsertLine(
 	line_range srcspan.Range,
 	line_number int,
 ) *Line {
+	//revive:disable:indent-error-flow
 	if line, ok := lf.Lines.Get(line_index); !ok {
 		line = &Line{
 			Range:        line_range,

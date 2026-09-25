@@ -235,7 +235,6 @@ func (s *Styles) Label(severity diagnostic.Severity, label_style diagnostic.Labe
 		return s.SecondaryLabel
 	default:
 		panic(fmt.Sprintf("Unknown diagnostic.LabelStyle: %v", label_style))
-
 	}
 }
 

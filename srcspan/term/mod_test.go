@@ -5,7 +5,7 @@ import (
 	//"github.com/stretchr/testify/assert"
 )
 
-func TestUnsizedEmit(t *testing.T) {
+func TestUnsizedEmit(_ *testing.T) {
 }
 
 /*

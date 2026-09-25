@@ -21,6 +21,9 @@ fmt:
 vet:
 	go vet ./srcspan/...
 
+lint:
+	golangci-lint --timeout 10m run  ./...
+
 
 # Sample files.
 #
