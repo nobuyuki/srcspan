@@ -1,5 +1,8 @@
 # `srcspan` -- A Go port of Rust's Codespan
 
+Beautiful diagnostic reporting for text-based programming languages
+and complex configuration files.
+
 ![Example](docs/images/readme.png)
 
 Error messages from Go-related tools are as simple as those from
@@ -10,12 +13,12 @@ can sometimes make it difficult for many others to understand the
 nature of the error.
 
 This is a Go module that features functionality similar to Rust's
-[codespan](https://github.com/brendanzab/codespan).
+[codespan](https://github.com/brendanzab/codespan).  Actually,
+`srcspan` is a literal one-to-one port of `codespan` and tries to have
+a similar interface as `codespan`.
 
-`srcspan` tries to have a similar interface as `codespan`.
 
-
-## How to use
+## Example
 ```go
 package main
 
@@ -76,12 +79,39 @@ func main() {
 	os.Exit(0)
 }
 ```
+([./examples/example/example.go](./examples/example/example.go))
+
+
+## Running the CLI example
+
+To get an idea of what the colored CLI output looks like, clone the
+repository and run the following shell command:
+
+```sh
+go run ./examples/codespan/term/term.go
+
+```
+More examples of using `srcspan` can be found in the `examples` directory.
+
+
+## Contributing
+
+A guide to contributing to codespan-reporting [can be found here](/CONTRIBUTING.md).
+
+
+## Code of Conduct
+
+Please note that this project is released with a [Code of Conduct](./CODE_OF_CONDUCT.md).
+By participating in this project you agree to abide by its terms.
+
 
 ## Limitations
 
-* In Rust, there is a trait called `File` and a standard
-  implementation called `SimpleFile`, but in srcspan, a standard
-  implementation called `File` is provided. If possible, I would like
-  to define an interface modeled after Rust.
+### API
+
+In Rust, there is a trait called `File` and a standard implementation
+called `SimpleFile`, but in srcspan, a standard implementation called
+`File` is provided. If possible, I would like to define an interface
+modeled after Rust.
 
 (EOF)
