@@ -64,7 +64,10 @@ func (fs *Files) SourceSpan(file_id int) srcspan.Span {
 }
 
 func (fs *Files) SourceSlice(file_id int, span srcspan.Span) (string, error) {
-	f, _ := fs.Get(file_id)
+	f, err := fs.Get(file_id)
+	if err != nil {
+		return "", err
+	}
 	return f.SourceSlice(span)
 }
 
@@ -96,7 +99,10 @@ func (fs *Files) ColumnNumber(id, line_index, byte_index int) (int, error) {
 }
 
 func (fs *Files) Location(id, byte_index int) (srcspan.Location, error) {
-	f, _ := fs.Get(id)
+	f, err := fs.Get(id)
+	if err != nil {
+		return srcspan.Location{}, err
+	}
 	return f.Location(byte_index)
 }
 

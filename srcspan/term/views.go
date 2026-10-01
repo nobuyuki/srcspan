@@ -425,7 +425,7 @@ func (d *RichDiagnostic) Render(
 				line.MultiLabels,
 			)
 			if err != nil {
-				return nil
+				return err
 			}
 
 			// Check to see if we need to render any intermediate stuff
@@ -624,10 +624,16 @@ func (d *ShortDiagnostic) Render(
 		}
 		primary_labels_encountered += 1
 
-		name, _ := files.Name(label.FileId)
-		loc, _ := files.Location(label.FileId, label.Span.Start())
+		name, err := files.Name(label.FileId)
+		if err != nil {
+			return err
+		}
+		loc, err := files.Location(label.FileId, label.Span.Start())
+		if err != nil {
+			return err
+		}
 
-		err := renderer.RenderHeader(
+		err = renderer.RenderHeader(
 			&Locus{
 				Name:     name,
 				Location: loc,
@@ -654,7 +660,7 @@ func (d *ShortDiagnostic) Render(
 			d.diagnostic.Message,
 		)
 		if err != nil {
-			return nil
+			return err
 		}
 	}
 

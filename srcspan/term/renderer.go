@@ -1305,14 +1305,20 @@ func (r *Renderer) RenderSnippetNote(
 			if err != nil {
 				return err
 			}
-			fmt.Fprintf(r, "%c", r.Chars().NoteBullet)
+			_, err = fmt.Fprintf(r, "%c", r.Chars().NoteBullet)
+			if err != nil {
+				return err
+			}
 
 			err = r.Reset()
 			if err != nil {
 				return err
 			}
 		default:
-			fmt.Fprintf(r, " ")
+			_, err = fmt.Fprintf(r, " ")
+			if err != nil {
+				return err
+			}
 		}
 
 		// Write line of message
@@ -1517,7 +1523,7 @@ func (r *Renderer) CaretPointers(
 			for i := spaces_start; i < spaces_end; i++ {
 				_, err = fmt.Fprintf(r, " ")
 				if err != nil {
-					break
+					return err
 				}
 			}
 		}
@@ -1676,7 +1682,10 @@ func (r *Renderer) LabelMultiTopCaret(
 
 		// FIXME: improve rendering of carets between character boundaries
 		for i := 0; i < metrics.unicode_width; i++ { //nolint:intrange // emulate rust code
-			fmt.Fprintf(r, "%c", r.Chars().MultiTop)
+			_, err = fmt.Fprintf(r, "%c", r.Chars().MultiTop)
+			if err != nil {
+				return err
+			}
 		}
 	}
 
@@ -1732,7 +1741,10 @@ func (r *Renderer) LabelMultiBottomCaret(
 
 		// FIXME: improve rendering of carets between character boundaries
 		for i := 0; i < metrics.unicode_width; i++ { //nolint:intrange // emulate rust code
-			fmt.Fprintf(r, "%c", r.Chars().MultiBottom)
+			_, err = fmt.Fprintf(r, "%c", r.Chars().MultiBottom)
+			if err != nil {
+				return err
+			}
 		}
 	}
 
