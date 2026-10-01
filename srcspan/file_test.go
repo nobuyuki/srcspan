@@ -59,7 +59,7 @@ func TestLocationEndOfFile(t *testing.T) {
 	assert.Equal(t, NewLocation(3, 3), location)
 
 	_, err = file.location(source_len + 1)
-	assert.ErrorIs(t, err, files.IndexTooLargeError{Given: source_len + 1, Max: source_len - 1})
+	require.ErrorIs(t, err, files.IndexTooLargeError{Given: source_len + 1, Max: source_len - 1})
 }
 
 func TestLocationEmptyFile(t *testing.T) {
@@ -84,7 +84,7 @@ func TestSourceSliceEndOfFile(t *testing.T) {
 	assert.Empty(t, slice)
 
 	_, err = file.sourceSlice(NewSpan(source_len+1, source_len+1))
-	assert.ErrorIs(t, err, files.IndexTooLargeError{Given: source_len + 1, Max: source_len})
+	require.ErrorIs(t, err, files.IndexTooLargeError{Given: source_len + 1, Max: source_len})
 }
 
 func TestLocationCountsCharacters(t *testing.T) {
@@ -105,7 +105,7 @@ func TestSourceSliceStartAfterEnd(t *testing.T) {
 
 	require.NotPanics(t, func() {
 		_, err := file.sourceSlice(NewSpan(3, 1))
-		assert.ErrorIs(t, err, files.IndexTooLargeError{Given: 1, Max: len(TEST_SOURCE1) - 1})
+		require.ErrorIs(t, err, files.IndexTooLargeError{Given: 1, Max: len(TEST_SOURCE1) - 1})
 	})
 }
 
@@ -119,10 +119,10 @@ func TestSourceSliceCharBoundary(t *testing.T) {
 
 	// Reported as `IndexTooLarge` like codespan.
 	_, err = file.sourceSlice(NewSpan(2, 3))
-	assert.ErrorIs(t, err, files.IndexTooLargeError{Given: 3, Max: len(source) - 1})
+	require.ErrorIs(t, err, files.IndexTooLargeError{Given: 3, Max: len(source) - 1})
 
 	_, err = file.sourceSlice(NewSpan(0, 2))
-	assert.ErrorIs(t, err, files.IndexTooLargeError{Given: 2, Max: len(source) - 1})
+	require.ErrorIs(t, err, files.IndexTooLargeError{Given: 2, Max: len(source) - 1})
 }
 
 // (`codespan::file::test::line_starts` in Rust)
