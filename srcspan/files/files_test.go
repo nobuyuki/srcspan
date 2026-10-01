@@ -46,3 +46,18 @@ func TestLineSpanSources(t *testing.T) {
 		line_sources,
 	)
 }
+
+func TestUpdate(t *testing.T) {
+	files := NewFiles()
+	file_id := files.Add("test", "foo")
+
+	files.Update(file_id, TEST_SOURCE)
+
+	source, err := files.Source(file_id)
+	require.NoError(t, err)
+	assert.Equal(t, TEST_SOURCE, *source)
+
+	file, err := files.Get(file_id)
+	require.NoError(t, err)
+	assert.Equal(t, []int{0, 4, 9, 10}, file.LineStarts())
+}

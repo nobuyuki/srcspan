@@ -21,8 +21,8 @@ func (f *Files) Add(name string, source srcspan.Source) int {
 }
 
 func (fs *Files) Update(file_id int, source srcspan.Source) {
-	f, _ := fs.Get(file_id)
-	f.Update(source)
+	// `Get` returns a copy, so update the element in place.
+	fs.files[file_id].Update(source)
 }
 
 func (f *Files) Get(file_id int) (srcspan.File, error) {
