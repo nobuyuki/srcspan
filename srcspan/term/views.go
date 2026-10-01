@@ -450,11 +450,8 @@ func (d *RichDiagnostic) Render(
 						MultiLabel MultiLabel
 					}{}
 
-					if line_info.LineIndex+1 < labeled_file.Lines.Len() {
-						line, _ := labeled_file.Lines.Get(line_info.LineIndex + 1)
-						if line != nil {
-							labels = append(labels, line.MultiLabels...)
-						}
+					if line, ok := labeled_file.Lines.Get(line_info.LineIndex + 1); ok {
+						labels = append(labels, line.MultiLabels...)
 					}
 
 					var ln int

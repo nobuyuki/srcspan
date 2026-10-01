@@ -1,6 +1,8 @@
 package term
 
 import (
+	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -84,4 +86,25 @@ func TestTrailingBorderMultipleFiles(t *testing.T) {
 			"\n",
 		emitString(t, &fs, d),
 	)
+}
+
+// A single skipped line inside a multi-line label is rendered with the
+// label's left border, even when the line index exceeds the number of
+// collected lines.
+func TestSkippedLineKeepsMultiLabelBorder(t *testing.T) {
+	source := ""
+	for i := range 20 {
+		source += fmt.Sprintf("line%02d\n", i)
+	}
+
+	fs := files.NewFiles()
+	file_id := fs.Add("test", source)
+	start := strings.Index(source, "line10")
+	end := strings.Index(source, "line16") + len("line16")
+	d := diagnostic.NewError().WithMessage("message").WithLabel(
+		*diagnostic.NewPrimary(file_id, srcspan.NewSpan(start, end)).WithMessage("multi"),
+	)
+
+	out := emitString(t, &fs, d)
+	assert.Contains(t, out, "15 │ │ line14\n")
 }
