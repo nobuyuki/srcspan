@@ -13,11 +13,12 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"strings"
 
 	"srcspan/srcspan/diagnostic"
 	"srcspan/srcspan/files"
 	"srcspan/srcspan/term"
+
+	"srcspan/examples/internal/unindent"
 )
 
 var colorChoice string
@@ -45,7 +46,7 @@ func parseArgs() term.ColorOutput {
 func main() {
 	file := files.NewSimpleFile(
 		"main.rs",
-		unindent(`
+		unindent.Unindent(`
                 fn main() {
                     let foo: i32 = "hello, world";
                     foo += 1;
@@ -120,7 +121,7 @@ func (e MutatingImmutable) Report() *diagnostic.Diagnostic {
 			e.Original.Content,
 		)).
 		WithLabels([]diagnostic.Label{
-			*diagnostic.NewSecondary(file_id, e.Original.Range).WithMessage(unindent(
+			*diagnostic.NewSecondary(file_id, e.Original.Range).WithMessage(unindent.Unindent(
 				fmt.Sprintf(`
                                 first assignment to `+"`%[1]s`"+`
                                 help: make this binding mutable: `+"`mut %[1]s`"+`
@@ -143,46 +144,4 @@ type Item struct {
 
 func NewItem(range_ files.Range, content string) Item {
 	return Item{Range: range_, Content: content}
-}
-
-// Removes the common leading spaces of the lines after the first one, and
-// the first line if it is empty.
-// (A port of `unindent::unindent` from the `unindent` crate in Rust.)
-func unindent(s string) string {
-	// Document may start either on the same line as opening quote or on
-	// the next line
-	ignore_first_line := strings.HasPrefix(s, "\n") || strings.HasPrefix(s, "\r\n")
-
-	lines := strings.Split(s, "\n")
-
-	// Largest number of spaces that can be removed from every
-	// non-whitespace-only line after the first
-	spaces := -1
-	for _, line := range lines[1:] {
-		trimmed := strings.TrimLeft(line, " \t")
-		if strings.TrimSpace(trimmed) == "" {
-			continue
-		}
-		n := len(line) - len(trimmed)
-		if spaces < 0 || n < spaces {
-			spaces = n
-		}
-	}
-	spaces = max(spaces, 0)
-
-	var result strings.Builder
-	for i, line := range lines {
-		if i > 1 || (i == 1 && !ignore_first_line) {
-			result.WriteString("\n")
-		}
-		if i == 0 {
-			// Do not un-indent anything on same line as opening quote
-			result.WriteString(line)
-		} else if len(line) > spaces {
-			// Whitespace-only lines may have fewer lines than the number
-			// to be removed
-			result.WriteString(line[spaces:])
-		}
-	}
-	return result.String()
 }

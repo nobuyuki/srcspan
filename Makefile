@@ -27,7 +27,7 @@ lint:
 
 # Sample files.
 #
-samples: example term custom_files
+samples: example term custom_files reusable_diagnostic
 
 example:
 	go build -o ./bin/example ./examples/example
@@ -35,5 +35,7 @@ term:
 	go build -o ./bin/term    ./examples/codespan/term
 custom_files:
 	go build -o ./bin/custom_files ./examples/codespan/custom_files
+reusable_diagnostic:
+	go build -o ./bin/reusable_diagnostic ./examples/codespan/reusable_diagnostic
 
 # (EOF)

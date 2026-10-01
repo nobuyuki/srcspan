@@ -15,6 +15,8 @@ import (
 	"srcspan/srcspan/diagnostic"
 	"srcspan/srcspan/files"
 	term "srcspan/srcspan/term"
+
+	"srcspan/examples/internal/unindent"
 )
 
 var colorChoice string
@@ -117,10 +119,10 @@ fizz₂ num =
 				*diagnostic.NewPrimary(file_id2, files.NewRange(37, 44)).WithMessage("expected `Nat`, found `String`"),
 				*diagnostic.NewSecondary(file_id1, files.NewRange(130, 155)).WithMessage("based on the definition of `_+_`"),
 			}).
-			WithNotes([]string{`expected type 'Nat'
-   found type 'String'
-`,
-			}),
+			WithNotes([]string{unindent.Unindent(`
+                    expected type ` + "`Nat`" + `
+                       found type ` + "`String`" + `
+                `)}),
 
 		// Incompatible match clause error
 		diagnostic.NewError().
@@ -131,11 +133,10 @@ fizz₂ num =
 				*diagnostic.NewSecondary(file_id3, files.NewRange(62, 166)).WithMessage("`case` clauses have incompatible types"),
 				*diagnostic.NewSecondary(file_id3, files.NewRange(41, 47)).WithMessage("expected type `String` found here"),
 			}).
-			WithNotes([]string{
-				`expected type 'String'
-   found type 'Nat'
-                `,
-			}),
+			WithNotes([]string{unindent.Unindent(`
+                    expected type ` + "`String`" + `
+                       found type ` + "`Nat`" + `
+                `)}),
 		// Incompatible match clause error
 		diagnostic.NewError().
 			WithMessage("`case` clauses have incompatible types").
@@ -148,11 +149,10 @@ fizz₂ num =
 				*diagnostic.NewSecondary(file_id3, files.NewRange(306, 312)).WithMessage("this is found to be of type `String`"),
 				*diagnostic.NewSecondary(file_id3, files.NewRange(186, 192)).WithMessage("expected type `String` found here"),
 			}).
-			WithNotes([]string{
-				`expected type 'String'
-   found type 'Nat'
-                `,
-			}),
+			WithNotes([]string{unindent.Unindent(`
+                    expected type ` + "`String`" + `
+                       found type ` + "`Nat`" + `
+                `)}),
 	}
 
 	styles := term.DefaultColor()
