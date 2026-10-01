@@ -9,6 +9,7 @@ import (
 	"bufio"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"testing"
 	"unicode"
@@ -241,7 +242,7 @@ var (
 )
 
 func tabWidthNoColor(tab_width int) snapshotTest {
-	return snapshotTest{"tab_width_" + strconvItoa(tab_width) + "_no_color", func(c Config) Config {
+	return snapshotTest{"tab_width_" + strconv.Itoa(tab_width) + "_no_color", func(c Config) Config {
 		c.TabWidth = tab_width
 		return c
 	}, false}
@@ -250,22 +251,6 @@ func tabWidthNoColor(tab_width int) snapshotTest {
 var tabWidthDefaultNoColor = snapshotTest{"tab_width_default_no_color", func(c Config) Config {
 	return c
 }, false}
-
-func strconvItoa(n int) string {
-	return strings.TrimSpace(strings.Repeat(" ", 0) + itoa(n))
-}
-
-func itoa(n int) string {
-	if n == 0 {
-		return "0"
-	}
-	s := ""
-	for n > 0 {
-		s = string(rune('0'+n%10)) + s
-		n /= 10
-	}
-	return s
-}
 
 // A module of term.rs.
 type snapshotCase struct {
