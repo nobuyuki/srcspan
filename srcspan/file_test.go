@@ -94,3 +94,28 @@ func TestLocationCountsCharacters(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, NewLocation(1, 8), location)
 }
+
+func TestSourceSliceStartAfterEnd(t *testing.T) {
+	file := NewFile("test", TEST_SOURCE1)
+
+	require.NotPanics(t, func() {
+		_, err := file.SourceSlice(NewSpan(3, 1))
+		assert.ErrorIs(t, err, IndexTooLargeError{Given: 1, Max: len(TEST_SOURCE1) - 1})
+	})
+}
+
+func TestSourceSliceCharBoundary(t *testing.T) {
+	source := "aαb" // 'α' is 2 bytes: [1, 3)
+	file := NewFile("test", source)
+
+	slice, err := file.SourceSlice(NewSpan(1, 3))
+	require.NoError(t, err)
+	assert.Equal(t, "α", slice)
+
+	// Reported as `IndexTooLarge` like codespan.
+	_, err = file.SourceSlice(NewSpan(2, 3))
+	assert.ErrorIs(t, err, IndexTooLargeError{Given: 3, Max: len(source) - 1})
+
+	_, err = file.SourceSlice(NewSpan(0, 2))
+	assert.ErrorIs(t, err, IndexTooLargeError{Given: 2, Max: len(source) - 1})
+}

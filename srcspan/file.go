@@ -173,6 +173,21 @@ func (f *File) SourceSlice(span Span) (string, error) {
 		}
 	}
 
+	// A reversed span or an index inside a UTF-8 sequence can not be
+	// sliced. Like `source.get(start..end)` failing in Rust, report it as
+	// `IndexTooLarge` instead of panicking.
+	if s > e || !IsRuneBoundary(f.source, s) || !IsRuneBoundary(f.source, e) {
+		max_index := source_len - 1
+		given := e
+		if s > max_index {
+			given = s
+		}
+		return "", IndexTooLargeError{
+			Given: given,
+			Max:   max_index,
+		}
+	}
+
 	return f.source[s:e], nil
 }
 
