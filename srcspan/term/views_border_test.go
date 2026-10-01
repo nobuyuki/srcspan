@@ -182,11 +182,11 @@ func TestShortDiagnosticPrimaryLabelsOnly(t *testing.T) {
 		"test:2:1: error: message\n",
 		emitStringWithStyle(t, Short, &fs, d),
 	)
-
-	// The note's indentation is checked separately.
-	medium := emitStringWithStyle(t, Medium, &fs, d)
-	assert.True(t, strings.HasPrefix(medium, "test:2:1: error: message\n"))
-	assert.NotContains(t, medium, "test:1:1")
+	assert.Equal(t,
+		"test:2:1: error: message\n"+
+			" = note\n",
+		emitStringWithStyle(t, Medium, &fs, d),
+	)
 }
 
 // Without primary labels, a header without a locus is printed.
@@ -200,5 +200,18 @@ func TestShortDiagnosticWithoutPrimaryLabels(t *testing.T) {
 	assert.Equal(t,
 		"error: message\n",
 		emitStringWithStyle(t, Short, &fs, d),
+	)
+}
+
+// Notes without any labels are indented by a single space.
+func TestNotesWithoutLabels(t *testing.T) {
+	fs := files.NewFiles()
+	d := diagnostic.NewError().WithMessage("message").WithNote("note")
+
+	assert.Equal(t,
+		"error: message\n"+
+			" = note\n"+
+			"\n",
+		emitString(t, &fs, d),
 	)
 }

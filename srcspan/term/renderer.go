@@ -1386,7 +1386,7 @@ func (r *Renderer) SnippetLocus(locus *Locus) (err error) {
 func (r *Renderer) OuterGutter(
 	outer_padding int,
 ) (err error) {
-	_, err = fmt.Fprintf(r, "%*s ", outer_padding, " ")
+	_, err = fmt.Fprintf(r, "%*s ", outer_padding, "")
 	return
 }
 
