@@ -127,3 +127,44 @@ func TestMultiLineCaretStartAndEnd(t *testing.T) {
 		out,
 	)
 }
+
+// A `WriteStyle` that writes markers for label styling calls.
+type labelMarkerWriter struct {
+	strings.Builder
+}
+
+func (*labelMarkerWriter) SetHeader(_ diagnostic.Severity) error { return nil }
+func (*labelMarkerWriter) SetHeaderMessage() error               { return nil }
+func (*labelMarkerWriter) SetLineNumber() error                  { return nil }
+func (*labelMarkerWriter) SetNoteBullet() error                  { return nil }
+func (*labelMarkerWriter) SetSourceBorder() error                { return nil }
+
+func (w *labelMarkerWriter) SetLabel(_ diagnostic.Severity, label_style diagnostic.LabelStyle) error {
+	if label_style == diagnostic.Primary {
+		w.WriteString("<P>")
+	} else {
+		w.WriteString("<S>")
+	}
+	return nil
+}
+
+func (w *labelMarkerWriter) Reset() error {
+	w.WriteString("<R>")
+	return nil
+}
+
+// The label style is only switched when it changes along the caret line.
+func TestCaretLineSwitchesStyleOnlyOnChange(t *testing.T) {
+	fs := files.NewFiles()
+	file_id := fs.Add("test", "abc def\n")
+	d := diagnostic.NewError().WithMessage("message").WithLabels([]diagnostic.Label{
+		*diagnostic.NewPrimary(file_id, srcspan.NewSpan(0, 3)),
+		*diagnostic.NewSecondary(file_id, srcspan.NewSpan(4, 7)),
+	})
+
+	w := &labelMarkerWriter{}
+	config := DefaultConfig()
+	require.NoError(t, EmitToWriteStyle(w, &config, &fs, d))
+
+	assert.Contains(t, w.String(), "  │<R> <P>^^^<R> <S>---<R>\n")
+}

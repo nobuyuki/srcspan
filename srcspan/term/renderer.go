@@ -868,7 +868,7 @@ func (r *Renderer) RenderSnippetSource(
 			}
 
 			// Update writer style if necessary
-			if previous_label_style != current_label_style {
+			if !sameLabelStyle(previous_label_style, current_label_style) {
 				if current_label_style == nil {
 					err = r.Reset()
 					if err != nil {
@@ -1916,6 +1916,15 @@ type Metrics struct {
 // (`source.len() - source.trim_start().len()` in Rust)
 func leadingWhitespaceLen(source string) int {
 	return len(source) - len(strings.TrimLeftFunc(source, unicode.IsSpace))
+}
+
+// Reports whether two optional label styles are equal.
+// (`Option<LabelStyle>` comparison in Rust)
+func sameLabelStyle(a, b *diagnostic.LabelStyle) bool {
+	if a == nil || b == nil {
+		return a == b
+	}
+	return *a == *b
 }
 
 func isOverlapping(r0, r1 srcspan.Range) bool {
