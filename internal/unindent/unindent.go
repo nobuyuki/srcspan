@@ -1,4 +1,4 @@
-// A port of the `unindent` crate in Rust, used by the examples.
+// A port of the `unindent` crate in Rust, used by the examples and tests.
 package unindent
 
 import (

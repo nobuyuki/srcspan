@@ -20,7 +20,7 @@ import (
 	"srcspan/srcspan/files"
 	"srcspan/srcspan/term"
 
-	"srcspan/examples/internal/unindent"
+	"srcspan/internal/unindent"
 )
 
 // (`enum Opts` in Rust)

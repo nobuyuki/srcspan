@@ -16,7 +16,7 @@ import (
 	"srcspan/srcspan/files"
 	term "srcspan/srcspan/term"
 
-	"srcspan/examples/internal/unindent"
+	"srcspan/internal/unindent"
 )
 
 var colorChoice string
