@@ -36,7 +36,7 @@ func (f *Files) Name(id int) (string, error) {
 func (fs *Files) LineSpan(file_id, line_index int) (srcspan.Span, error) {
 	f, err := fs.Get(file_id)
 	if err != nil {
-		return srcspan.Span{}, nil
+		return srcspan.Span{}, err
 	}
 	return f.LineSpan(line_index)
 }
@@ -44,11 +44,11 @@ func (fs *Files) LineSpan(file_id, line_index int) (srcspan.Span, error) {
 func (fs *Files) LineRange(file_id, line_index int) (srcspan.Range, error) {
 	f, err := fs.Get(file_id)
 	if err != nil {
-		return srcspan.Range{}, nil
+		return srcspan.Range{}, err
 	}
 	span, err := f.LineSpan(line_index)
 	if err != nil {
-		return srcspan.Range{}, nil
+		return srcspan.Range{}, err
 	}
 	return srcspan.NewRange(span.Start(), span.End()), nil
 }

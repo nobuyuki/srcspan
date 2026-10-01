@@ -108,3 +108,27 @@ func TestSkippedLineKeepsMultiLabelBorder(t *testing.T) {
 	out := emitString(t, &fs, d)
 	assert.Contains(t, out, "15 │ │ line14\n")
 }
+
+// `AfterLabelLines` must stop at the end of the file.
+func TestAfterLabelLinesStopAtEndOfFile(t *testing.T) {
+	fs := files.NewFiles()
+	file_id := fs.Add("test", "abc\ndef")
+	d := diagnostic.NewError().WithMessage("message").WithLabel(
+		*diagnostic.NewPrimary(file_id, srcspan.NewSpan(4, 5)),
+	)
+
+	config := DefaultConfig()
+	config.AfterLabelLines = 3
+	out, err := EmitIntoString(&config, &fs, d)
+	require.NoError(t, err)
+
+	assert.Equal(t,
+		"error: message\n"+
+			"  ┌─ test:2:1\n"+
+			"  │\n"+
+			"2 │ def\n"+
+			"  │ ^\n"+
+			"\n",
+		out,
+	)
+}

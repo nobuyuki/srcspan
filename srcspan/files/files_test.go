@@ -61,3 +61,15 @@ func TestUpdate(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, []int{0, 4, 9, 10}, file.LineStarts())
 }
+
+func TestLineRangeTooLarge(t *testing.T) {
+	files := NewFiles()
+	file_id := files.Add("test", TEST_SOURCE)
+
+	// TEST_SOURCE has 4 lines (indices 0..3).
+	_, err := files.LineRange(file_id, 4)
+	require.Error(t, err)
+
+	_, err = files.LineSpan(file_id, 4)
+	require.Error(t, err)
+}
