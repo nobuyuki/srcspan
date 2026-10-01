@@ -216,3 +216,28 @@ func TestFilesFileMissing(t *testing.T) {
 		require.ErrorIs(t, err, missing)
 	}
 }
+
+// The doc test of `codespan::Files::location` in Rust, which is for the
+// 0-based location. (Not exposed in Go, see `Files`.)
+func TestFileLocationDocTest(t *testing.T) {
+	file := newFile("test", "foo\nbar\r\n\nbaz")
+
+	location, err := file.location(0)
+	require.NoError(t, err)
+	assert.Equal(t, NewLocation(0, 0), location)
+
+	location, err = file.location(7)
+	require.NoError(t, err)
+	assert.Equal(t, NewLocation(1, 3), location)
+
+	location, err = file.location(8)
+	require.NoError(t, err)
+	assert.Equal(t, NewLocation(1, 4), location)
+
+	location, err = file.location(9)
+	require.NoError(t, err)
+	assert.Equal(t, NewLocation(2, 0), location)
+
+	_, err = file.location(100)
+	require.Error(t, err)
+}

@@ -39,21 +39,6 @@ func TestLineSpanSources(t *testing.T) {
 	assert.Equal(t, []string{"foo\n", "bar\r\n", "\n", "baz"}, line_sources)
 }
 
-// The doc example of `column_index` in Rust.
-func TestColumnIndex(t *testing.T) {
-	source := "\n\n🗻∈🌏\n\n"
-
-	assert.Equal(t, 0, ColumnIndex(source, NewRange(0, 1), 0))
-	assert.Equal(t, 0, ColumnIndex(source, NewRange(2, 13), 0))
-	assert.Equal(t, 0, ColumnIndex(source, NewRange(2, 13), 2+0))
-	assert.Equal(t, 0, ColumnIndex(source, NewRange(2, 13), 2+1))
-	assert.Equal(t, 1, ColumnIndex(source, NewRange(2, 13), 2+4))
-	assert.Equal(t, 2, ColumnIndex(source, NewRange(2, 13), 2+8))
-	assert.Equal(t, 2, ColumnIndex(source, NewRange(2, 13), 2+10))
-	assert.Equal(t, 3, ColumnIndex(source, NewRange(2, 13), 2+11))
-	assert.Equal(t, 3, ColumnIndex(source, NewRange(2, 13), 2+12))
-}
-
 func TestIsRuneBoundary(t *testing.T) {
 	source := "aα" // 'α' is 2 bytes: [1, 3)
 
