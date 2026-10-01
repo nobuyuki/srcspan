@@ -168,3 +168,26 @@ func TestCaretLineSwitchesStyleOnlyOnChange(t *testing.T) {
 
 	assert.Contains(t, w.String(), "  │<R> <P>^^^<R> <S>---<R>\n")
 }
+
+func TestLines(t *testing.T) {
+	assert.Empty(t, lines(""))
+	assert.Equal(t, []string{""}, lines("\n"))
+	assert.Equal(t, []string{"a"}, lines("a"))
+	assert.Equal(t, []string{"a"}, lines("a\n"))
+	assert.Equal(t, []string{"a", ""}, lines("a\n\n"))
+	assert.Equal(t, []string{"a", "b"}, lines("a\r\nb\r\n"))
+}
+
+// A trailing newline in a note does not produce an empty note line.
+func TestNoteWithTrailingNewline(t *testing.T) {
+	fs := files.NewFiles()
+	d := diagnostic.NewError().WithMessage("message").WithNote("first\r\nsecond\n")
+
+	assert.Equal(t,
+		"error: message\n"+
+			" = first\n"+
+			"   second\n"+
+			"\n",
+		emitString(t, &fs, d),
+	)
+}

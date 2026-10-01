@@ -1293,7 +1293,7 @@ func (r *Renderer) RenderSnippetNote(
 	outer_padding int,
 	message string,
 ) (err error) {
-	for note_line_index, line := range strings.Split(message, "\n") {
+	for note_line_index, line := range lines(message) {
 		err = r.OuterGutter(outer_padding)
 		if err != nil {
 			return err
@@ -1925,6 +1925,21 @@ func sameLabelStyle(a, b *diagnostic.LabelStyle) bool {
 		return a == b
 	}
 	return *a == *b
+}
+
+// Splits `s` into lines like `str::lines()` in Rust: a trailing newline
+// does not produce an empty last line, and a trailing `\r` is removed
+// from each line.
+func lines(s string) []string {
+	if s == "" {
+		return nil
+	}
+
+	ls := strings.Split(strings.TrimSuffix(s, "\n"), "\n")
+	for i, l := range ls {
+		ls[i] = strings.TrimSuffix(l, "\r")
+	}
+	return ls
 }
 
 func isOverlapping(r0, r1 srcspan.Range) bool {
