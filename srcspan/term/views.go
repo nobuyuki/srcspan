@@ -504,7 +504,7 @@ func (d *RichDiagnostic) Render(
 
 		// Check to see if we should render a trailing border after the
 		// final line of the snippet.
-		if len(labeled_files) <= labeled_files_idx && len(d.diagnostic.Notes) == 0 {
+		if labeled_files_idx+1 >= len(labeled_files) && len(d.diagnostic.Notes) == 0 {
 			// We don't render a border if we are at the final newline
 			// without trailing notes, because it would end up looking too
 			// spaced-out in combination with the final new line.
