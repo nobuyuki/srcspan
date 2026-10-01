@@ -94,3 +94,36 @@ func TestLocusColumnCountsCharacters(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, "test:1:11: error: message\n", out)
 }
+
+// Multi-line labels use the top/start and bottom/end characters for their
+// top and bottom respectively.
+func TestMultiLineCaretStartAndEnd(t *testing.T) {
+	source := "a (\n  b\n)\n"
+
+	fs := files.NewFiles()
+	file_id := fs.Add("test", source)
+	d := diagnostic.NewError().WithMessage("message").WithLabels([]diagnostic.Label{
+		*diagnostic.NewPrimary(file_id, srcspan.NewSpan(2, 9)).WithMessage("primary"),
+	})
+
+	config := DefaultConfig()
+	config.Chars.MultiPrimaryCaretStart = 'S'
+	config.Chars.MultiPrimaryCaretEnd = 'E'
+	config.Chars.MultiTop = 't'
+	config.Chars.MultiBottom = 'b'
+	out, err := EmitIntoString(&config, &fs, d)
+	require.NoError(t, err)
+
+	assert.Equal(t,
+		"error: message\n"+
+			"  ┌─ test:1:3\n"+
+			"  │  \n"+
+			"1 │   a (\n"+
+			"  │ ╭tttS\n"+
+			"2 │ │   b\n"+
+			"3 │ │ )\n"+
+			"  │ ╰bE primary\n"+
+			"\n",
+		out,
+	)
+}

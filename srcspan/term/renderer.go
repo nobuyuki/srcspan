@@ -1736,12 +1736,15 @@ func (r *Renderer) LabelMultiBottomCaret(
 		}
 	}
 
+	// NOTE: codespan-reporting 0.13.1 uses `multi_*_caret_start` here,
+	// which looks like a bug: `multi_*_caret_end` are documented as
+	// "marking the end of a multi-line label" but are never used.
 	var caret_end rune
 	switch label_style {
 	case diagnostic.Primary:
-		caret_end = r.config.Chars.MultiPrimaryCaretStart
+		caret_end = r.config.Chars.MultiPrimaryCaretEnd
 	case diagnostic.Secondary:
-		caret_end = r.config.Chars.MultiSecondaryCaretStart
+		caret_end = r.config.Chars.MultiSecondaryCaretEnd
 	default:
 		panic(fmt.Sprintf("Unknown diagnostic.LabelStyle: %v", label_style))
 	}
