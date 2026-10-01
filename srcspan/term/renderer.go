@@ -6,6 +6,7 @@ import (
 	"slices"
 	"strings"
 	"unicode"
+	"unicode/utf8"
 
 	"github.com/mattn/go-runewidth"
 
@@ -639,7 +640,7 @@ func (r *Renderer) RenderSnippetSource(
 			metrics := cm.Metrics
 			ch := cm.Char
 
-			column_range := srcspan.NewRange(metrics.byte_index, metrics.byte_index+runewidth.RuneWidth(ch))
+			column_range := srcspan.NewRange(metrics.byte_index, metrics.byte_index+utf8.RuneLen(ch))
 
 			// Check if we are overlapping a primary label
 			var is_primary bool
@@ -853,7 +854,7 @@ func (r *Renderer) RenderSnippetSource(
 			ch := cm.Char
 
 			// Find the current label style at this column
-			column_range := srcspan.NewRange(metrics.byte_index, metrics.byte_index+runewidth.RuneWidth(ch))
+			column_range := srcspan.NewRange(metrics.byte_index, metrics.byte_index+utf8.RuneLen(ch))
 
 			var current_label_style *diagnostic.LabelStyle
 			var max_priority int
@@ -1471,7 +1472,7 @@ func (r *Renderer) CaretPointers(
 		ch := cm.Char
 
 		column_range_start := metrics.byte_index
-		column_range_end := metrics.byte_index + runewidth.RuneWidth(ch)
+		column_range_end := metrics.byte_index + utf8.RuneLen(ch)
 
 		var label_style *diagnostic.LabelStyle
 		var max_priority int
