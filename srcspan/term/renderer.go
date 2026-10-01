@@ -1551,8 +1551,9 @@ func (r *Renderer) LabelMultiLeft(
 		}
 	} else {
 		// Continue an underline horizontally
-		label_style = *underline
-		err = r.SetLabel(severity, label_style)
+		// (`Some(label_style)` in Rust shadows the parameter only in this
+		// branch, so the parameter must not be overwritten here.)
+		err = r.SetLabel(severity, *underline)
 		if err != nil {
 			return err
 		}
