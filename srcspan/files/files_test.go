@@ -1,10 +1,13 @@
 package files
 
 import (
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"srcspan/srcspan"
 )
 
 const TEST_SOURCE = "foo\nbar\r\n\nbaz"
@@ -72,4 +75,40 @@ func TestLineRangeTooLarge(t *testing.T) {
 
 	_, err = files.LineSpan(file_id, 4)
 	require.Error(t, err)
+}
+
+func TestFileMissing(t *testing.T) {
+	files := NewFiles()
+	files.Add("test", TEST_SOURCE)
+
+	for _, file_id := range []int{-1, 1} {
+		missing := srcspan.FileMissingError(strconv.Itoa(file_id))
+
+		_, err := files.Get(file_id)
+		require.ErrorIs(t, err, missing)
+
+		_, err = files.Name(file_id)
+		require.ErrorIs(t, err, missing)
+
+		_, err = files.Source(file_id)
+		require.ErrorIs(t, err, missing)
+
+		_, err = files.LineIndex(file_id, 0)
+		require.ErrorIs(t, err, missing)
+
+		_, err = files.LineSpan(file_id, 0)
+		require.ErrorIs(t, err, missing)
+
+		_, err = files.LineRange(file_id, 0)
+		require.ErrorIs(t, err, missing)
+
+		_, err = files.SourceSlice(file_id, srcspan.DefaultSpan())
+		require.ErrorIs(t, err, missing)
+
+		_, err = files.Location(file_id, 0)
+		require.ErrorIs(t, err, missing)
+
+		_, err = files.ColumnNumber(file_id, 0, 0)
+		require.ErrorIs(t, err, missing)
+	}
 }

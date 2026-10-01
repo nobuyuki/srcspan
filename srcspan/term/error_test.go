@@ -60,3 +60,22 @@ func TestEmitReturnsWriteErrors(t *testing.T) {
 		}
 	}
 }
+
+// A label pointing to an unknown file is reported as an error.
+func TestEmitFileMissing(t *testing.T) {
+	fs := files.NewFiles()
+	fs.Add("test", "abc\n")
+	d := diagnostic.NewError().WithMessage("message").WithLabel(
+		*diagnostic.NewPrimary(1, srcspan.NewSpan(0, 1)),
+	)
+
+	for _, style := range []DisplayStyle{Rich, Medium, Short} {
+		config := DefaultConfig()
+		config.DisplayStyle = style
+
+		require.NotPanics(t, func() {
+			_, err := EmitIntoString(&config, &fs, d)
+			require.ErrorIs(t, err, srcspan.FileMissingError("1"), "style=%v", style)
+		})
+	}
+}

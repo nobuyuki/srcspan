@@ -1,6 +1,8 @@
 package files
 
 import (
+	"strconv"
+
 	"srcspan/srcspan"
 )
 
@@ -25,12 +27,28 @@ func (fs *Files) Update(file_id int, source srcspan.Source) {
 	fs.files[file_id].Update(source)
 }
 
-func (f *Files) Get(file_id int) (srcspan.File, error) {
-	return f.files[file_id], nil
+// Returns the stored file, or `FileMissingError` if `file_id` is unknown.
+func (fs *Files) get(file_id int) (*srcspan.File, error) {
+	if file_id < 0 || file_id >= len(fs.files) {
+		return nil, srcspan.FileMissingError(strconv.Itoa(file_id))
+	}
+	return &fs.files[file_id], nil
 }
 
-func (f *Files) Name(id int) (string, error) {
-	return f.files[id].Name(), nil
+func (fs *Files) Get(file_id int) (srcspan.File, error) {
+	f, err := fs.get(file_id)
+	if err != nil {
+		return srcspan.File{}, err
+	}
+	return *f, nil
+}
+
+func (fs *Files) Name(id int) (string, error) {
+	f, err := fs.get(id)
+	if err != nil {
+		return "", err
+	}
+	return f.Name(), nil
 }
 
 func (fs *Files) LineSpan(file_id, line_index int) (srcspan.Span, error) {
@@ -54,7 +72,11 @@ func (fs *Files) LineRange(file_id, line_index int) (srcspan.Range, error) {
 }
 
 func (fs *Files) Source(id int) (*srcspan.Source, error) {
-	return fs.files[id].Source(), nil
+	f, err := fs.get(id)
+	if err != nil {
+		return nil, err
+	}
+	return f.Source(), nil
 }
 
 func (fs *Files) SourceSpan(file_id int) srcspan.Span {
@@ -72,8 +94,11 @@ func (fs *Files) SourceSlice(file_id int, span srcspan.Span) (string, error) {
 }
 
 func (fs *Files) LineIndex(id, byte_index int) (int, error) {
-	// file_idのエラーがいるかもね〜
-	return fs.files[id].LineIndex(byte_index), nil
+	f, err := fs.get(id)
+	if err != nil {
+		return 0, err
+	}
+	return f.LineIndex(byte_index), nil
 }
 
 func (*Files) LineNumber(_, line_index int) (int, error) {
