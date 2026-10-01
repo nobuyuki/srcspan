@@ -1171,6 +1171,10 @@ func (r *Renderer) RenderSnippetSource(
 							return err
 						}
 					} else if _, _, ok := label.asBottom(); ok && multi_label_index == i {
+						underline = &Underline{
+							LabelStyle:    ls,
+							VerticalBound: VerticalBoundBottom,
+						}
 						err = r.LabelMultiBottomLeft(severity, label_style)
 						if err != nil {
 							return err

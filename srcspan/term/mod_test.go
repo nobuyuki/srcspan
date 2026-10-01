@@ -89,4 +89,8 @@ func TestNestedMultiLineLabels(t *testing.T) {
 	})
 	assert.Contains(t, out, "inner")
 	assert.Contains(t, out, "outer")
+
+	// The bottom underline of the outer label continues horizontally
+	// through the inner label's column.
+	assert.Contains(t, out, "  │ ╰───^ outer\n")
 }
