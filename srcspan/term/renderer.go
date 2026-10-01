@@ -313,6 +313,15 @@ type Underline struct {
 	VerticalBound VerticalBound
 }
 
+// Returns the label style of the underline, or nil if there is no underline.
+// (`underline.map(|(s, _)| s)` in Rust)
+func (u *Underline) labelStyle() *diagnostic.LabelStyle {
+	if u == nil {
+		return nil
+	}
+	return &u.LabelStyle
+}
+
 /// A renderer of display list entries.
 ///
 /// The following diagram gives an overview of each of the parts of the renderer's output:
@@ -1136,17 +1145,17 @@ func (r *Renderer) RenderSnippetSource(
 
 				if label_index == label_column {
 					if label.isLeft() {
-						err = r.LabelMultiLeft(severity, ls, &underline.LabelStyle)
+						err = r.LabelMultiLeft(severity, ls, underline.labelStyle())
 						if err != nil {
 							return err
 						}
 					} else if _, ok := label.asTop(); ok && multi_label_index > i {
-						err = r.LabelMultiLeft(severity, ls, &underline.LabelStyle)
+						err = r.LabelMultiLeft(severity, ls, underline.labelStyle())
 						if err != nil {
 							return err
 						}
 					} else if _, _, ok := label.asBottom(); ok && multi_label_index < i {
-						err = r.LabelMultiLeft(severity, ls, &underline.LabelStyle)
+						err = r.LabelMultiLeft(severity, ls, underline.labelStyle())
 						if err != nil {
 							return err
 						}
