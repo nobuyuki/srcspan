@@ -2,6 +2,8 @@ package srcspan
 
 import (
 	"fmt"
+
+	"srcspan/srcspan/files"
 )
 
 type Span struct {
@@ -62,4 +64,16 @@ func (s Span) End() int {
 
 func (s Span) String() string {
 	return fmt.Sprintf("[%d, %d)", s.start, s.end)
+}
+
+// Convert a range into a span.
+// (`impl From<Range<I>> for Span` in Rust)
+func SpanFromRange(r files.Range) Span {
+	return NewSpan(r.Start, r.End)
+}
+
+// Convert the span into a range.
+// (`impl From<Span> for Range<usize>` in Rust)
+func (s Span) Range() files.Range {
+	return files.NewRange(s.start, s.end)
 }

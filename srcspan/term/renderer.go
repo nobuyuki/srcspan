@@ -5,11 +5,13 @@ import (
 	"io"
 	"slices"
 	"strings"
+	"unicode"
+	"unicode/utf8"
 
 	"github.com/mattn/go-runewidth"
 
-	"srcspan/srcspan"
 	"srcspan/srcspan/diagnostic"
+	"srcspan/srcspan/files"
 )
 
 // A writer that can apply styling for different parts of a diagnostic renderer.
@@ -176,7 +178,7 @@ type Locus struct {
 	Name string
 
 	// The location.
-	Location srcspan.Location
+	Location files.Location
 }
 
 // Single-line label, with an optional message.
@@ -186,7 +188,7 @@ type Locus struct {
 // ```
 type SingleLabel struct {
 	LabelStyle diagnostic.LabelStyle
-	Range      srcspan.Range
+	Range      files.Range
 	Message    string
 }
 
@@ -311,6 +313,15 @@ const (
 type Underline struct {
 	LabelStyle    diagnostic.LabelStyle
 	VerticalBound VerticalBound
+}
+
+// Returns the label style of the underline, or nil if there is no underline.
+// (`underline.map(|(s, _)| s)` in Rust)
+func (u *Underline) labelStyle() *diagnostic.LabelStyle {
+	if u == nil {
+		return nil
+	}
+	return &u.LabelStyle
 }
 
 /// A renderer of display list entries.
@@ -586,7 +597,7 @@ func (r *Renderer) RenderSnippetSource(
 				ml := multi_labels[multi_labels_idx]
 				if ml.LabelIndex == label_column {
 					if start, ok := ml.MultiLabel.asTop(); ok {
-						if start <= len(source)-len(strings.TrimLeft(source, " \t")) {
+						if start <= leadingWhitespaceLen(source) {
 							err = r.LabelMultiTopLeft(severity, ml.LabelStyle)
 							if err != nil {
 								return err
@@ -629,7 +640,7 @@ func (r *Renderer) RenderSnippetSource(
 			metrics := cm.Metrics
 			ch := cm.Char
 
-			column_range := srcspan.NewRange(metrics.byte_index, metrics.byte_index+runewidth.RuneWidth(ch))
+			column_range := files.NewRange(metrics.byte_index, metrics.byte_index+utf8.RuneLen(ch))
 
 			// Check if we are overlapping a primary label
 			var is_primary bool
@@ -843,7 +854,7 @@ func (r *Renderer) RenderSnippetSource(
 			ch := cm.Char
 
 			// Find the current label style at this column
-			column_range := srcspan.NewRange(metrics.byte_index, metrics.byte_index+runewidth.RuneWidth(ch))
+			column_range := files.NewRange(metrics.byte_index, metrics.byte_index+utf8.RuneLen(ch))
 
 			var current_label_style *diagnostic.LabelStyle
 			var max_priority int
@@ -857,7 +868,7 @@ func (r *Renderer) RenderSnippetSource(
 			}
 
 			// Update writer style if necessary
-			if previous_label_style != current_label_style {
+			if !sameLabelStyle(previous_label_style, current_label_style) {
 				if current_label_style == nil {
 					err = r.Reset()
 					if err != nil {
@@ -1095,7 +1106,7 @@ func (r *Renderer) RenderSnippetSource(
 		}
 		if start, ok := _label.asTop(); ok {
 			// no label caret needed if this can be started in front of the line
-			if start <= len(source)-len(strings.TrimLeft(source, " ")) {
+			if start <= leadingWhitespaceLen(source) {
 				continue
 			} else {
 				label_style = _label_style
@@ -1136,17 +1147,17 @@ func (r *Renderer) RenderSnippetSource(
 
 				if label_index == label_column {
 					if label.isLeft() {
-						err = r.LabelMultiLeft(severity, ls, &underline.LabelStyle)
+						err = r.LabelMultiLeft(severity, ls, underline.labelStyle())
 						if err != nil {
 							return err
 						}
 					} else if _, ok := label.asTop(); ok && multi_label_index > i {
-						err = r.LabelMultiLeft(severity, ls, &underline.LabelStyle)
+						err = r.LabelMultiLeft(severity, ls, underline.labelStyle())
 						if err != nil {
 							return err
 						}
 					} else if _, _, ok := label.asBottom(); ok && multi_label_index < i {
-						err = r.LabelMultiLeft(severity, ls, &underline.LabelStyle)
+						err = r.LabelMultiLeft(severity, ls, underline.labelStyle())
 						if err != nil {
 							return err
 						}
@@ -1160,6 +1171,10 @@ func (r *Renderer) RenderSnippetSource(
 							return err
 						}
 					} else if _, _, ok := label.asBottom(); ok && multi_label_index == i {
+						underline = &Underline{
+							LabelStyle:    ls,
+							VerticalBound: VerticalBoundBottom,
+						}
 						err = r.LabelMultiBottomLeft(severity, label_style)
 						if err != nil {
 							return err
@@ -1278,7 +1293,7 @@ func (r *Renderer) RenderSnippetNote(
 	outer_padding int,
 	message string,
 ) (err error) {
-	for note_line_index, line := range strings.Split(message, "\n") {
+	for note_line_index, line := range lines(message) {
 		err = r.OuterGutter(outer_padding)
 		if err != nil {
 			return err
@@ -1290,14 +1305,20 @@ func (r *Renderer) RenderSnippetNote(
 			if err != nil {
 				return err
 			}
-			fmt.Fprintf(r, "%c", r.Chars().NoteBullet)
+			_, err = fmt.Fprintf(r, "%c", r.Chars().NoteBullet)
+			if err != nil {
+				return err
+			}
 
 			err = r.Reset()
 			if err != nil {
 				return err
 			}
 		default:
-			fmt.Fprintf(r, " ")
+			_, err = fmt.Fprintf(r, " ")
+			if err != nil {
+				return err
+			}
 		}
 
 		// Write line of message
@@ -1367,7 +1388,7 @@ func (r *Renderer) CharMetrics(
 // Location focus.
 func (r *Renderer) SnippetLocus(locus *Locus) (err error) {
 	// Location.{Line,Column} is Index or 0-based.
-	_, err = fmt.Fprintf(r, "%s:%d:%d", locus.Name, locus.Location.Line+1, locus.Location.Column+1)
+	_, err = fmt.Fprintf(r, "%s:%d:%d", locus.Name, locus.Location.LineNumber, locus.Location.ColumnNumber)
 	return
 }
 
@@ -1375,7 +1396,7 @@ func (r *Renderer) SnippetLocus(locus *Locus) (err error) {
 func (r *Renderer) OuterGutter(
 	outer_padding int,
 ) (err error) {
-	_, err = fmt.Fprintf(r, "%*s ", outer_padding, " ")
+	_, err = fmt.Fprintf(r, "%*s ", outer_padding, "")
 	return
 }
 
@@ -1461,7 +1482,7 @@ func (r *Renderer) CaretPointers(
 		ch := cm.Char
 
 		column_range_start := metrics.byte_index
-		column_range_end := metrics.byte_index + runewidth.RuneWidth(ch)
+		column_range_end := metrics.byte_index + utf8.RuneLen(ch)
 
 		var label_style *diagnostic.LabelStyle
 		var max_priority int
@@ -1502,7 +1523,7 @@ func (r *Renderer) CaretPointers(
 			for i := spaces_start; i < spaces_end; i++ {
 				_, err = fmt.Fprintf(r, " ")
 				if err != nil {
-					break
+					return err
 				}
 			}
 		}
@@ -1530,8 +1551,9 @@ func (r *Renderer) LabelMultiLeft(
 		}
 	} else {
 		// Continue an underline horizontally
-		label_style = *underline
-		err = r.SetLabel(severity, label_style)
+		// (`Some(label_style)` in Rust shadows the parameter only in this
+		// branch, so the parameter must not be overwritten here.)
+		err = r.SetLabel(severity, *underline)
 		if err != nil {
 			return err
 		}
@@ -1652,13 +1674,19 @@ func (r *Renderer) LabelMultiTopCaret(
 	for _, cm := range r.CharMetrics(CharIndices(source)) {
 		metrics := cm.Metrics
 
-		if metrics.byte_index >= start {
+		// `take_while(|(metrics, _)| metrics.byte_index < start + 1)` in Rust:
+		// the extra column makes up for the space between the gutter and
+		// the source, so that the caret is under the first labeled char.
+		if metrics.byte_index >= start+1 {
 			break
 		}
 
 		// FIXME: improve rendering of carets between character boundaries
 		for i := 0; i < metrics.unicode_width; i++ { //nolint:intrange // emulate rust code
-			fmt.Fprintf(r, "%c", r.Chars().MultiBottom)
+			_, err = fmt.Fprintf(r, "%c", r.Chars().MultiTop)
+			if err != nil {
+				return err
+			}
 		}
 	}
 
@@ -1714,16 +1742,22 @@ func (r *Renderer) LabelMultiBottomCaret(
 
 		// FIXME: improve rendering of carets between character boundaries
 		for i := 0; i < metrics.unicode_width; i++ { //nolint:intrange // emulate rust code
-			fmt.Fprintf(r, "%c", r.Chars().MultiBottom)
+			_, err = fmt.Fprintf(r, "%c", r.Chars().MultiBottom)
+			if err != nil {
+				return err
+			}
 		}
 	}
 
+	// NOTE: codespan-reporting 0.13.1 uses `multi_*_caret_start` here,
+	// which looks like a bug: `multi_*_caret_end` are documented as
+	// "marking the end of a multi-line label" but are never used.
 	var caret_end rune
 	switch label_style {
 	case diagnostic.Primary:
-		caret_end = r.config.Chars.MultiPrimaryCaretStart
+		caret_end = r.config.Chars.MultiPrimaryCaretEnd
 	case diagnostic.Secondary:
-		caret_end = r.config.Chars.MultiSecondaryCaretStart
+		caret_end = r.config.Chars.MultiSecondaryCaretEnd
 	default:
 		panic(fmt.Sprintf("Unknown diagnostic.LabelStyle: %v", label_style))
 	}
@@ -1776,7 +1810,7 @@ func (r *Renderer) InnerGutterColumn(
 		case VerticalBoundBottom:
 			ch = r.config.Chars.MultiBottom
 		default:
-			panic(fmt.Sprintf("Unknown srcspan.VerticalBound: %v", vertical_bound))
+			panic(fmt.Sprintf("Unknown term.VerticalBound: %v", vertical_bound))
 		}
 
 		_, err = fmt.Fprintf(r, "%c%c", ch, ch)
@@ -1879,7 +1913,37 @@ type Metrics struct {
 }
 
 // Check if two ranges overlap
-func isOverlapping(r0, r1 srcspan.Range) bool {
+// Returns the byte length of the leading whitespace in `source`.
+// (`source.len() - source.trim_start().len()` in Rust)
+func leadingWhitespaceLen(source string) int {
+	return len(source) - len(strings.TrimLeftFunc(source, unicode.IsSpace))
+}
+
+// Reports whether two optional label styles are equal.
+// (`Option<LabelStyle>` comparison in Rust)
+func sameLabelStyle(a, b *diagnostic.LabelStyle) bool {
+	if a == nil || b == nil {
+		return a == b
+	}
+	return *a == *b
+}
+
+// Splits `s` into lines like `str::lines()` in Rust: a trailing newline
+// does not produce an empty last line, and a trailing `\r` is removed
+// from each line.
+func lines(s string) []string {
+	if s == "" {
+		return nil
+	}
+
+	ls := strings.Split(strings.TrimSuffix(s, "\n"), "\n")
+	for i, l := range ls {
+		ls[i] = strings.TrimSuffix(l, "\r")
+	}
+	return ls
+}
+
+func isOverlapping(r0, r1 files.Range) bool {
 	start := max(r0.Start, r1.Start)
 	end := min(r0.End, r1.End)
 	return start < end

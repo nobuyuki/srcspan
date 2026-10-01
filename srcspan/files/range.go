@@ -1,5 +1,7 @@
-package srcspan
+package files
 
+// A byte range in a source, half-open: [Start, End).
+// (`core::ops::Range<usize>` in Rust)
 type Range struct {
 	Start int
 	End   int
@@ -12,6 +14,9 @@ func NewRange(s, e int) Range {
 	}
 }
 
+// Reports whether the byte index `i` is the first byte of a UTF-8 code
+// point or the end of `s`.
+// (`str::is_char_boundary` in Rust)
 func IsRuneBoundary(s string, i int) bool {
 	const utf8Mask = 0xC0
 	const utf8Continue = 0x80

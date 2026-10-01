@@ -3,6 +3,7 @@ package term
 import (
 	"fmt"
 	"io"
+	"strings"
 
 	"github.com/fatih/color"
 
@@ -318,111 +319,79 @@ func (sw StylesWriter) Flush() error {
 	return nil
 }
 
-func (sw StylesWriter) SetHeader(severity diagnostic.Severity) error {
+// Reports whether escape sequences should be written.
+//
+// `ColorOutputAuto` follows `color.NoColor`, which fatih/color
+// initializes from `NO_COLOR`, `TERM=dumb` and whether stdout is a
+// terminal.
+func (sw StylesWriter) colorEnabled() bool {
 	switch sw.style.ColorOutput {
 	case ColorOutputNone:
-		color.NoColor = true
-		return nil
+		return false
 	case ColorOutputAuto:
+		return !color.NoColor
 	case ColorOutputForce:
-		color.NoColor = false
+		return true
 	default:
-		panic("")
+		panic(fmt.Sprintf("Unknown ColorOutput: %v", sw.style.ColorOutput))
 	}
-	sw.style.Header(severity).Set()
-	return nil
+}
+
+// Writes the escape sequence of `c` to the underlying writer.
+//
+// `Color.Set()` writes to `color.Output` (stdout), not to our writer,
+// so the sequence is rendered into a buffer and written here instead.
+func (sw StylesWriter) setColor(c *color.Color) error {
+	if !sw.colorEnabled() {
+		return nil
+	}
+
+	// Copy so that enabling the color does not affect the caller's
+	// `Styles`.
+	cc := *c
+	cc.EnableColor()
+
+	var buf strings.Builder
+	cc.SetWriter(&buf)
+
+	_, err := io.WriteString(sw.writer, buf.String())
+	return err
+}
+
+func (sw StylesWriter) SetHeader(severity diagnostic.Severity) error {
+	return sw.setColor(sw.style.Header(severity))
 }
 
 func (sw StylesWriter) SetHeaderMessage() error {
-	switch sw.style.ColorOutput {
-	case ColorOutputNone:
-		color.NoColor = true
-		return nil
-	case ColorOutputAuto:
-	case ColorOutputForce:
-		color.NoColor = false
-	default:
-		panic("")
+	// Reset the header color first, since `HeaderMessage` (bold)
+	// would otherwise be combined with it.
+	if err := sw.Reset(); err != nil {
+		return err
 	}
-	color.Unset() // nobuyuki
-	sw.style.HeaderMessage.Set()
-	return nil
+	return sw.setColor(sw.style.HeaderMessage)
 }
 
 func (sw StylesWriter) SetLineNumber() error {
-	switch sw.style.ColorOutput {
-	case ColorOutputNone:
-		color.NoColor = true
-		return nil
-	case ColorOutputAuto:
-	case ColorOutputForce:
-		color.NoColor = false
-	default:
-		panic("")
-	}
-	sw.style.LineNumber.Set()
-	return nil
+	return sw.setColor(sw.style.LineNumber)
 }
 
 func (sw StylesWriter) SetNoteBullet() error {
-	switch sw.style.ColorOutput {
-	case ColorOutputNone:
-		color.NoColor = true
-		return nil
-	case ColorOutputAuto:
-	case ColorOutputForce:
-		color.NoColor = false
-	default:
-		panic("")
-	}
-	sw.style.NoteBullet.Set()
-	return nil
+	return sw.setColor(sw.style.NoteBullet)
 }
 
 func (sw StylesWriter) SetSourceBorder() error {
-	switch sw.style.ColorOutput {
-	case ColorOutputNone:
-		color.NoColor = true
-		return nil
-	case ColorOutputAuto:
-	case ColorOutputForce:
-		color.NoColor = false
-	default:
-		panic("")
-	}
-	sw.style.SourceBorder.Set()
-	return nil
+	return sw.setColor(sw.style.SourceBorder)
 }
 
 func (sw StylesWriter) SetLabel(severity diagnostic.Severity, label_style diagnostic.LabelStyle) error {
-	switch sw.style.ColorOutput {
-	case ColorOutputNone:
-		color.NoColor = true
-		return nil
-	case ColorOutputAuto:
-	case ColorOutputForce:
-		color.NoColor = false
-	default:
-		panic("")
-	}
-	sw.style.Label(severity, label_style).Set()
-	return nil
+	return sw.setColor(sw.style.Label(severity, label_style))
 }
 
 func (sw StylesWriter) Reset() error {
-	switch sw.style.ColorOutput {
-	case ColorOutputNone:
-		color.NoColor = true
-		return nil
-	case ColorOutputAuto:
-	case ColorOutputForce:
-		color.NoColor = false
-	default:
-		panic("")
-	}
-	color.Unset()
-	return nil
+	return sw.setColor(resetColor)
 }
+
+var resetColor = color.New(color.Reset)
 
 /*
 #[cfg(feature = "termcolor")]

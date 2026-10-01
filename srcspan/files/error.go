@@ -1,4 +1,7 @@
-package srcspan
+package files
+
+// Errors from looking up a file or a piece of content in that file.
+// (`codespan_reporting::files::Error` in Rust)
 
 import (
 	"fmt"
