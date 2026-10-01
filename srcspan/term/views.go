@@ -617,10 +617,12 @@ func (d *ShortDiagnostic) Render(
 	// ```
 	primary_labels_encountered := 0
 
+	// Only primary labels get a header.
 	for _, label := range d.diagnostic.Labels {
-		if label.Style == diagnostic.Primary {
-			primary_labels_encountered += 1
+		if label.Style != diagnostic.Primary {
+			continue
 		}
+		primary_labels_encountered += 1
 
 		name, _ := files.Name(label.FileId)
 		loc, _ := files.Location(label.FileId, label.Span.Start())

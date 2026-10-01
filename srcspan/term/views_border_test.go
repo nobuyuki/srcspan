@@ -158,3 +158,47 @@ func TestMultiLineLabelAfterTabIndent(t *testing.T) {
 		emitString(t, &fs, d),
 	)
 }
+
+func emitStringWithStyle(t *testing.T, style DisplayStyle, fs *files.Files, d *diagnostic.Diagnostic) string {
+	t.Helper()
+
+	config := DefaultConfig()
+	config.DisplayStyle = style
+	out, err := EmitIntoString(&config, fs, d)
+	require.NoError(t, err)
+	return out
+}
+
+// Short and medium diagnostics print a header for primary labels only.
+func TestShortDiagnosticPrimaryLabelsOnly(t *testing.T) {
+	fs := files.NewFiles()
+	file_id := fs.Add("test", "abc\ndef\n")
+	d := diagnostic.NewError().WithMessage("message").WithLabels([]diagnostic.Label{
+		*diagnostic.NewSecondary(file_id, srcspan.NewSpan(0, 1)),
+		*diagnostic.NewPrimary(file_id, srcspan.NewSpan(4, 5)),
+	}).WithNote("note")
+
+	assert.Equal(t,
+		"test:2:1: error: message\n",
+		emitStringWithStyle(t, Short, &fs, d),
+	)
+
+	// The note's indentation is checked separately.
+	medium := emitStringWithStyle(t, Medium, &fs, d)
+	assert.True(t, strings.HasPrefix(medium, "test:2:1: error: message\n"))
+	assert.NotContains(t, medium, "test:1:1")
+}
+
+// Without primary labels, a header without a locus is printed.
+func TestShortDiagnosticWithoutPrimaryLabels(t *testing.T) {
+	fs := files.NewFiles()
+	file_id := fs.Add("test", "abc\n")
+	d := diagnostic.NewError().WithMessage("message").WithLabel(
+		*diagnostic.NewSecondary(file_id, srcspan.NewSpan(0, 1)),
+	)
+
+	assert.Equal(t,
+		"error: message\n",
+		emitStringWithStyle(t, Short, &fs, d),
+	)
+}
