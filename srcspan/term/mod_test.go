@@ -12,7 +12,33 @@ import (
 	"srcspan/srcspan/files"
 )
 
-func TestUnsizedEmit(_ *testing.T) {
+// Test range of 0 to 0 and check does not crash
+func TestUnsizedEmit(t *testing.T) {
+	fs := files.NewFiles()
+
+	file_id := fs.Add("test", "")
+	d := diagnostic.NewBug().WithLabel(*diagnostic.NewPrimary(file_id, srcspan.NewSpan(0, 0)))
+
+	config := DefaultConfig()
+	_, err := EmitIntoString(&config, &fs, d)
+	require.NoError(t, err)
+}
+
+// A label at the end of the file (e.g. "expected `;`") must be rendered.
+func TestEmitEndOfFile(t *testing.T) {
+	source := "let x = 1"
+
+	fs := files.NewFiles()
+	file_id := fs.Add("test", source)
+	d := diagnostic.NewError().WithMessage("expected `;`").WithLabel(
+		*diagnostic.NewPrimary(file_id, srcspan.NewSpan(len(source), len(source))).WithMessage("here"),
+	)
+
+	config := DefaultConfig()
+	out, err := EmitIntoString(&config, &fs, d)
+	require.NoError(t, err)
+	assert.Contains(t, out, "test:1:10")
+	assert.Contains(t, out, "here")
 }
 
 /*

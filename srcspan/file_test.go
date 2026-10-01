@@ -43,3 +43,40 @@ func TestLineSpanSources1(t *testing.T) {
 		line_sources,
 	)
 }
+
+func TestLocationEndOfFile(t *testing.T) {
+	file := NewFile("test", TEST_SOURCE1)
+	source_len := len(TEST_SOURCE1)
+
+	location, err := file.Location(source_len)
+	require.NoError(t, err)
+	assert.Equal(t, NewLocation(3, 3), location)
+
+	_, err = file.Location(source_len + 1)
+	assert.ErrorIs(t, err, IndexTooLargeError{Given: source_len + 1, Max: source_len - 1})
+}
+
+func TestLocationEmptyFile(t *testing.T) {
+	file := NewFile("test", "")
+
+	location, err := file.Location(0)
+	require.NoError(t, err)
+	assert.Equal(t, NewLocation(0, 0), location)
+}
+
+func TestSourceSliceEndOfFile(t *testing.T) {
+	file := NewFile("test", TEST_SOURCE1)
+	source_len := len(TEST_SOURCE1)
+
+	slice, err := file.SourceSlice(NewSpan(source_len, source_len))
+	require.NoError(t, err)
+	assert.Empty(t, slice)
+
+	empty := NewFile("empty", "")
+	slice, err = empty.SourceSlice(DefaultSpan())
+	require.NoError(t, err)
+	assert.Empty(t, slice)
+
+	_, err = file.SourceSlice(NewSpan(source_len+1, source_len+1))
+	assert.ErrorIs(t, err, IndexTooLargeError{Given: source_len + 1, Max: source_len})
+}

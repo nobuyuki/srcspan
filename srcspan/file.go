@@ -114,7 +114,8 @@ func (f *File) Location(byte_index int) (Location, error) {
 		}
 	}
 
-	if byte_index >= len(f.source) {
+	// `byte_index == len(f.source)` (the end of the file) is valid.
+	if byte_index > len(f.source) {
 		return Location{}, IndexTooLargeError{
 			Given: byte_index,
 			Max:   len(f.source) - 1,
@@ -145,7 +146,8 @@ func (f *File) SourceSlice(span Span) (string, error) {
 
 	source_len := len(f.source)
 
-	if s >= source_len {
+	// `s == source_len` is valid for an empty span at the end of the file.
+	if s > source_len {
 		return "", IndexTooLargeError{
 			Given: s,
 			Max:   source_len,
@@ -157,7 +159,7 @@ func (f *File) SourceSlice(span Span) (string, error) {
 		}
 	}
 
-	if e >= source_len+1 {
+	if e > source_len {
 		return "", IndexTooLargeError{
 			Given: e,
 			Max:   source_len,
