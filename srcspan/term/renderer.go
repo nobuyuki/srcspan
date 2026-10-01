@@ -5,6 +5,7 @@ import (
 	"io"
 	"slices"
 	"strings"
+	"unicode"
 
 	"github.com/mattn/go-runewidth"
 
@@ -595,7 +596,7 @@ func (r *Renderer) RenderSnippetSource(
 				ml := multi_labels[multi_labels_idx]
 				if ml.LabelIndex == label_column {
 					if start, ok := ml.MultiLabel.asTop(); ok {
-						if start <= len(source)-len(strings.TrimLeft(source, " \t")) {
+						if start <= leadingWhitespaceLen(source) {
 							err = r.LabelMultiTopLeft(severity, ml.LabelStyle)
 							if err != nil {
 								return err
@@ -1104,7 +1105,7 @@ func (r *Renderer) RenderSnippetSource(
 		}
 		if start, ok := _label.asTop(); ok {
 			// no label caret needed if this can be started in front of the line
-			if start <= len(source)-len(strings.TrimLeft(source, " ")) {
+			if start <= leadingWhitespaceLen(source) {
 				continue
 			} else {
 				label_style = _label_style
@@ -1888,6 +1889,12 @@ type Metrics struct {
 }
 
 // Check if two ranges overlap
+// Returns the byte length of the leading whitespace in `source`.
+// (`source.len() - source.trim_start().len()` in Rust)
+func leadingWhitespaceLen(source string) int {
+	return len(source) - len(strings.TrimLeftFunc(source, unicode.IsSpace))
+}
+
 func isOverlapping(r0, r1 srcspan.Range) bool {
 	start := max(r0.Start, r1.Start)
 	end := min(r0.End, r1.End)

@@ -132,3 +132,29 @@ func TestAfterLabelLinesStopAtEndOfFile(t *testing.T) {
 		out,
 	)
 }
+
+// A multi-line label starting after tab indentation is drawn from the
+// gutter only, without an extra top caret line.
+func TestMultiLineLabelAfterTabIndent(t *testing.T) {
+	source := "func f() {\n\tif x {\n\t\ty()\n\t}\n}\n"
+
+	fs := files.NewFiles()
+	file_id := fs.Add("test", source)
+	start := strings.Index(source, "if")
+	end := strings.Index(source, "\t}") + len("\t}")
+	d := diagnostic.NewError().WithMessage("message").WithLabel(
+		*diagnostic.NewPrimary(file_id, srcspan.NewSpan(start, end)).WithMessage("block"),
+	)
+
+	assert.Equal(t,
+		"error: message\n"+
+			"  ┌─ test:2:2\n"+
+			"  │  \n"+
+			"2 │ ╭     if x {\n"+
+			"3 │ │         y()\n"+
+			"4 │ │     }\n"+
+			"  │ ╰─────^ block\n"+
+			"\n",
+		emitString(t, &fs, d),
+	)
+}
