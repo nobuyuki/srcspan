@@ -1,6 +1,7 @@
 package srcspan
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -79,4 +80,17 @@ func TestSourceSliceEndOfFile(t *testing.T) {
 
 	_, err = file.SourceSlice(NewSpan(source_len+1, source_len+1))
 	assert.ErrorIs(t, err, IndexTooLargeError{Given: source_len + 1, Max: source_len})
+}
+
+func TestLocationCountsCharacters(t *testing.T) {
+	source := "let αβγ = 1;\nfizz₁ : Nat"
+	file := NewFile("test", source)
+
+	location, err := file.Location(strings.Index(source, "1;"))
+	require.NoError(t, err)
+	assert.Equal(t, NewLocation(0, 10), location)
+
+	location, err = file.Location(strings.Index(source, "Nat"))
+	require.NoError(t, err)
+	assert.Equal(t, NewLocation(1, 8), location)
 }

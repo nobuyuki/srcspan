@@ -130,9 +130,11 @@ func (f *File) Location(byte_index int) (Location, error) {
 		}
 	}
 
+	// The column is counted in characters, not bytes.
+	// (`line_src.chars().count()` in Rust)
 	return Location{
 		Line:   line_index,
-		Column: len(line_src),
+		Column: utf8.RuneCountInString(line_src),
 	}, nil
 }
 

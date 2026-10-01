@@ -1,9 +1,11 @@
 package term
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"srcspan/srcspan"
 	"srcspan/srcspan/diagnostic"
@@ -71,4 +73,24 @@ func TestHangingLabelAtEndOfLine(t *testing.T) {
 			"\n",
 		emitString(t, &fs, d),
 	)
+}
+
+// The column in the locus is counted in characters, not bytes.
+func TestLocusColumnCountsCharacters(t *testing.T) {
+	source := "let αβγ = 1;"
+
+	fs := files.NewFiles()
+	file_id := fs.Add("test", source)
+	start := strings.Index(source, "1")
+	d := diagnostic.NewError().WithMessage("message").WithLabel(
+		*diagnostic.NewPrimary(file_id, srcspan.NewSpan(start, start+1)),
+	)
+
+	assert.Contains(t, emitString(t, &fs, d), "┌─ test:1:11\n")
+
+	config := DefaultConfig()
+	config.DisplayStyle = Short
+	out, err := EmitIntoString(&config, &fs, d)
+	require.NoError(t, err)
+	assert.Equal(t, "test:1:11: error: message\n", out)
 }
