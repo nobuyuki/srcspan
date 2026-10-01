@@ -8,7 +8,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"srcspan/srcspan"
 	"srcspan/srcspan/diagnostic"
 	"srcspan/srcspan/files"
 )
@@ -22,10 +21,10 @@ func emitWithColorOutput(t *testing.T, color_output ColorOutput) (written, stdou
 	color.Output = &out
 	t.Cleanup(func() { color.Output = saved_output })
 
-	fs := files.NewFiles()
+	fs := files.NewSimpleFiles()
 	file_id := fs.Add("test", "abc")
 	d := diagnostic.NewError().WithMessage("message").WithLabel(
-		*diagnostic.NewPrimary(file_id, srcspan.NewSpan(0, 1)),
+		*diagnostic.NewPrimary(file_id, files.NewRange(0, 1)),
 	)
 
 	styles := DefaultColor()

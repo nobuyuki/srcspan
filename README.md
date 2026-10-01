@@ -25,7 +25,6 @@ package main
 import (
 	"os"
 
-	"srcspan/srcspan"
 	"srcspan/srcspan/diagnostic"
 	"srcspan/srcspan/files"
 	"srcspan/srcspan/term"
@@ -50,20 +49,20 @@ fizz₂ num =
 `)
 
 func main() {
-	files := files.NewFiles()
-	file_id := files.Add("FizzBuzz.fun", string(content))
+	fs := files.NewSimpleFiles()
+	file_id := fs.Add("FizzBuzz.fun", string(content))
 
 	// We normally recommend creating a custom diagnostic data type for your
 	// application, and then converting that to `codespan-reporting`'s diagnostic
 	// type, but for the sake of this example we construct it directly.
 
 	diagnostic := diagnostic.NewError().WithMessage("`case` clauses have incompatible types").WithCode("E0308").WithLabels([]diagnostic.Label{
-		*diagnostic.NewPrimary(file_id, srcspan.NewSpan(328, 331)).WithMessage("expected `String`, found `Nat`"),
-		*diagnostic.NewSecondary(file_id, srcspan.NewSpan(211, 331)).WithMessage("`case` clauses have incompatible types"),
-		*diagnostic.NewSecondary(file_id, srcspan.NewSpan(258, 268)).WithMessage("this is found to be of type `String`"),
-		*diagnostic.NewSecondary(file_id, srcspan.NewSpan(284, 290)).WithMessage("this is found to be of type `String`"),
-		*diagnostic.NewSecondary(file_id, srcspan.NewSpan(306, 312)).WithMessage("this is found to be of type `String`"),
-		*diagnostic.NewSecondary(file_id, srcspan.NewSpan(186, 192)).WithMessage("expected type `String` found here"),
+		*diagnostic.NewPrimary(file_id, files.NewRange(328, 331)).WithMessage("expected `String`, found `Nat`"),
+		*diagnostic.NewSecondary(file_id, files.NewRange(211, 331)).WithMessage("`case` clauses have incompatible types"),
+		*diagnostic.NewSecondary(file_id, files.NewRange(258, 268)).WithMessage("this is found to be of type `String`"),
+		*diagnostic.NewSecondary(file_id, files.NewRange(284, 290)).WithMessage("this is found to be of type `String`"),
+		*diagnostic.NewSecondary(file_id, files.NewRange(306, 312)).WithMessage("this is found to be of type `String`"),
+		*diagnostic.NewSecondary(file_id, files.NewRange(186, 192)).WithMessage("expected type `String` found here"),
 	}).WithNotes([]string{
 		`expected type 'String'
    found type 'Nat'`})
@@ -72,7 +71,7 @@ func main() {
 	writer := term.NewStylesWriter(os.Stdout, term.DefaultColor())
 	config := term.DefaultConfig()
 
-	err := term.EmitToWriteStyle(writer, &config, &files, diagnostic)
+	err := term.EmitToWriteStyle(writer, &config, &fs, diagnostic)
 	if err != nil {
 		os.Exit(1)
 	}
@@ -105,13 +104,19 @@ Please note that this project is released with a [Code of Conduct](./CODE_OF_CON
 By participating in this project you agree to abide by its terms.
 
 
-## Limitations
+## Packages
 
-### API
+The packages follow the structure of the original Rust crates:
 
-In Rust, there is a trait called `File` and a standard implementation
-called `SimpleFile`, but in srcspan, a standard implementation called
-`File` is provided. If possible, I would like to define an interface
-modeled after Rust.
+- `srcspan/srcspan/files`, `srcspan/srcspan/diagnostic` and
+  `srcspan/srcspan/term` correspond to `codespan-reporting`. The
+  `files.Files` interface corresponds to the `Files` trait, and
+  `files.SimpleFile` / `files.SimpleFiles` to its simple implementations.
+- `srcspan/srcspan` corresponds to `codespan`: `Span` and a `Files`
+  database that also implements `files.Files`.
+
+As in Rust, the `codespan-reporting` side does not depend on the
+`codespan` side.
+
 
 (EOF)

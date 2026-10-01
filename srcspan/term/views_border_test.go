@@ -8,12 +8,11 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"srcspan/srcspan"
 	"srcspan/srcspan/diagnostic"
 	"srcspan/srcspan/files"
 )
 
-func emitString(t *testing.T, fs *files.Files, d *diagnostic.Diagnostic) string {
+func emitString(t *testing.T, fs files.Files, d *diagnostic.Diagnostic) string {
 	t.Helper()
 
 	config := DefaultConfig()
@@ -24,10 +23,10 @@ func emitString(t *testing.T, fs *files.Files, d *diagnostic.Diagnostic) string 
 
 // No trailing border after the last snippet when there are no notes.
 func TestTrailingBorderWithoutNotes(t *testing.T) {
-	fs := files.NewFiles()
+	fs := files.NewSimpleFiles()
 	file_id := fs.Add("test", "abc\n")
 	d := diagnostic.NewError().WithMessage("message").WithLabel(
-		*diagnostic.NewPrimary(file_id, srcspan.NewSpan(0, 1)).WithMessage("label"),
+		*diagnostic.NewPrimary(file_id, files.NewRange(0, 1)).WithMessage("label"),
 	)
 
 	assert.Equal(t,
@@ -43,10 +42,10 @@ func TestTrailingBorderWithoutNotes(t *testing.T) {
 
 // The trailing border is kept before notes.
 func TestTrailingBorderWithNotes(t *testing.T) {
-	fs := files.NewFiles()
+	fs := files.NewSimpleFiles()
 	file_id := fs.Add("test", "abc\n")
 	d := diagnostic.NewError().WithMessage("message").WithLabel(
-		*diagnostic.NewPrimary(file_id, srcspan.NewSpan(0, 1)).WithMessage("label"),
+		*diagnostic.NewPrimary(file_id, files.NewRange(0, 1)).WithMessage("label"),
 	).WithNote("note")
 
 	assert.Equal(t,
@@ -64,12 +63,12 @@ func TestTrailingBorderWithNotes(t *testing.T) {
 
 // The trailing border is kept between files, but not after the last one.
 func TestTrailingBorderMultipleFiles(t *testing.T) {
-	fs := files.NewFiles()
+	fs := files.NewSimpleFiles()
 	file_id1 := fs.Add("one", "abc\n")
 	file_id2 := fs.Add("two", "def\n")
 	d := diagnostic.NewError().WithMessage("message").WithLabels([]diagnostic.Label{
-		*diagnostic.NewPrimary(file_id1, srcspan.NewSpan(0, 1)).WithMessage("first"),
-		*diagnostic.NewSecondary(file_id2, srcspan.NewSpan(0, 1)).WithMessage("second"),
+		*diagnostic.NewPrimary(file_id1, files.NewRange(0, 1)).WithMessage("first"),
+		*diagnostic.NewSecondary(file_id2, files.NewRange(0, 1)).WithMessage("second"),
 	})
 
 	assert.Equal(t,
@@ -97,12 +96,12 @@ func TestSkippedLineKeepsMultiLabelBorder(t *testing.T) {
 		source += fmt.Sprintf("line%02d\n", i)
 	}
 
-	fs := files.NewFiles()
+	fs := files.NewSimpleFiles()
 	file_id := fs.Add("test", source)
 	start := strings.Index(source, "line10")
 	end := strings.Index(source, "line16") + len("line16")
 	d := diagnostic.NewError().WithMessage("message").WithLabel(
-		*diagnostic.NewPrimary(file_id, srcspan.NewSpan(start, end)).WithMessage("multi"),
+		*diagnostic.NewPrimary(file_id, files.NewRange(start, end)).WithMessage("multi"),
 	)
 
 	out := emitString(t, &fs, d)
@@ -111,10 +110,10 @@ func TestSkippedLineKeepsMultiLabelBorder(t *testing.T) {
 
 // `AfterLabelLines` must stop at the end of the file.
 func TestAfterLabelLinesStopAtEndOfFile(t *testing.T) {
-	fs := files.NewFiles()
+	fs := files.NewSimpleFiles()
 	file_id := fs.Add("test", "abc\ndef")
 	d := diagnostic.NewError().WithMessage("message").WithLabel(
-		*diagnostic.NewPrimary(file_id, srcspan.NewSpan(4, 5)),
+		*diagnostic.NewPrimary(file_id, files.NewRange(4, 5)),
 	)
 
 	config := DefaultConfig()
@@ -138,12 +137,12 @@ func TestAfterLabelLinesStopAtEndOfFile(t *testing.T) {
 func TestMultiLineLabelAfterTabIndent(t *testing.T) {
 	source := "func f() {\n\tif x {\n\t\ty()\n\t}\n}\n"
 
-	fs := files.NewFiles()
+	fs := files.NewSimpleFiles()
 	file_id := fs.Add("test", source)
 	start := strings.Index(source, "if")
 	end := strings.Index(source, "\t}") + len("\t}")
 	d := diagnostic.NewError().WithMessage("message").WithLabel(
-		*diagnostic.NewPrimary(file_id, srcspan.NewSpan(start, end)).WithMessage("block"),
+		*diagnostic.NewPrimary(file_id, files.NewRange(start, end)).WithMessage("block"),
 	)
 
 	assert.Equal(t,
@@ -159,7 +158,7 @@ func TestMultiLineLabelAfterTabIndent(t *testing.T) {
 	)
 }
 
-func emitStringWithStyle(t *testing.T, style DisplayStyle, fs *files.Files, d *diagnostic.Diagnostic) string {
+func emitStringWithStyle(t *testing.T, style DisplayStyle, fs files.Files, d *diagnostic.Diagnostic) string {
 	t.Helper()
 
 	config := DefaultConfig()
@@ -171,11 +170,11 @@ func emitStringWithStyle(t *testing.T, style DisplayStyle, fs *files.Files, d *d
 
 // Short and medium diagnostics print a header for primary labels only.
 func TestShortDiagnosticPrimaryLabelsOnly(t *testing.T) {
-	fs := files.NewFiles()
+	fs := files.NewSimpleFiles()
 	file_id := fs.Add("test", "abc\ndef\n")
 	d := diagnostic.NewError().WithMessage("message").WithLabels([]diagnostic.Label{
-		*diagnostic.NewSecondary(file_id, srcspan.NewSpan(0, 1)),
-		*diagnostic.NewPrimary(file_id, srcspan.NewSpan(4, 5)),
+		*diagnostic.NewSecondary(file_id, files.NewRange(0, 1)),
+		*diagnostic.NewPrimary(file_id, files.NewRange(4, 5)),
 	}).WithNote("note")
 
 	assert.Equal(t,
@@ -191,10 +190,10 @@ func TestShortDiagnosticPrimaryLabelsOnly(t *testing.T) {
 
 // Without primary labels, a header without a locus is printed.
 func TestShortDiagnosticWithoutPrimaryLabels(t *testing.T) {
-	fs := files.NewFiles()
+	fs := files.NewSimpleFiles()
 	file_id := fs.Add("test", "abc\n")
 	d := diagnostic.NewError().WithMessage("message").WithLabel(
-		*diagnostic.NewSecondary(file_id, srcspan.NewSpan(0, 1)),
+		*diagnostic.NewSecondary(file_id, files.NewRange(0, 1)),
 	)
 
 	assert.Equal(t,
@@ -205,7 +204,7 @@ func TestShortDiagnosticWithoutPrimaryLabels(t *testing.T) {
 
 // Notes without any labels are indented by a single space.
 func TestNotesWithoutLabels(t *testing.T) {
-	fs := files.NewFiles()
+	fs := files.NewSimpleFiles()
 	d := diagnostic.NewError().WithMessage("message").WithNote("note")
 
 	assert.Equal(t,

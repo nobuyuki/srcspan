@@ -6,10 +6,16 @@ import (
 
 	"github.com/tidwall/btree"
 
-	"srcspan/srcspan"
 	"srcspan/srcspan/diagnostic"
 	"srcspan/srcspan/files"
 )
+
+// The render functions take a parameter named `files` (as in Rust), which
+// shadows the `files` package in their bodies, so the package's names used
+// there are aliased here.
+type fileRange = files.Range
+
+var newRange = files.NewRange
 
 // Calculate the number of decimal digits in `n`.
 func countDigits(n int) int {
@@ -38,7 +44,7 @@ func NewRichDiagnostic(diagnostic *diagnostic.Diagnostic, config *Config) *RichD
 }
 
 func (d *RichDiagnostic) Render(
-	files *files.Files,
+	files files.Files,
 	renderer Renderer,
 ) error {
 	// TODO: Make this data structure external, to allow for allocation reuse
@@ -51,7 +57,7 @@ func (d *RichDiagnostic) Render(
 	// Group labels by file
 	for _, label := range d.diagnostic.Labels {
 		//nolint:shadow // to avoid var decls of the the first vars.
-		start_line_index, err := files.LineIndex(label.FileId, label.Span.Start())
+		start_line_index, err := files.LineIndex(label.FileId, label.Range.Start)
 		if err != nil {
 			return err
 		}
@@ -63,7 +69,7 @@ func (d *RichDiagnostic) Render(
 		if err != nil {
 			return err
 		}
-		end_line_index, err := files.LineIndex(label.FileId, label.Span.End())
+		end_line_index, err := files.LineIndex(label.FileId, label.Range.End)
 		if err != nil {
 			return err
 		}
@@ -92,10 +98,10 @@ func (d *RichDiagnostic) Render(
 		if labeled_file_idx != -1 {
 			// another diagnostic also referenced this file
 			labeled_file = labeled_files[labeled_file_idx]
-			if labeled_file.MaxLabelStyle > label.Style || (labeled_file.MaxLabelStyle == label.Style && labeled_file.Start > label.Span.Start()) {
+			if labeled_file.MaxLabelStyle > label.Style || (labeled_file.MaxLabelStyle == label.Style && labeled_file.Start > label.Range.Start) {
 				// this label has a higher style or has the same style but starts earlier
-				labeled_file.Start = label.Span.Start()
-				l, err := files.Location(label.FileId, label.Span.Start())
+				labeled_file.Start = label.Range.Start
+				l, err := files.Location(label.FileId, label.Range.Start)
 				if err != nil {
 					return err
 				}
@@ -108,7 +114,7 @@ func (d *RichDiagnostic) Render(
 			if err != nil {
 				return err
 			}
-			l, err := files.Location(label.FileId, label.Span.Start())
+			l, err := files.Location(label.FileId, label.Range.Start)
 			if err != nil {
 				return err
 			}
@@ -117,7 +123,7 @@ func (d *RichDiagnostic) Render(
 			lines := btree.Map[int, *Line]{}
 			labeled_file = &LabeledFile{
 				FileId:         label.FileId,
-				Start:          label.Span.Start(),
+				Start:          label.Range.Start,
 				Name:           name,
 				Location:       l,
 				NumMultiLabels: 0,
@@ -175,11 +181,11 @@ func (d *RichDiagnostic) Render(
 			// 2 │ (+ test "")
 			//   │         ^^ expected `Int` but found `String`
 			// ```
-			label_start := label.Span.Start() - start_line_range.Start
+			label_start := label.Range.Start - start_line_range.Start
 
 			// Ensure that we print at least one caret, even when we
 			// have a zero-length source range.
-			label_end := max(label.Span.End()-start_line_range.Start, label_start+1)
+			label_end := max(label.Range.End-start_line_range.Start, label_start+1)
 
 			line := labeled_file.GetOrInsertLine(
 				start_line_index,
@@ -191,7 +197,7 @@ func (d *RichDiagnostic) Render(
 			// sorted by the range of source code that they cover.
 			index, _ := slices.BinarySearchFunc(
 				line.SingleLabels,
-				SingleLabel{Range: srcspan.NewRange(label_start, label_end)},
+				SingleLabel{Range: newRange(label_start, label_end)},
 				func(sl1 SingleLabel, sl2 SingleLabel) int {
 					diff := sl1.Range.Start - sl2.Range.Start
 					if diff != 0 {
@@ -206,7 +212,7 @@ func (d *RichDiagnostic) Render(
 
 			line.SingleLabels = slices.Insert(line.SingleLabels, index, SingleLabel{
 				LabelStyle: label.Style,
-				Range:      srcspan.NewRange(label_start, label_end),
+				Range:      newRange(label_start, label_end),
 				Message:    label.Message,
 			})
 
@@ -228,7 +234,7 @@ func (d *RichDiagnostic) Render(
 			labeled_file.NumMultiLabels += 1
 
 			// First labeled line
-			label_start := label.Span.Start() - start_line_range.Start
+			label_start := label.Range.Start - start_line_range.Start
 
 			start_line := labeled_file.GetOrInsertLine(
 				start_line_index,
@@ -299,7 +305,7 @@ func (d *RichDiagnostic) Render(
 			// 8 │ │     _ _ => num
 			//   │ ╰──────────────^ `case` clauses have incompatible types
 			// ```
-			label_end := label.Span.End() - end_line_range.Start
+			label_end := label.Range.End - end_line_range.Start
 
 			end_line := labeled_file.GetOrInsertLine(
 				end_line_index,
@@ -354,7 +360,7 @@ func (d *RichDiagnostic) Render(
 	for labeled_files_idx < len(labeled_files) {
 		labeled_file := labeled_files[labeled_files_idx]
 
-		var source *srcspan.Source
+		var source string
 		source, err = files.Source(labeled_file.FileId)
 		if err != nil {
 			return err
@@ -418,7 +424,7 @@ func (d *RichDiagnostic) Render(
 			err = renderer.RenderSnippetSource(
 				outer_padding,
 				line.Number,
-				(*source)[line.Range.Start:line.Range.End],
+				source[line.Range.Start:line.Range.End],
 				d.diagnostic.Severity,
 				line.SingleLabels,
 				labeled_file.NumMultiLabels,
@@ -460,7 +466,7 @@ func (d *RichDiagnostic) Render(
 						return err
 					}
 
-					var lr srcspan.Range
+					var lr fileRange
 					lr, err = files.LineRange(file_id, line_info.LineIndex+1)
 					if err != nil {
 						return err
@@ -468,7 +474,7 @@ func (d *RichDiagnostic) Render(
 					err = renderer.RenderSnippetSource(
 						outer_padding,
 						ln,
-						(*source)[lr.Start:lr.End],
+						source[lr.Start:lr.End],
 						d.diagnostic.Severity,
 						[]SingleLabel{},
 						labeled_file.NumMultiLabels,
@@ -549,7 +555,7 @@ type LabeledFile struct {
 	FileId         int
 	Start          int
 	Name           string
-	Location       srcspan.Location
+	Location       files.Location
 	NumMultiLabels int
 	Lines          *btree.Map[int, *Line]
 	MaxLabelStyle  diagnostic.LabelStyle
@@ -557,7 +563,7 @@ type LabeledFile struct {
 
 func (lf *LabeledFile) GetOrInsertLine(
 	line_index int,
-	line_range srcspan.Range,
+	line_range files.Range,
 	line_number int,
 ) *Line {
 	//revive:disable:indent-error-flow
@@ -583,7 +589,7 @@ func (lf *LabeledFile) GetOrInsertLine(
 
 type Line struct {
 	Number       int
-	Range        srcspan.Range
+	Range        files.Range
 	SingleLabels []SingleLabel
 	MultiLabels  []struct {
 		LabelIndex int
@@ -607,7 +613,7 @@ func NewShortDiagnostic(diagnostic *diagnostic.Diagnostic, showNotes bool) *Shor
 }
 
 func (d *ShortDiagnostic) Render(
-	files *files.Files,
+	files files.Files,
 	renderer Renderer,
 ) error {
 	// Located headers
@@ -628,7 +634,7 @@ func (d *ShortDiagnostic) Render(
 		if err != nil {
 			return err
 		}
-		loc, err := files.Location(label.FileId, label.Span.Start())
+		loc, err := files.Location(label.FileId, label.Range.Start)
 		if err != nil {
 			return err
 		}

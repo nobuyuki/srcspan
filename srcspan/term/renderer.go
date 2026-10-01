@@ -10,8 +10,8 @@ import (
 
 	"github.com/mattn/go-runewidth"
 
-	"srcspan/srcspan"
 	"srcspan/srcspan/diagnostic"
+	"srcspan/srcspan/files"
 )
 
 // A writer that can apply styling for different parts of a diagnostic renderer.
@@ -178,7 +178,7 @@ type Locus struct {
 	Name string
 
 	// The location.
-	Location srcspan.Location
+	Location files.Location
 }
 
 // Single-line label, with an optional message.
@@ -188,7 +188,7 @@ type Locus struct {
 // ```
 type SingleLabel struct {
 	LabelStyle diagnostic.LabelStyle
-	Range      srcspan.Range
+	Range      files.Range
 	Message    string
 }
 
@@ -640,7 +640,7 @@ func (r *Renderer) RenderSnippetSource(
 			metrics := cm.Metrics
 			ch := cm.Char
 
-			column_range := srcspan.NewRange(metrics.byte_index, metrics.byte_index+utf8.RuneLen(ch))
+			column_range := files.NewRange(metrics.byte_index, metrics.byte_index+utf8.RuneLen(ch))
 
 			// Check if we are overlapping a primary label
 			var is_primary bool
@@ -854,7 +854,7 @@ func (r *Renderer) RenderSnippetSource(
 			ch := cm.Char
 
 			// Find the current label style at this column
-			column_range := srcspan.NewRange(metrics.byte_index, metrics.byte_index+utf8.RuneLen(ch))
+			column_range := files.NewRange(metrics.byte_index, metrics.byte_index+utf8.RuneLen(ch))
 
 			var current_label_style *diagnostic.LabelStyle
 			var max_priority int
@@ -1388,7 +1388,7 @@ func (r *Renderer) CharMetrics(
 // Location focus.
 func (r *Renderer) SnippetLocus(locus *Locus) (err error) {
 	// Location.{Line,Column} is Index or 0-based.
-	_, err = fmt.Fprintf(r, "%s:%d:%d", locus.Name, locus.Location.Line+1, locus.Location.Column+1)
+	_, err = fmt.Fprintf(r, "%s:%d:%d", locus.Name, locus.Location.LineNumber, locus.Location.ColumnNumber)
 	return
 }
 
@@ -1809,7 +1809,7 @@ func (r *Renderer) InnerGutterColumn(
 		case VerticalBoundBottom:
 			ch = r.config.Chars.MultiBottom
 		default:
-			panic(fmt.Sprintf("Unknown srcspan.VerticalBound: %v", vertical_bound))
+			panic(fmt.Sprintf("Unknown term.VerticalBound: %v", vertical_bound))
 		}
 
 		_, err = fmt.Fprintf(r, "%c%c", ch, ch)
@@ -1942,7 +1942,7 @@ func lines(s string) []string {
 	return ls
 }
 
-func isOverlapping(r0, r1 srcspan.Range) bool {
+func isOverlapping(r0, r1 files.Range) bool {
 	start := max(r0.Start, r1.Start)
 	end := min(r0.End, r1.End)
 	return start < end

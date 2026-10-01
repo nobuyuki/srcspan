@@ -6,16 +6,13 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"srcspan/srcspan"
 )
 
 const TEST_SOURCE = "foo\nbar\r\n\nbaz"
 
-func TestLineStart(t *testing.T) {
-	files := NewFiles()
-	file_id := files.Add("test", TEST_SOURCE)
-	file, _ := files.Get(file_id)
+// (`codespan_reporting::files::test::line_starts` in Rust)
+func TestLineStarts(t *testing.T) {
+	file := NewSimpleFile("test", TEST_SOURCE)
 
 	assert.Equal(t,
 		[]int{
@@ -24,91 +21,101 @@ func TestLineStart(t *testing.T) {
 			9,  // ""
 			10, // "baz"
 		},
-		file.LineStarts(),
+		file.line_starts,
 	)
 }
 
+// (`codespan_reporting::files::test::line_span_sources` in Rust)
 func TestLineSpanSources(t *testing.T) {
-	files := NewFiles()
-	file_id := files.Add("test", TEST_SOURCE)
+	file := NewSimpleFile("test", TEST_SOURCE)
 
 	line_sources := []string{}
-
 	for line := range 4 {
-		line_span, err := files.LineSpan(file_id, line)
+		line_range, err := file.LineRange(0, line)
 		require.NoError(t, err)
-
-		slice, err1 := files.SourceSlice(file_id, line_span)
-		require.NoError(t, err1)
-
-		line_sources = append(line_sources, slice)
+		line_sources = append(line_sources, file.source[line_range.Start:line_range.End])
 	}
 
-	assert.Equal(t,
-		[]string{"foo\n", "bar\r\n", "\n", "baz"},
-		line_sources,
-	)
+	assert.Equal(t, []string{"foo\n", "bar\r\n", "\n", "baz"}, line_sources)
 }
 
-func TestUpdate(t *testing.T) {
-	files := NewFiles()
-	file_id := files.Add("test", "foo")
+// The doc example of `column_index` in Rust.
+func TestColumnIndex(t *testing.T) {
+	source := "\n\n🗻∈🌏\n\n"
 
-	files.Update(file_id, TEST_SOURCE)
+	assert.Equal(t, 0, ColumnIndex(source, NewRange(0, 1), 0))
+	assert.Equal(t, 0, ColumnIndex(source, NewRange(2, 13), 0))
+	assert.Equal(t, 0, ColumnIndex(source, NewRange(2, 13), 2+0))
+	assert.Equal(t, 0, ColumnIndex(source, NewRange(2, 13), 2+1))
+	assert.Equal(t, 1, ColumnIndex(source, NewRange(2, 13), 2+4))
+	assert.Equal(t, 2, ColumnIndex(source, NewRange(2, 13), 2+8))
+	assert.Equal(t, 2, ColumnIndex(source, NewRange(2, 13), 2+10))
+	assert.Equal(t, 3, ColumnIndex(source, NewRange(2, 13), 2+11))
+	assert.Equal(t, 3, ColumnIndex(source, NewRange(2, 13), 2+12))
+}
 
-	source, err := files.Source(file_id)
+func TestIsRuneBoundary(t *testing.T) {
+	source := "aα" // 'α' is 2 bytes: [1, 3)
+
+	assert.True(t, IsRuneBoundary(source, 0))
+	assert.True(t, IsRuneBoundary(source, 1))
+	assert.False(t, IsRuneBoundary(source, 2))
+	assert.True(t, IsRuneBoundary(source, 3))
+	assert.False(t, IsRuneBoundary(source, -1))
+	assert.False(t, IsRuneBoundary(source, 4))
+}
+
+func TestSimpleFilesLocation(t *testing.T) {
+	source := "let αβγ = 1;\nfizz₁ : Nat"
+
+	fs := NewSimpleFiles()
+	file_id := fs.Add("test", source)
+
+	// 1-based, and the column is counted in characters.
+	location, err := fs.Location(file_id, len("let αβγ = "))
 	require.NoError(t, err)
-	assert.Equal(t, TEST_SOURCE, *source)
+	assert.Equal(t, Location{LineNumber: 1, ColumnNumber: 11}, location)
 
-	file, err := files.Get(file_id)
+	location, err = fs.Location(file_id, len(source))
 	require.NoError(t, err)
-	assert.Equal(t, []int{0, 4, 9, 10}, file.LineStarts())
+	assert.Equal(t, Location{LineNumber: 2, ColumnNumber: 12}, location)
 }
 
 func TestLineRangeTooLarge(t *testing.T) {
-	files := NewFiles()
-	file_id := files.Add("test", TEST_SOURCE)
+	fs := NewSimpleFiles()
+	file_id := fs.Add("test", TEST_SOURCE)
 
 	// TEST_SOURCE has 4 lines (indices 0..3).
-	_, err := files.LineRange(file_id, 4)
-	require.Error(t, err)
-
-	_, err = files.LineSpan(file_id, 4)
+	_, err := fs.LineRange(file_id, 4)
 	require.Error(t, err)
 }
 
 func TestFileMissing(t *testing.T) {
-	files := NewFiles()
-	files.Add("test", TEST_SOURCE)
+	fs := NewSimpleFiles()
+	fs.Add("test", TEST_SOURCE)
 
 	for _, file_id := range []int{-1, 1} {
-		missing := srcspan.FileMissingError(strconv.Itoa(file_id))
+		missing := FileMissingError(strconv.Itoa(file_id))
 
-		_, err := files.Get(file_id)
+		_, err := fs.Get(file_id)
 		require.ErrorIs(t, err, missing)
 
-		_, err = files.Name(file_id)
+		_, err = fs.Name(file_id)
 		require.ErrorIs(t, err, missing)
 
-		_, err = files.Source(file_id)
+		_, err = fs.Source(file_id)
 		require.ErrorIs(t, err, missing)
 
-		_, err = files.LineIndex(file_id, 0)
+		_, err = fs.LineIndex(file_id, 0)
 		require.ErrorIs(t, err, missing)
 
-		_, err = files.LineSpan(file_id, 0)
+		_, err = fs.LineRange(file_id, 0)
 		require.ErrorIs(t, err, missing)
 
-		_, err = files.LineRange(file_id, 0)
+		_, err = fs.ColumnNumber(file_id, 0, 0)
 		require.ErrorIs(t, err, missing)
 
-		_, err = files.SourceSlice(file_id, srcspan.DefaultSpan())
-		require.ErrorIs(t, err, missing)
-
-		_, err = files.Location(file_id, 0)
-		require.ErrorIs(t, err, missing)
-
-		_, err = files.ColumnNumber(file_id, 0, 0)
+		_, err = fs.Location(file_id, 0)
 		require.ErrorIs(t, err, missing)
 	}
 }

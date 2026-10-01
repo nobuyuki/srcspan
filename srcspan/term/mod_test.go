@@ -7,17 +7,16 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"srcspan/srcspan"
 	"srcspan/srcspan/diagnostic"
 	"srcspan/srcspan/files"
 )
 
 // Test range of 0 to 0 and check does not crash
 func TestUnsizedEmit(t *testing.T) {
-	fs := files.NewFiles()
+	fs := files.NewSimpleFiles()
 
 	file_id := fs.Add("test", "")
-	d := diagnostic.NewBug().WithLabel(*diagnostic.NewPrimary(file_id, srcspan.NewSpan(0, 0)))
+	d := diagnostic.NewBug().WithLabel(*diagnostic.NewPrimary(file_id, files.NewRange(0, 0)))
 
 	config := DefaultConfig()
 	_, err := EmitIntoString(&config, &fs, d)
@@ -28,10 +27,10 @@ func TestUnsizedEmit(t *testing.T) {
 func TestEmitEndOfFile(t *testing.T) {
 	source := "let x = 1"
 
-	fs := files.NewFiles()
+	fs := files.NewSimpleFiles()
 	file_id := fs.Add("test", source)
 	d := diagnostic.NewError().WithMessage("expected `;`").WithLabel(
-		*diagnostic.NewPrimary(file_id, srcspan.NewSpan(len(source), len(source))).WithMessage("here"),
+		*diagnostic.NewPrimary(file_id, files.NewRange(len(source), len(source))).WithMessage("here"),
 	)
 
 	config := DefaultConfig()
@@ -69,15 +68,15 @@ mod tests {
 func TestNestedMultiLineLabels(t *testing.T) {
 	source := "fn f() {\n    let a = {\n        1\n    };\n}\n"
 
-	fs := files.NewFiles()
+	fs := files.NewSimpleFiles()
 	file_id := fs.Add("nested", source)
 
 	inner_start := strings.Index(source, "{\n        1")
 	inner_end := strings.Index(source, "};") + 1
 
 	d := diagnostic.NewError().WithMessage("nested").WithLabels([]diagnostic.Label{
-		*diagnostic.NewPrimary(file_id, srcspan.NewSpan(0, len(source)-1)).WithMessage("outer"),
-		*diagnostic.NewSecondary(file_id, srcspan.NewSpan(inner_start, inner_end)).WithMessage("inner"),
+		*diagnostic.NewPrimary(file_id, files.NewRange(0, len(source)-1)).WithMessage("outer"),
+		*diagnostic.NewSecondary(file_id, files.NewRange(inner_start, inner_end)).WithMessage("inner"),
 	})
 
 	config := DefaultConfig()

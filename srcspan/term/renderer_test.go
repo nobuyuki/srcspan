@@ -7,7 +7,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"srcspan/srcspan"
 	"srcspan/srcspan/diagnostic"
 	"srcspan/srcspan/files"
 )
@@ -16,10 +15,10 @@ import (
 func TestCaretAtEndOfLine(t *testing.T) {
 	source := "let x = 1"
 
-	fs := files.NewFiles()
+	fs := files.NewSimpleFiles()
 	file_id := fs.Add("test", source)
 	d := diagnostic.NewError().WithMessage("expected `;`").WithLabel(
-		*diagnostic.NewPrimary(file_id, srcspan.NewSpan(len(source), len(source))).WithMessage("here"),
+		*diagnostic.NewPrimary(file_id, files.NewRange(len(source), len(source))).WithMessage("here"),
 	)
 
 	assert.Equal(t,
@@ -35,10 +34,10 @@ func TestCaretAtEndOfLine(t *testing.T) {
 
 // A label covering a tab underlines the whole expanded tab.
 func TestCaretOnTab(t *testing.T) {
-	fs := files.NewFiles()
+	fs := files.NewSimpleFiles()
 	file_id := fs.Add("test", "a\tb")
 	d := diagnostic.NewError().WithMessage("message").WithLabel(
-		*diagnostic.NewPrimary(file_id, srcspan.NewSpan(1, 3)).WithMessage("tab and b"),
+		*diagnostic.NewPrimary(file_id, files.NewRange(1, 3)).WithMessage("tab and b"),
 	)
 
 	assert.Equal(t,
@@ -55,11 +54,11 @@ func TestCaretOnTab(t *testing.T) {
 // A zero-width label at the end of a line is still pointed at when it
 // hangs below the carets.
 func TestHangingLabelAtEndOfLine(t *testing.T) {
-	fs := files.NewFiles()
+	fs := files.NewSimpleFiles()
 	file_id := fs.Add("test", "abc")
 	d := diagnostic.NewError().WithMessage("message").WithLabels([]diagnostic.Label{
-		*diagnostic.NewPrimary(file_id, srcspan.NewSpan(0, 3)).WithMessage("whole"),
-		*diagnostic.NewSecondary(file_id, srcspan.NewSpan(3, 3)).WithMessage("end"),
+		*diagnostic.NewPrimary(file_id, files.NewRange(0, 3)).WithMessage("whole"),
+		*diagnostic.NewSecondary(file_id, files.NewRange(3, 3)).WithMessage("end"),
 	})
 
 	assert.Equal(t,
@@ -79,11 +78,11 @@ func TestHangingLabelAtEndOfLine(t *testing.T) {
 func TestLocusColumnCountsCharacters(t *testing.T) {
 	source := "let αβγ = 1;"
 
-	fs := files.NewFiles()
+	fs := files.NewSimpleFiles()
 	file_id := fs.Add("test", source)
 	start := strings.Index(source, "1")
 	d := diagnostic.NewError().WithMessage("message").WithLabel(
-		*diagnostic.NewPrimary(file_id, srcspan.NewSpan(start, start+1)),
+		*diagnostic.NewPrimary(file_id, files.NewRange(start, start+1)),
 	)
 
 	assert.Contains(t, emitString(t, &fs, d), "┌─ test:1:11\n")
@@ -100,10 +99,10 @@ func TestLocusColumnCountsCharacters(t *testing.T) {
 func TestMultiLineCaretStartAndEnd(t *testing.T) {
 	source := "a (\n  b\n)\n"
 
-	fs := files.NewFiles()
+	fs := files.NewSimpleFiles()
 	file_id := fs.Add("test", source)
 	d := diagnostic.NewError().WithMessage("message").WithLabels([]diagnostic.Label{
-		*diagnostic.NewPrimary(file_id, srcspan.NewSpan(2, 9)).WithMessage("primary"),
+		*diagnostic.NewPrimary(file_id, files.NewRange(2, 9)).WithMessage("primary"),
 	})
 
 	config := DefaultConfig()
@@ -155,11 +154,11 @@ func (w *labelMarkerWriter) Reset() error {
 
 // The label style is only switched when it changes along the caret line.
 func TestCaretLineSwitchesStyleOnlyOnChange(t *testing.T) {
-	fs := files.NewFiles()
+	fs := files.NewSimpleFiles()
 	file_id := fs.Add("test", "abc def\n")
 	d := diagnostic.NewError().WithMessage("message").WithLabels([]diagnostic.Label{
-		*diagnostic.NewPrimary(file_id, srcspan.NewSpan(0, 3)),
-		*diagnostic.NewSecondary(file_id, srcspan.NewSpan(4, 7)),
+		*diagnostic.NewPrimary(file_id, files.NewRange(0, 3)),
+		*diagnostic.NewSecondary(file_id, files.NewRange(4, 7)),
 	})
 
 	w := &labelMarkerWriter{}
@@ -180,7 +179,7 @@ func TestLines(t *testing.T) {
 
 // A trailing newline in a note does not produce an empty note line.
 func TestNoteWithTrailingNewline(t *testing.T) {
-	fs := files.NewFiles()
+	fs := files.NewSimpleFiles()
 	d := diagnostic.NewError().WithMessage("message").WithNote("first\r\nsecond\n")
 
 	assert.Equal(t,

@@ -1,7 +1,7 @@
 package diagnostic
 
 import (
-	"srcspan/srcspan"
+	"srcspan/srcspan/files"
 )
 
 // A severity level for diagnostic messages.
@@ -33,7 +33,7 @@ type Label struct {
 
 	// The range in bytes we are going to include in the final
 	// snippet.
-	Span srcspan.Span
+	Range files.Range
 
 	// An optional message to provide some additional information
 	// for the underlined code. These should not include line
@@ -41,11 +41,11 @@ type Label struct {
 	Message string
 }
 
-func NewLabel(style LabelStyle, file_id int, span srcspan.Span) *Label {
+func NewLabel(style LabelStyle, file_id int, range_ files.Range) *Label {
 	return &Label{
 		Style:   style,
 		FileId:  file_id,
-		Span:    span,
+		Range:   range_,
 		Message: "",
 	}
 }
@@ -53,15 +53,15 @@ func NewLabel(style LabelStyle, file_id int, span srcspan.Span) *Label {
 // Create a new label with a style of [`LabelStyle::Primary`].
 //
 // [`LabelStyle::Primary`]: LabelStyle::Primary
-func NewPrimary(file_id int, span srcspan.Span) *Label {
-	return NewLabel(Primary, file_id, span)
+func NewPrimary(file_id int, range_ files.Range) *Label {
+	return NewLabel(Primary, file_id, range_)
 }
 
 // Create a new label with a style of [`LabelStyle::Secondary`].
 //
 // [`LabelStyle::Secondary`]: LabelStyle::Secondary
-func NewSecondary(file_id int, span srcspan.Span) *Label {
-	return NewLabel(Secondary, file_id, span)
+func NewSecondary(file_id int, range_ files.Range) *Label {
+	return NewLabel(Secondary, file_id, range_)
 }
 
 // Add a message to the diagnostic.
