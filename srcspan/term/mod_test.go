@@ -87,10 +87,19 @@ func TestNestedMultiLineLabels(t *testing.T) {
 		out, err = EmitIntoString(&config, &fs, d)
 		require.NoError(t, err)
 	})
-	assert.Contains(t, out, "inner")
-	assert.Contains(t, out, "outer")
-
-	// The bottom underline of the outer label continues horizontally
-	// through the inner label's column.
-	assert.Contains(t, out, "  │ ╰───^ outer\n")
+	assert.Equal(t,
+		"error: nested\n"+
+			"  ┌─ nested:1:1\n"+
+			"  │    \n"+
+			"1 │ ╭   fn f() {\n"+
+			"2 │ │       let a = {\n"+
+			"  │ │ ╭─────────────'\n"+
+			"3 │ │ │         1\n"+
+			"4 │ │ │     };\n"+
+			"  │ │ ╰─────' inner\n"+
+			"5 │ │   }\n"+
+			"  │ ╰───^ outer\n"+
+			"\n",
+		out,
+	)
 }

@@ -1667,13 +1667,16 @@ func (r *Renderer) LabelMultiTopCaret(
 	for _, cm := range r.CharMetrics(CharIndices(source)) {
 		metrics := cm.Metrics
 
-		if metrics.byte_index >= start {
+		// `take_while(|(metrics, _)| metrics.byte_index < start + 1)` in Rust:
+		// the extra column makes up for the space between the gutter and
+		// the source, so that the caret is under the first labeled char.
+		if metrics.byte_index >= start+1 {
 			break
 		}
 
 		// FIXME: improve rendering of carets between character boundaries
 		for i := 0; i < metrics.unicode_width; i++ { //nolint:intrange // emulate rust code
-			fmt.Fprintf(r, "%c", r.Chars().MultiBottom)
+			fmt.Fprintf(r, "%c", r.Chars().MultiTop)
 		}
 	}
 
