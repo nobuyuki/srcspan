@@ -31,8 +31,15 @@ func EmitToString(writer io.Writer, config *Config, files files.Files, diagnosti
 	)
 }
 
-func EmitToIoWriter(writer WriteStyle, config *Config, files files.Files, diagnostic *diagnostic.Diagnostic) error {
-	return EmitWithStyle(writer, config, files, diagnostic)
+// Emit a diagnostic to the given writer as plain text, without styling.
+// (`emit_to_io_write` in Rust)
+func EmitToIoWrite(writer io.Writer, config *Config, files files.Files, diagnostic *diagnostic.Diagnostic) error {
+	return EmitWithStyle(
+		NewPlainWriter(writer),
+		config,
+		files,
+		diagnostic,
+	)
 }
 
 func EmitToWriteStyle(writer WriteStyle, config *Config, files files.Files, diagnostic *diagnostic.Diagnostic) error {

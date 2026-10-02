@@ -102,3 +102,22 @@ func TestNestedMultiLineLabels(t *testing.T) {
 		out,
 	)
 }
+
+// `EmitToIoWrite` writes plain text, like `emit_to_io_write` in Rust.
+func TestEmitToIoWrite(t *testing.T) {
+	fs := files.NewSimpleFiles()
+	file_id := fs.Add("test", "abc\n")
+	d := diagnostic.NewError().WithMessage("message").WithLabel(
+		*diagnostic.NewPrimary(file_id, files.NewRange(0, 1)).WithMessage("label"),
+	)
+
+	config := DefaultConfig()
+	expected, err := EmitIntoString(&config, &fs, d)
+	require.NoError(t, err)
+
+	var writer strings.Builder
+	require.NoError(t, EmitToIoWrite(&writer, &config, &fs, d))
+
+	assert.Equal(t, expected, writer.String())
+	assert.NotContains(t, writer.String(), "\x1b[")
+}
