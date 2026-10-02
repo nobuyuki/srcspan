@@ -3,8 +3,8 @@ package files
 // A byte range in a source, half-open: [Start, End).
 // (`core::ops::Range<usize>` in Rust)
 type Range struct {
-	Start int
-	End   int
+	Start int `json:"start"`
+	End   int `json:"end"`
 }
 
 func NewRange(s, e int) Range {

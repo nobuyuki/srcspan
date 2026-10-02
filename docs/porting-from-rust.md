@@ -33,6 +33,7 @@ srcspan.
 | Traits | Interfaces |
 | Default methods of a trait | `DefaultXxx` functions that implementations delegate to |
 | `enum` with data | An interface implemented by one type per variant (see the examples) |
+| The `serialization` feature (serde) | `encoding/json`, always available; the JSON is the same as serde_json's (see [Serialization](#serialization)) |
 
 
 ## Package layout
@@ -108,6 +109,30 @@ err := term.EmitToWriteStyle(writer, &config, &fs, d)
 More examples are ported in [`examples/codespan`](../examples/codespan),
 and produce the same output as their Rust versions.
 
+
+## Serialization
+
+The `serialization` feature of codespan and codespan-reporting (serde) is
+always available in Go with `encoding/json`, and produces the same JSON as
+serde_json in Rust:
+
+```json
+{"severity":"Error","code":"E0001","message":"expected `;`",
+ "labels":[{"style":"Primary","file_id":0,"range":{"start":9,"end":9},"message":"here"}],
+ "notes":["a note"]}
+```
+
+| Rust | Go | JSON |
+|---|---|---|
+| `Severity`, `LabelStyle` | `diagnostic.Severity`, `diagnostic.LabelStyle` | The variant name, e.g. `"Error"`, `"Primary"` |
+| `Label<FileId>` | `diagnostic.Label` | `{"style", "file_id", "range", "message"}` |
+| `Diagnostic<FileId>` | `diagnostic.Diagnostic` | `{"severity", "code", "message", "labels", "notes"}`; no code is `null` |
+| `Range<usize>` | `files.Range` | `{"start", "end"}` |
+| `Span` | `srcspan.Span` | `{"start", "end"}` |
+| `Location` | `srcspan.Location` | `{"line", "column"}` |
+
+`Some("")` as a code in Rust is decoded as an empty `Code`, which means no
+code in Go (and is rendered the same way).
 
 ## `codespan_reporting::diagnostic` → `github.com/nobuyuki/srcspan/diagnostic`
 

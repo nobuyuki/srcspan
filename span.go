@@ -1,6 +1,7 @@
 package srcspan
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/nobuyuki/srcspan/files"
@@ -76,4 +77,26 @@ func SpanFromRange(r files.Range) Span {
 // (`impl From<Span> for Range<usize>` in Rust)
 func (s Span) Range() files.Range {
 	return files.NewRange(s.start, s.end)
+}
+
+// The JSON representation of `Span`, like serde in Rust (the
+// `serialization` feature): {"start":0,"end":4}.
+type spanJSON struct {
+	Start int `json:"start"`
+	End   int `json:"end"`
+}
+
+// Encodes the span like serde in Rust.
+func (s Span) MarshalJSON() ([]byte, error) {
+	return json.Marshal(spanJSON{Start: s.start, End: s.end})
+}
+
+// Decodes a span encoded like serde in Rust.
+func (s *Span) UnmarshalJSON(data []byte) error {
+	var j spanJSON
+	if err := json.Unmarshal(data, &j); err != nil {
+		return err
+	}
+	*s = NewSpan(j.Start, j.End)
+	return nil
 }
