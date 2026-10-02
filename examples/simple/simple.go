@@ -97,7 +97,6 @@ func main() {
 	// diagnostic to standard error.
 
 	writer := term.NewStylesWriter(os.Stdout, term.DefaultColor())
-	//writer := term.NewPlainWriter(os.Stdout)
 	config := term.DefaultConfig()
 
 	for _, diagnostic := range diagnostics {

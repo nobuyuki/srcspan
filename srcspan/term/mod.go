@@ -23,8 +23,8 @@ func EmitIntoString(config *Config, files files.Files, diagnostic *diagnostic.Di
 }
 
 func EmitToString(writer io.Writer, config *Config, files files.Files, diagnostic *diagnostic.Diagnostic) error {
-	return EmitWithStyle(
-		NewPlainWriter(writer),
+	return emitWithStyle(
+		newPlainWriter(writer),
 		config,
 		files,
 		diagnostic,
@@ -34,8 +34,8 @@ func EmitToString(writer io.Writer, config *Config, files files.Files, diagnosti
 // Emit a diagnostic to the given writer as plain text, without styling.
 // (`emit_to_io_write` in Rust)
 func EmitToIoWrite(writer io.Writer, config *Config, files files.Files, diagnostic *diagnostic.Diagnostic) error {
-	return EmitWithStyle(
-		NewPlainWriter(writer),
+	return emitWithStyle(
+		newPlainWriter(writer),
 		config,
 		files,
 		diagnostic,
@@ -43,7 +43,7 @@ func EmitToIoWrite(writer io.Writer, config *Config, files files.Files, diagnost
 }
 
 func EmitToWriteStyle(writer WriteStyle, config *Config, files files.Files, diagnostic *diagnostic.Diagnostic) error {
-	return EmitWithStyle(writer, config, files, diagnostic)
+	return emitWithStyle(writer, config, files, diagnostic)
 }
 
 // #[deprecated(
@@ -59,10 +59,10 @@ func EmitToWriteStyle(writer WriteStyle, config *Config, files files.Files, diag
 // * a file was changed so that it is too small to have an index
 // * IO fails
 func Emit(writer io.Writer, config *Config, files files.Files, diagnostic *diagnostic.Diagnostic) error {
-	return EmitWithStyle(NewPlainWriter(writer), config, files, diagnostic)
+	return emitWithStyle(newPlainWriter(writer), config, files, diagnostic)
 }
 
-func EmitWithStyle(writer WriteStyle, config *Config, files files.Files, diagnostic *diagnostic.Diagnostic) error {
+func emitWithStyle(writer WriteStyle, config *Config, files files.Files, diagnostic *diagnostic.Diagnostic) error {
 	renderer := NewRenderer(writer, *config)
 
 	switch config.DisplayStyle {

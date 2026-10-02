@@ -67,7 +67,6 @@ func main() {
 		`expected type 'String'
    found type 'Nat'`})
 
-	//	writer := term.NewPlainWriter(os.Stdout)
 	writer := term.NewStylesWriter(os.Stdout, term.DefaultColor())
 	config := term.DefaultConfig()
 
