@@ -107,4 +107,13 @@ As in Rust, the `codespan-reporting` side does not depend on the
 `codespan` side.
 
 
+## License
+
+`srcspan` is a Go port of [codespan](https://github.com/brendanzab/codespan)
+(`codespan` and `codespan-reporting`) by Brendan Zabarauskas and its
+contributors, which is licensed under the Apache License, Version 2.0.
+
+`srcspan` is also licensed under the [Apache License, Version 2.0](./LICENSE).
+
+
 (EOF)
