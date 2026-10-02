@@ -46,18 +46,16 @@ func EmitToWriteStyle(writer WriteStyle, config *Config, files files.Files, diag
 	return emitWithStyle(writer, config, files, diagnostic)
 }
 
-// #[deprecated(
-//
-//	since = "0.13.0",
-//	note = "Use `emit_to_write_style` instead or depending on the writer use `emit_to_io_write` or `emit_to_string`"
-//
-// )]
 // Emit a diagnostic using the given writer, context, config, and files.
 //
 // The return value covers all error cases. These error case can arise if:
-// * a file was removed from the file database.
-// * a file was changed so that it is too small to have an index
-// * IO fails
+//   - a file was removed from the file database.
+//   - a file was changed so that it is too small to have an index
+//   - IO fails
+//
+// Deprecated: Since codespan-reporting 0.13.0. Use [EmitToWriteStyle]
+// instead or depending on the writer use [EmitToIoWrite] or
+// [EmitToString]. (`#[deprecated]` in Rust)
 func Emit(writer io.Writer, config *Config, files files.Files, diagnostic *diagnostic.Diagnostic) error {
 	return emitWithStyle(newPlainWriter(writer), config, files, diagnostic)
 }
