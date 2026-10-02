@@ -32,19 +32,19 @@ const (
 // diagnostic.
 type Label struct {
 	// The style of the label.
-	Style LabelStyle
+	Style LabelStyle `json:"style"`
 
 	// The file that we are labeling.
-	FileId int
+	FileId int `json:"file_id"`
 
 	// The range in bytes we are going to include in the final
 	// snippet.
-	Range files.Range
+	Range files.Range `json:"range"`
 
 	// An optional message to provide some additional information
 	// for the underlined code. These should not include line
 	// breaks.
-	Message string
+	Message string `json:"message"`
 }
 
 func NewLabel(style LabelStyle, file_id int, range_ files.Range) *Label {
@@ -85,10 +85,10 @@ func (l *Label) WithMessage(message string) *Label {
 
 type Diagnostic struct {
 	// The overall severity of the diagnostic
-	Severity Severity
+	Severity Severity `json:"severity"`
 
 	// An optional code that identifies this diagnostic.
-	Code string // e.g. "E0308"
+	Code string `json:"code"` // e.g. "E0308"
 
 	// The main message associated with this diagnostic.
 	//
@@ -96,18 +96,18 @@ type Diagnostic struct {
 	// the 'short' diagnostic display mod, the message should be
 	// specific enough to make sense on its own, without
 	// additional context provided by labels and notes.
-	Message string
+	Message string `json:"message"`
 
 	// Source labels that describe the cause of the diagnostic.
 	// The order of the labels inside the vector does not have
 	// any meaning.  The labels are always arranged in the order
 	// they appear in the source code.
-	Labels []Label
+	Labels []Label `json:"labels"`
 
 	// Notes that are associated with the primary cause of the
 	// diagnostic.  These can include line breaks for improved
 	// formatting.
-	Notes []string
+	Notes []string `json:"notes"`
 }
 
 // Create a new diagnostic.
