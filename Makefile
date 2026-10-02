@@ -27,17 +27,9 @@ lint:
 
 # Sample files.
 #
-samples: example term custom_files reusable_diagnostic readme_preview
-
-example:
-	go build -o ./bin/example ./examples/example
-term:
-	go build -o ./bin/term    ./examples/codespan/term
-custom_files:
-	go build -o ./bin/custom_files ./examples/codespan/custom_files
-reusable_diagnostic:
-	go build -o ./bin/reusable_diagnostic ./examples/codespan/reusable_diagnostic
-readme_preview:
-	go build -o ./bin/readme_preview ./examples/codespan/readme_preview
+# Builds every example under ./examples into ./bin, named after its
+# directory. New examples are picked up without editing this file.
+samples:
+	go build -o ./bin/ ./examples/...
 
 # (EOF)
