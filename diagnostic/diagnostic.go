@@ -1,7 +1,13 @@
+// Package diagnostic provides diagnostic data structures.
+//
+// (`codespan_reporting::diagnostic` in Rust)
 package diagnostic
 
 import (
-	"srcspan/srcspan/files"
+	"iter"
+	"slices"
+
+	"github.com/nobuyuki/srcspan/files"
 )
 
 // A severity level for diagnostic messages.
@@ -174,14 +180,28 @@ func (d *Diagnostic) WithLabels(labels []Label) *Diagnostic {
 	return d
 }
 
+// Add some labels to the diagnostic.
+// (`with_labels_iter` in Rust, which takes an `IntoIterator`)
+func (d *Diagnostic) WithLabelsIter(labels iter.Seq[Label]) *Diagnostic {
+	d.Labels = slices.AppendSeq(d.Labels, labels)
+	return d
+}
+
 // Add a note to the diagnostic.
 func (d *Diagnostic) WithNote(note string) *Diagnostic {
 	d.Notes = append(d.Notes, note)
 	return d
 }
 
-// Add some labels to the diagnostic.
+// Add some notes to the diagnostic.
 func (d *Diagnostic) WithNotes(notes []string) *Diagnostic {
 	d.Notes = append(d.Notes, notes...)
+	return d
+}
+
+// Add some notes to the diagnostic.
+// (`with_notes_iter` in Rust, which takes an `IntoIterator`)
+func (d *Diagnostic) WithNotesIter(notes iter.Seq[string]) *Diagnostic {
+	d.Notes = slices.AppendSeq(d.Notes, notes)
 	return d
 }

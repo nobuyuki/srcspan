@@ -3,9 +3,9 @@ package main
 import (
 	"os"
 
-	"srcspan/srcspan/diagnostic"
-	"srcspan/srcspan/files"
-	"srcspan/srcspan/term"
+	"github.com/nobuyuki/srcspan/diagnostic"
+	"github.com/nobuyuki/srcspan/files"
+	"github.com/nobuyuki/srcspan/term"
 )
 
 var content = []byte(`module FizzBuzz where
@@ -45,7 +45,6 @@ func main() {
 		`expected type 'String'
    found type 'Nat'`})
 
-	//	writer := term.NewPlainWriter(os.Stdout)
 	writer := term.NewStylesWriter(os.Stdout, term.DefaultColor())
 	config := term.DefaultConfig()
 

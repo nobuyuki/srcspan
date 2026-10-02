@@ -12,11 +12,11 @@ import (
 	"fmt"
 	"os"
 
-	"srcspan/srcspan/diagnostic"
-	"srcspan/srcspan/files"
-	term "srcspan/srcspan/term"
+	"github.com/nobuyuki/srcspan/diagnostic"
+	"github.com/nobuyuki/srcspan/files"
+	term "github.com/nobuyuki/srcspan/term"
 
-	"srcspan/internal/unindent"
+	"github.com/nobuyuki/srcspan/internal/unindent"
 )
 
 var colorChoice string

@@ -25,9 +25,9 @@ package main
 import (
 	"os"
 
-	"srcspan/srcspan/diagnostic"
-	"srcspan/srcspan/files"
-	"srcspan/srcspan/term"
+	"github.com/nobuyuki/srcspan/diagnostic"
+	"github.com/nobuyuki/srcspan/files"
+	"github.com/nobuyuki/srcspan/term"
 )
 
 var content = []byte(`module FizzBuzz where
@@ -67,7 +67,6 @@ func main() {
 		`expected type 'String'
    found type 'Nat'`})
 
-	//	writer := term.NewPlainWriter(os.Stdout)
 	writer := term.NewStylesWriter(os.Stdout, term.DefaultColor())
 	config := term.DefaultConfig()
 
@@ -93,30 +92,31 @@ go run ./examples/codespan/term/term.go
 More examples of using `srcspan` can be found in the `examples` directory.
 
 
-## Contributing
-
-A guide to contributing to codespan-reporting [can be found here](/CONTRIBUTING.md).
-
-
-## Code of Conduct
-
-Please note that this project is released with a [Code of Conduct](./CODE_OF_CONDUCT.md).
-By participating in this project you agree to abide by its terms.
-
-
 ## Packages
 
 The packages follow the structure of the original Rust crates:
 
-- `srcspan/srcspan/files`, `srcspan/srcspan/diagnostic` and
-  `srcspan/srcspan/term` correspond to `codespan-reporting`. The
+- `github.com/nobuyuki/srcspan/files`, `github.com/nobuyuki/srcspan/diagnostic` and
+  `github.com/nobuyuki/srcspan/term` correspond to `codespan-reporting`. The
   `files.Files` interface corresponds to the `Files` trait, and
   `files.SimpleFile` / `files.SimpleFiles` to its simple implementations.
-- `srcspan/srcspan` corresponds to `codespan`: `Span` and a `Files`
+- `github.com/nobuyuki/srcspan` corresponds to `codespan`: `Span` and a `Files`
   database that also implements `files.Files`.
 
 As in Rust, the `codespan-reporting` side does not depend on the
 `codespan` side.
+
+See [Porting from Rust](./docs/porting-from-rust.md) for how the Rust API
+maps to the Go API.
+
+
+## License
+
+`srcspan` is a Go port of [codespan](https://github.com/brendanzab/codespan)
+(`codespan` and `codespan-reporting`) by Brendan Zabarauskas and its
+contributors, which is licensed under the Apache License, Version 2.0.
+
+`srcspan` is also licensed under the [Apache License, Version 2.0](./LICENSE).
 
 
 (EOF)
