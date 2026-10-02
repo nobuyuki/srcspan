@@ -1,4 +1,4 @@
-// Source file support for diagnostic reporting.
+// Package files provides source file support for diagnostic reporting.
 //
 // The main interface defined in this package is the [Files] interface,
 // which provides the minimum amount of functionality required for printing

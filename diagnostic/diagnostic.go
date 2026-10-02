@@ -1,3 +1,6 @@
+// Package diagnostic provides diagnostic data structures.
+//
+// (`codespan_reporting::diagnostic` in Rust)
 package diagnostic
 
 import (

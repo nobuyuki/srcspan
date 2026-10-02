@@ -1,6 +1,7 @@
+// Package term is the terminal back-end for emitting diagnostics.
+//
+// (`codespan_reporting::term` in Rust)
 package term
-
-//! Terminal back-end for emitting diagnostics.
 
 import (
 	"fmt"
