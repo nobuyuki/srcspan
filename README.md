@@ -25,9 +25,9 @@ package main
 import (
 	"os"
 
-	"srcspan/srcspan/diagnostic"
-	"srcspan/srcspan/files"
-	"srcspan/srcspan/term"
+	"github.com/nobuyuki/srcspan/diagnostic"
+	"github.com/nobuyuki/srcspan/files"
+	"github.com/nobuyuki/srcspan/term"
 )
 
 var content = []byte(`module FizzBuzz where
@@ -107,11 +107,11 @@ By participating in this project you agree to abide by its terms.
 
 The packages follow the structure of the original Rust crates:
 
-- `srcspan/srcspan/files`, `srcspan/srcspan/diagnostic` and
-  `srcspan/srcspan/term` correspond to `codespan-reporting`. The
+- `github.com/nobuyuki/srcspan/files`, `github.com/nobuyuki/srcspan/diagnostic` and
+  `github.com/nobuyuki/srcspan/term` correspond to `codespan-reporting`. The
   `files.Files` interface corresponds to the `Files` trait, and
   `files.SimpleFile` / `files.SimpleFiles` to its simple implementations.
-- `srcspan/srcspan` corresponds to `codespan`: `Span` and a `Files`
+- `github.com/nobuyuki/srcspan` corresponds to `codespan`: `Span` and a `Files`
   database that also implements `files.Files`.
 
 As in Rust, the `codespan-reporting` side does not depend on the

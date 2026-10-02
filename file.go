@@ -6,7 +6,7 @@ import (
 	"slices"
 	"unicode/utf8"
 
-	"srcspan/srcspan/files"
+	"github.com/nobuyuki/srcspan/files"
 )
 
 // A database of source files.

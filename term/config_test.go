@@ -8,8 +8,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"srcspan/srcspan/diagnostic"
-	"srcspan/srcspan/files"
+	"github.com/nobuyuki/srcspan/diagnostic"
+	"github.com/nobuyuki/srcspan/files"
 )
 
 func emitWithColorOutput(t *testing.T, color_output ColorOutput) (written, stdout string) {

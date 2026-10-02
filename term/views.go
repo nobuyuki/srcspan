@@ -6,8 +6,8 @@ import (
 
 	"github.com/tidwall/btree"
 
-	"srcspan/srcspan/diagnostic"
-	"srcspan/srcspan/files"
+	"github.com/nobuyuki/srcspan/diagnostic"
+	"github.com/nobuyuki/srcspan/files"
 )
 
 // The render functions take a parameter named `files` (as in Rust), which

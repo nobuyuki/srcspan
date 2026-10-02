@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"srcspan/srcspan/files"
+	"github.com/nobuyuki/srcspan/files"
 )
 
 func Test(t *testing.T) {

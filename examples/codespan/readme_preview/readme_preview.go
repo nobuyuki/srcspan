@@ -16,11 +16,11 @@ import (
 	"io"
 	"os"
 
-	"srcspan/srcspan/diagnostic"
-	"srcspan/srcspan/files"
-	"srcspan/srcspan/term"
+	"github.com/nobuyuki/srcspan/diagnostic"
+	"github.com/nobuyuki/srcspan/files"
+	"github.com/nobuyuki/srcspan/term"
 
-	"srcspan/internal/unindent"
+	"github.com/nobuyuki/srcspan/internal/unindent"
 )
 
 // (`enum Opts` in Rust)

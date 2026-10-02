@@ -4,7 +4,7 @@ import (
 	"iter"
 	"slices"
 
-	"srcspan/srcspan/files"
+	"github.com/nobuyuki/srcspan/files"
 )
 
 // A severity level for diagnostic messages.

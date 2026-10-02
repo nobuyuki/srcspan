@@ -3,7 +3,7 @@ package srcspan
 import (
 	"fmt"
 
-	"srcspan/srcspan/files"
+	"github.com/nobuyuki/srcspan/files"
 )
 
 type Span struct {
