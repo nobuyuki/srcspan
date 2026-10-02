@@ -92,17 +92,6 @@ go run ./examples/codespan/term/term.go
 More examples of using `srcspan` can be found in the `examples` directory.
 
 
-## Contributing
-
-A guide to contributing to codespan-reporting [can be found here](/CONTRIBUTING.md).
-
-
-## Code of Conduct
-
-Please note that this project is released with a [Code of Conduct](./CODE_OF_CONDUCT.md).
-By participating in this project you agree to abide by its terms.
-
-
 ## Packages
 
 The packages follow the structure of the original Rust crates:
