@@ -102,6 +102,9 @@ The packages follow the structure of the original Rust crates:
   `files.SimpleFile` / `files.SimpleFiles` to its simple implementations.
 - `github.com/nobuyuki/srcspan` corresponds to `codespan`: `Span` and a `Files`
   database that also implements `files.Files`.
+- `github.com/nobuyuki/srcspan/lsp` corresponds to `codespan-lsp`: it
+  translates byte indices and spans into Language Server Protocol positions
+  and ranges.
 
 As in Rust, the `codespan-reporting` side does not depend on the
 `codespan` side.

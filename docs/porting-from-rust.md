@@ -1,17 +1,19 @@
 # Porting from Rust (codespan / codespan-reporting) to Go (srcspan)
 
 `srcspan` is a port of [codespan](https://github.com/brendanzab/codespan)
-**0.13.1** (`codespan` and `codespan-reporting`). This document maps the
-Rust API to the Go API, so that code using codespan can be ported to
-srcspan.
+**0.13.1** (`codespan`, `codespan-reporting` and `codespan-lsp`). This
+document maps the Rust API to the Go API, so that code using codespan can
+be ported to srcspan.
 
 - [General conventions](#general-conventions)
 - [Package layout](#package-layout)
 - [An example side by side](#an-example-side-by-side)
-- [`codespan_reporting::diagnostic`](#codespan_reportingdiagnostic--srcspansrcspandiagnostic)
-- [`codespan_reporting::files`](#codespan_reportingfiles--srcspansrcspanfiles)
-- [`codespan_reporting::term`](#codespan_reportingterm--srcspansrcspanterm)
-- [`codespan`](#codespan--srcspansrcspan)
+- [Serialization](#serialization)
+- [`codespan_reporting::diagnostic`](#codespan_reportingdiagnostic--githubcomnobuyukisrcspandiagnostic)
+- [`codespan_reporting::files`](#codespan_reportingfiles--githubcomnobuyukisrcspanfiles)
+- [`codespan_reporting::term`](#codespan_reportingterm--githubcomnobuyukisrcspanterm)
+- [`codespan`](#codespan--githubcomnobuyukisrcspan)
+- [`codespan_lsp`](#codespan_lsp--githubcomnobuyukisrcspanlsp)
 
 
 ## General conventions
@@ -48,6 +50,7 @@ not the other way around).
 | `codespan_reporting::files` | `github.com/nobuyuki/srcspan/files` |
 | `codespan_reporting::term` | `github.com/nobuyuki/srcspan/term` |
 | `codespan` | `github.com/nobuyuki/srcspan` |
+| `codespan_lsp` | `github.com/nobuyuki/srcspan/lsp` |
 | `codespan_reporting::term::termcolor` (re-export of `termcolor`) | [`github.com/fatih/color`](https://github.com/fatih/color) (used by `term.Styles`) |
 
 
@@ -264,3 +267,15 @@ code in Go (and is rendered the same way).
 | `files.location(file_id, byte_index)` (0-based `Location`) | — | Not exposed, since `Location` is taken by `files.Files`; `fs.Location` returns the 1-based `files.Location`. |
 | `files.source_span(file_id)` | `fs.SourceSpan(file_id)` | Returns `(Span, error)`. |
 | `files.source_slice(file_id, span)` | `fs.SourceSlice(file_id, span)` | |
+
+
+## `codespan_lsp` → `github.com/nobuyuki/srcspan/lsp`
+
+| Rust | Go | Notes |
+|---|---|---|
+| `lsp_types::Position { line, character }` | `lsp.Position{Line, Character}` | Defined in this package (`uint32` fields), so that srcspan does not depend on a Go LSP library. The JSON is the same as the protocol's. |
+| `lsp_types::Range { start, end }` | `lsp.Range{Start, End}` | |
+| `byte_index_to_position(files, file_id, byte_index)` | `lsp.ByteIndexToPosition(files, file_id, byte_index)` | `character` is counted in UTF-16 code units, as specified by the protocol. |
+| `byte_span_to_range(files, file_id, span)` | `lsp.ByteSpanToRange(files, file_id, span)` | |
+| `position_to_byte_index(files, file_id, &position)` | `lsp.PositionToByteIndex(files, file_id, position)` | Returns an error for a line past the end of the file (Rust panics). |
+| `range_to_byte_span(files, file_id, &range)` | `lsp.RangeToByteSpan(files, file_id, range)` | |

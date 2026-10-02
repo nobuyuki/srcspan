@@ -4,7 +4,7 @@
 // Package srcspan provides utilities for working with source code and
 // printing nicely formatted diagnostic information like warnings and errors.
 //
-// It is a port of codespan and codespan-reporting 0.13.1
+// It is a port of codespan, codespan-reporting and codespan-lsp 0.13.1
 // (https://github.com/brendanzab/codespan), and follows the structure of
 // these Rust crates:
 //
@@ -16,6 +16,8 @@
 //   - [github.com/nobuyuki/srcspan/diagnostic] provides the diagnostic data
 //     structures.
 //   - [github.com/nobuyuki/srcspan/term] renders diagnostics to a terminal.
+//   - [github.com/nobuyuki/srcspan/lsp] translates byte indices and spans
+//     into Language Server Protocol positions and ranges (codespan-lsp).
 //
 // A diagnostic is built with diagnostic.NewError (or NewWarning, ...) and its
 // With* methods, and emitted with term.EmitToWriteStyle (with colors) or
