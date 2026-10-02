@@ -109,8 +109,9 @@ config := term.DefaultConfig()
 err := term.EmitToWriteStyle(writer, &config, &fs, d)
 ```
 
-More examples are ported in [`examples/codespan`](../examples/codespan),
-and produce the same output as their Rust versions.
+More examples are ported in [`examples/codespan`](../examples/codespan).
+They produce the same output as their Rust versions, except
+`peg_calculator`, whose parser and grammar differ.
 
 
 ## Serialization
