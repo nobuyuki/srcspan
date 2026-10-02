@@ -106,6 +106,9 @@ The packages follow the structure of the original Rust crates:
 As in Rust, the `codespan-reporting` side does not depend on the
 `codespan` side.
 
+See [Porting from Rust](./docs/porting-from-rust.md) for how the Rust API
+maps to the Go API.
+
 
 ## License
 
