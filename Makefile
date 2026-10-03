@@ -12,6 +12,11 @@ build:
 test:
 	go test ./...
 
+# Coverage of the library packages, excluding the examples.
+cover:
+	go test -coverprofile=cover.out $$(go list ./... | grep -v /examples/)
+	go tool cover -func=cover.out
+
 clean:
 	go clean -cache -modcache
 
