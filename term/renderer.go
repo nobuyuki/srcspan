@@ -42,8 +42,13 @@ type plainWriter struct {
 	w io.Writer
 }
 
-func init() {
-	runewidth.DefaultCondition.EastAsianWidth = false
+// The width condition used to measure characters. East Asian ambiguous
+// characters are treated as narrow regardless of the locale, matching the
+// `unicode-width` crate used by Rust. A dedicated condition is used so that
+// the global `runewidth.DefaultCondition` is left untouched.
+var widthCondition = &runewidth.Condition{
+	EastAsianWidth:     false,
+	StrictEmojiNeutral: true,
 }
 
 func newPlainWriter(w io.Writer) plainWriter {
@@ -1285,7 +1290,7 @@ func (r *Renderer) charMetrics(
 				uw = tab_width - (unicode_column % tab_width)
 			}
 		} else {
-			uw = runewidth.RuneWidth(ci.Char)
+			uw = widthCondition.RuneWidth(ci.Char)
 		}
 
 		metrics := charMetric{
