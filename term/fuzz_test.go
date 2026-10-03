@@ -40,7 +40,7 @@ func FuzzEmit(f *testing.F) {
 	f.Add("\t日本語\n🦀 x\n", []byte{0, 1, 4, 0, 2, 12, 1, 12, 14}, uint8(0))
 	f.Add("abc\xffdef\n", []byte{0, 2, 5}, uint8(0))
 
-	f.Fuzz(func(t *testing.T, source string, data []byte, style uint8) {
+	f.Fuzz(func(_ *testing.T, source string, data []byte, style uint8) {
 		fs := files.NewSimpleFiles()
 		file_id := fs.Add("test", source)
 

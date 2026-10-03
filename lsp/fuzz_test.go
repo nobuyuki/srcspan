@@ -48,7 +48,7 @@ func FuzzRangeToByteSpan(f *testing.F) {
 	f.Add("日本語\n🦀 x\n", uint32(0), uint32(1), uint32(1), uint32(2))
 	f.Add("abc\xffdef\n", uint32(0), uint32(3), uint32(5), uint32(0))
 
-	f.Fuzz(func(t *testing.T, source string, start_line, start_character, end_line, end_character uint32) {
+	f.Fuzz(func(_ *testing.T, source string, start_line, start_character, end_line, end_character uint32) {
 		fs := files.NewSimpleFiles()
 		file_id := fs.Add("test", source)
 
