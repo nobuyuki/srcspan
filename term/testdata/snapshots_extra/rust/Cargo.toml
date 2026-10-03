@@ -1,0 +1,21 @@
+# Generates the expected outputs in ../ (term/testdata/snapshots_extra) with
+# codespan-reporting 0.13.1. These tests are not in upstream.
+#
+#   cd term/testdata/snapshots_extra/rust
+#   INSTA_UPDATE=always cargo test
+[package]
+name = "srcspan-snapshots-extra"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[dev-dependencies]
+codespan-reporting = { version = "=0.13.1", features = ["termcolor"] }
+insta = "1.6.3"
+termcolor = "1.0.4"
+unindent = "0.1"
+
+# `tests/support` and `test_emit!` check this feature, as in upstream.
+[features]
+default = ["termcolor"]
+termcolor = []

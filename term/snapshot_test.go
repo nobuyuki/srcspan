@@ -154,11 +154,12 @@ func (w *colorBuffer) Reset() error {
 
 var _ WriteStyle = (*colorBuffer)(nil)
 
-// Reads the contents of an `insta` snapshot file, skipping its metadata.
-func readSnapshot(t *testing.T, name string) string {
+// Reads the contents of an `insta` snapshot file in testdata/<dir>, skipping
+// its metadata.
+func readSnapshot(t *testing.T, dir string, name string) string {
 	t.Helper()
 
-	f, err := os.Open(filepath.Join("testdata", "snapshots", name))
+	f, err := os.Open(filepath.Join("testdata", dir, name))
 	require.NoError(t, err)
 	defer f.Close()
 
@@ -192,10 +193,10 @@ func normalizeSnapshot(s string) string {
 	return strings.ReplaceAll(s, "\r\n", "\n")
 }
 
-func assertSnapshot(t *testing.T, name string, actual string) {
+func assertSnapshot(t *testing.T, dir string, name string, actual string) {
 	t.Helper()
 
-	expected := readSnapshot(t, name)
+	expected := readSnapshot(t, dir, name)
 	assert.Equal(t, normalizeSnapshot(expected), normalizeSnapshot(actual))
 }
 
@@ -262,7 +263,15 @@ type snapshotCase struct {
 }
 
 func TestSnapshots(t *testing.T) {
-	for _, c := range snapshotCases {
+	runSnapshotCases(t, snapshotCases, "snapshots", "term")
+}
+
+// Runs the cases against the snapshots named `<prefix>__<case>__<test>.snap`
+// in testdata/<dir>.
+func runSnapshotCases(t *testing.T, cases []snapshotCase, dir string, prefix string) {
+	t.Helper()
+
+	for _, c := range cases {
 		data := c.data()
 		for _, test := range c.tests {
 			t.Run(c.name+"/"+test.name, func(t *testing.T) {
@@ -273,7 +282,7 @@ func TestSnapshots(t *testing.T) {
 				} else {
 					actual = data.emitNoColor(t, &config)
 				}
-				assertSnapshot(t, "term__"+c.name+"__"+test.name+".snap", actual)
+				assertSnapshot(t, dir, prefix+"__"+c.name+"__"+test.name+".snap", actual)
 			})
 		}
 	}

@@ -1,0 +1,16 @@
+---
+source: tests/extra.rs
+expression: TEST_DATA.emit_no_color(& config)
+---
+error: mismatched types
+  --> main.rs:2:13
+  |    
+2 |         let x = foo(
+  | /---------------^
+3 | |           1,
+4 | |       ); let y = bar(
+  | \-------^ expected `u32`
+  |   /----------------'
+5 |   |         2,
+6 |   |     );
+  |   \-----' found `i32`
