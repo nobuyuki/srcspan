@@ -1,0 +1,5 @@
+---
+source: tests/extra.rs
+expression: TEST_DATA.emit_no_color(& config)
+---
+main.rs:2:13: error: mismatched types

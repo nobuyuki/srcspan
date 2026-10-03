@@ -1,0 +1,5 @@
+---
+source: tests/extra.rs
+expression: TEST_DATA.emit_color(& config)
+---
+main.rs:2:13: {fg:Red bold bright}error{bold bright}: mismatched types{/}

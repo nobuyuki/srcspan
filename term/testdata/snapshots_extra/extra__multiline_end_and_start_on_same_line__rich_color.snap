@@ -1,0 +1,16 @@
+---
+source: tests/extra.rs
+expression: TEST_DATA.emit_color(& config)
+---
+{fg:Red bold bright}error{bold bright}: mismatched types{/}
+  {fg:Cyan}┌─{/} main.rs:2:13
+  {fg:Cyan}│{/}    
+{fg:Cyan}2{/} {fg:Cyan}│{/}         let x = {fg:Red}foo({/}
+  {fg:Cyan}│{/} {fg:Red}╭{/}{fg:Red}──{/}{fg:Red}─────────────^{/}
+{fg:Cyan}3{/} {fg:Cyan}│{/} {fg:Red}│{/}   {fg:Red}        1,{/}
+{fg:Cyan}4{/} {fg:Cyan}│{/} {fg:Red}│{/}   {fg:Red}    ){/}; let y = bar(
+  {fg:Cyan}│{/} {fg:Red}╰{/}{fg:Red}──{/}{fg:Red}─────^ expected `u32`{/}
+  {fg:Cyan}│{/}   {fg:Cyan}╭{/}{fg:Cyan}────────────────'{/}
+{fg:Cyan}5{/} {fg:Cyan}│{/}   {fg:Cyan}│{/}         2,
+{fg:Cyan}6{/} {fg:Cyan}│{/}   {fg:Cyan}│{/}     );
+  {fg:Cyan}│{/}   {fg:Cyan}╰{/}{fg:Cyan}─────' found `i32`{/}
