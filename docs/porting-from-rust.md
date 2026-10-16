@@ -55,6 +55,11 @@ Using `any` as the id type would avoid generics but lose type safety
 keeps the API simple; map other kinds of ids to `int` on your side, as
 `SimpleFiles` does.
 
+For the same reason, the associated types `Files::Name` (`Display`) and
+`Files::Source` (`AsRef<str>`) are fixed to `string`, and so is
+`SimpleFile<Name, Source>`. The renderer needs strings in the end, and a
+generic name such as `fmt.Stringer` would not even accept a plain `string`.
+
 
 ## Package layout
 
