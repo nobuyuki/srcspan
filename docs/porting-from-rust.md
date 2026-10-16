@@ -37,6 +37,24 @@ be ported to srcspan.
 | `enum` with data | An interface implemented by one type per variant (see the examples) |
 | The `serialization` feature (serde) | `encoding/json`, always available; the JSON is the same as serde_json's (see [Serialization](#serialization)) |
 
+### Why `FileId` is fixed to `int`
+
+In Rust, `Files::FileId` is an associated type (`Copy + PartialEq`), so a
+`&str` or a user-defined type can be used as a file id. A generic port would
+have to thread a type parameter through `Diagnostic`, `Label`, `Files`, and
+every `term.Emit*` function — the same scope as in Rust — but Go makes this
+noticeably heavier:
+
+- Go has no associated types, so the id type must be an explicit type
+  parameter (`Files[ID comparable]`) on every signature.
+- Go cannot infer type arguments from return types, so constructors such as
+  `diagnostic.NewError[int]()` would always need them spelled out.
+
+Using `any` as the id type would avoid generics but lose type safety
+(mismatches and non-comparable ids fail at run time). Fixing the id to `int`
+keeps the API simple; map other kinds of ids to `int` on your side, as
+`SimpleFiles` does.
+
 
 ## Package layout
 
@@ -228,7 +246,7 @@ code in Go (and is rendered the same way).
 | `Styles` / `Styles::default()` | `term.Styles` / `term.DefaultColor()` | The fields are `*color.Color` (fatih/color) instead of `ColorSpec`. |
 | `Styles::no_color()` | `term.NoColor()` | |
 | `styles.header(severity)` / `styles.label(severity, style)` | `styles.Header(severity)` / `styles.Label(severity, style)` | |
-| `styles.header_message()` / `line_number()` / `note_bullet()` / `source_border()` | `styles.HeaderMessage_()` / `LineNumber_()` / `NoteBullet_()` / `SourceBorder_()` | Suffixed with `_`, since the fields have the same names. |
+| `styles.header_message()` / `line_number()` / `note_bullet()` / `source_border()` | `styles.HeaderMessage_()` / `LineNumber_()` / `NoteBullet_()` / `SourceBorder_()` | Suffixed with `_`, since Go does not allow a field and a method with the same name. These just return the exported fields, so reading `styles.HeaderMessage` etc. directly is equivalent (as in Rust, where the fields are also `pub`). The methods are kept for one-to-one correspondence; the fields keep the plain names so that struct literals read naturally. |
 | `StylesWriter::new(writer, &styles)` | `term.NewStylesWriter(writer, styles)` | Writes escape codes to `writer`. |
 | `StandardStream::stderr(ColorChoice::X)` (termcolor) | `term.NewStylesWriter(os.Stderr, styles)` with `styles.ColorOutput` set | |
 | `ColorChoice::Always` / `Auto` / `Never` | `term.ColorOutputForce` / `ColorOutputAuto` / `ColorOutputNone` | `Auto` follows fatih/color (`NO_COLOR`, `TERM=dumb`, whether stdout is a terminal). |
