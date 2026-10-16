@@ -24,8 +24,8 @@ func testDiagnostic() *Diagnostic {
 		WithMessage("expected `;`").
 		WithCode("E0001").
 		WithLabels([]Label{
-			*NewPrimary(0, files.NewRange(9, 9)).WithMessage("here"),
-			*NewSecondary(1, files.NewRange(2, 5)),
+			NewPrimary(0, files.NewRange(9, 9)).WithMessage("here"),
+			NewSecondary(1, files.NewRange(2, 5)),
 		}).
 		WithNotes([]string{"a note"})
 }

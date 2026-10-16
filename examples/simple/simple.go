@@ -49,39 +49,39 @@ func main() {
 	file_id := fs.Add("config.yaml", string(data))
 
 	d0 := diagnostic.NewNote().WithMessage("This is a TOML comment").WithLabel(
-		*diagnostic.NewPrimary(file_id, files.NewRange(0, 26)),
+		diagnostic.NewPrimary(file_id, files.NewRange(0, 26)),
 	).WithNote("Comment starts from '#' to EOL")
 
 	d1 := diagnostic.NewNote().WithMessage("Number or string").WithLabel(
-		*diagnostic.NewPrimary(file_id, files.NewRange(61, 64)).WithMessage("You can write just '1', rather thatn '\"1\"'."),
+		diagnostic.NewPrimary(file_id, files.NewRange(61, 64)).WithMessage("You can write just '1', rather thatn '\"1\"'."),
 	).WithNote("Both string and number are accepted, but string should be able to interpret as a number.")
 
 	d2 := diagnostic.NewError().WithMessage("invalid value").WithLabel(
-		*diagnostic.NewPrimary(file_id, files.NewRange(61, 64)).WithMessage("expected number"),
+		diagnostic.NewPrimary(file_id, files.NewRange(61, 64)).WithMessage("expected number"),
 	)
 
 	d3 := diagnostic.NewNote().WithMessage("First class date").WithLabel(
-		*diagnostic.NewPrimary(file_id, files.NewRange(108, 133)).WithMessage("Yon don't need double quotes."),
+		diagnostic.NewPrimary(file_id, files.NewRange(108, 133)).WithMessage("Yon don't need double quotes."),
 	).WithNote("If you put sinble/double qoutes, it's a string type rather than a date type.")
 
 	d4 := diagnostic.NewNote().WithMessage("Indentation (tabs and/or spaces) is allowed but not required").WithLabels([]diagnostic.Label{
-		*diagnostic.NewPrimary(file_id, files.NewRange(332, 334)).WithMessage("Indentation."),
-		*diagnostic.NewPrimary(file_id, files.NewRange(350, 352)).WithMessage("Indentation."),
-		*diagnostic.NewPrimary(file_id, files.NewRange(368, 370)).WithMessage("Indentation."),
+		diagnostic.NewPrimary(file_id, files.NewRange(332, 334)).WithMessage("Indentation."),
+		diagnostic.NewPrimary(file_id, files.NewRange(350, 352)).WithMessage("Indentation."),
+		diagnostic.NewPrimary(file_id, files.NewRange(368, 370)).WithMessage("Indentation."),
 
-		*diagnostic.NewPrimary(file_id, files.NewRange(385, 387)).WithMessage("Indentation."),
-		*diagnostic.NewPrimary(file_id, files.NewRange(402, 404)).WithMessage("Indentation."),
-		*diagnostic.NewPrimary(file_id, files.NewRange(420, 422)).WithMessage("Indentation."),
+		diagnostic.NewPrimary(file_id, files.NewRange(385, 387)).WithMessage("Indentation."),
+		diagnostic.NewPrimary(file_id, files.NewRange(402, 404)).WithMessage("Indentation."),
+		diagnostic.NewPrimary(file_id, files.NewRange(420, 422)).WithMessage("Indentation."),
 
-		*diagnostic.NewSecondary(file_id, files.NewRange(270, 435)).WithMessage("A whole indented block."),
+		diagnostic.NewSecondary(file_id, files.NewRange(270, 435)).WithMessage("A whole indented block."),
 	})
 
 	d5 := diagnostic.NewNote().WithMessage("Line breaks are OK when inside arrays").WithLabels([]diagnostic.Label{
-		*diagnostic.NewPrimary(file_id, files.NewRange(535, 535)).WithMessage("Line break here."),
-		*diagnostic.NewPrimary(file_id, files.NewRange(546, 546)).WithMessage("Line break here."),
-		*diagnostic.NewPrimary(file_id, files.NewRange(556, 556)).WithMessage("Line break here."),
+		diagnostic.NewPrimary(file_id, files.NewRange(535, 535)).WithMessage("Line break here."),
+		diagnostic.NewPrimary(file_id, files.NewRange(546, 546)).WithMessage("Line break here."),
+		diagnostic.NewPrimary(file_id, files.NewRange(556, 556)).WithMessage("Line break here."),
 
-		*diagnostic.NewSecondary(file_id, files.NewRange(534, 568)).WithMessage("Whole array."),
+		diagnostic.NewSecondary(file_id, files.NewRange(534, 568)).WithMessage("Whole array."),
 	}).WithNote("You can also add the final ',' at the end of the last item.")
 
 	diagnostics := []*diagnostic.Diagnostic{

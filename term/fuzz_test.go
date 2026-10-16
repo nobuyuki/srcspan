@@ -25,7 +25,7 @@ func fuzzLabels(file_id int, source string, data []byte) []diagnostic.Label {
 		if data[i]&2 == 2 {
 			label = label.WithMessage("message\nwith a line break")
 		}
-		labels = append(labels, *label)
+		labels = append(labels, label)
 	}
 	return labels
 }

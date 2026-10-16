@@ -100,11 +100,11 @@ func (e MismatchType) Report() *diagnostic.Diagnostic {
 		WithCode("E0308").
 		WithMessage("mismatch types").
 		WithLabels([]diagnostic.Label{
-			*diagnostic.NewPrimary(file_id, e.Right.Range).WithMessage(fmt.Sprintf(
+			diagnostic.NewPrimary(file_id, e.Right.Range).WithMessage(fmt.Sprintf(
 				"Expected `%s`, found: `%s`",
 				e.Left.Content, e.Right.Content,
 			)),
-			*diagnostic.NewSecondary(file_id, e.Left.Range).WithMessage("expected due to this"),
+			diagnostic.NewSecondary(file_id, e.Left.Range).WithMessage("expected due to this"),
 		})
 }
 
@@ -121,7 +121,7 @@ func (e MutatingImmutable) Report() *diagnostic.Diagnostic {
 			e.Original.Content,
 		)).
 		WithLabels([]diagnostic.Label{
-			*diagnostic.NewSecondary(file_id, e.Original.Range).WithMessage(unindent.Unindent(
+			diagnostic.NewSecondary(file_id, e.Original.Range).WithMessage(unindent.Unindent(
 				fmt.Sprintf(`
                                 first assignment to `+"`%[1]s`"+`
                                 help: make this binding mutable: `+"`mut %[1]s`"+`
@@ -129,7 +129,7 @@ func (e MutatingImmutable) Report() *diagnostic.Diagnostic {
 					e.Original.Content,
 				),
 			)),
-			*diagnostic.NewPrimary(file_id, e.Mutating.Range).
+			diagnostic.NewPrimary(file_id, e.Mutating.Range).
 				WithMessage("cannot assign twice to immutable variable"),
 		})
 }

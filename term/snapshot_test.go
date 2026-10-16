@@ -288,10 +288,6 @@ func runSnapshotCases(t *testing.T, cases []snapshotCase, dir string, prefix str
 	}
 }
 
-func label(label *diagnostic.Label) diagnostic.Label {
-	return *label
-}
-
 var snapshotCases = []snapshotCase{
 	{
 		name:   "empty",
@@ -325,12 +321,12 @@ var snapshotCases = []snapshotCase{
 					WithCode("E0499").
 					WithMessage("cannot borrow `v` as mutable more than once at a time").
 					WithLabels([]diagnostic.Label{
-						label(diagnostic.NewPrimary(file_id1, files.NewRange(71, 72)).
-							WithMessage("second mutable borrow occurs here")),
-						label(diagnostic.NewSecondary(file_id1, files.NewRange(64, 65)).
-							WithMessage("first borrow later used by call")),
-						label(diagnostic.NewSecondary(file_id1, files.NewRange(66, 70)).
-							WithMessage("first mutable borrow occurs here")),
+						diagnostic.NewPrimary(file_id1, files.NewRange(71, 72)).
+							WithMessage("second mutable borrow occurs here"),
+						diagnostic.NewSecondary(file_id1, files.NewRange(64, 65)).
+							WithMessage("first borrow later used by call"),
+						diagnostic.NewSecondary(file_id1, files.NewRange(66, 70)).
+							WithMessage("first mutable borrow occurs here"),
 					}),
 				diagnostic.NewError().
 					WithMessage("aborting due to previous error").
@@ -359,41 +355,41 @@ var snapshotCases = []snapshotCase{
 					WithCode("E0666").
 					WithMessage("nested `impl Trait` is not allowed").
 					WithLabels([]diagnostic.Label{
-						label(diagnostic.NewPrimary(file_id1, files.NewRange(129, 139)).
-							WithMessage("nested `impl Trait` here")),
-						label(diagnostic.NewSecondary(file_id1, files.NewRange(119, 140)).
-							WithMessage("outer `impl Trait`")),
+						diagnostic.NewPrimary(file_id1, files.NewRange(129, 139)).
+							WithMessage("nested `impl Trait` here"),
+						diagnostic.NewSecondary(file_id1, files.NewRange(119, 140)).
+							WithMessage("outer `impl Trait`"),
 					}),
 				diagnostic.NewError().
 					WithCode("E0121").
 					WithMessage("the type placeholder `_` is not allowed within types on item signatures").
 					WithLabels([]diagnostic.Label{
-						label(diagnostic.NewPrimary(file_id2, files.NewRange(17, 18)).
-							WithMessage("not allowed in type signatures")),
-						label(diagnostic.NewSecondary(file_id2, files.NewRange(17, 18)).
-							WithMessage("help: replace with the correct return type: `i32`")),
+						diagnostic.NewPrimary(file_id2, files.NewRange(17, 18)).
+							WithMessage("not allowed in type signatures"),
+						diagnostic.NewSecondary(file_id2, files.NewRange(17, 18)).
+							WithMessage("help: replace with the correct return type: `i32`"),
 					}),
 				diagnostic.NewError().
 					WithCode("E0121").
 					WithMessage("the type placeholder `_` is not allowed within types on item signatures").
 					WithLabels([]diagnostic.Label{
-						label(diagnostic.NewPrimary(file_id2, files.NewRange(49, 50)).
-							WithMessage("not allowed in type signatures")),
-						label(diagnostic.NewPrimary(file_id2, files.NewRange(52, 53)).
-							WithMessage("not allowed in type signatures")),
-						label(diagnostic.NewSecondary(file_id2, files.NewRange(48, 54)).
-							WithMessage("help: replace with the correct return type: `(i32, i32)`")),
+						diagnostic.NewPrimary(file_id2, files.NewRange(49, 50)).
+							WithMessage("not allowed in type signatures"),
+						diagnostic.NewPrimary(file_id2, files.NewRange(52, 53)).
+							WithMessage("not allowed in type signatures"),
+						diagnostic.NewSecondary(file_id2, files.NewRange(48, 54)).
+							WithMessage("help: replace with the correct return type: `(i32, i32)`"),
 					}),
 				diagnostic.NewError().
 					WithCode("E0277").
 					WithMessage("`std::rc::Rc<()>` cannot be sent between threads safely").
 					WithLabels([]diagnostic.Label{
-						label(diagnostic.NewPrimary(file_id4, files.NewRange(339, 352)).
-							WithMessage("`std::rc::Rc<()>` cannot be sent between threads safely")),
-						label(diagnostic.NewSecondary(file_id4, files.NewRange(353, 416)).
-							WithMessage("within this `[closure@no_send_res_ports.rs:29:19: 33:6 x:main::Foo]`")),
-						label(diagnostic.NewSecondary(file_id3, files.NewRange(141, 145)).
-							WithMessage("required by this bound in `std::thread::spawn`")),
+						diagnostic.NewPrimary(file_id4, files.NewRange(339, 352)).
+							WithMessage("`std::rc::Rc<()>` cannot be sent between threads safely"),
+						diagnostic.NewSecondary(file_id4, files.NewRange(353, 416)).
+							WithMessage("within this `[closure@no_send_res_ports.rs:29:19: 33:6 x:main::Foo]`"),
+						diagnostic.NewSecondary(file_id3, files.NewRange(141, 145)).
+							WithMessage("required by this bound in `std::thread::spawn`"),
 					}).
 					WithNotes([]string{
 						"help: within `[closure@no_send_res_ports.rs:29:19: 33:6 x:main::Foo]`, the trait `std::marker::Send` is not implemented for `std::rc::Rc<()>`",
@@ -479,16 +475,16 @@ var snapshotCases = []snapshotCase{
 			diagnostics := []*diagnostic.Diagnostic{
 				diagnostic.NewNote().
 					WithMessage("middle").
-					WithLabels([]diagnostic.Label{label(diagnostic.NewPrimary(0, files.NewRange(6, 6)).WithMessage("middle"))}),
+					WithLabels([]diagnostic.Label{diagnostic.NewPrimary(0, files.NewRange(6, 6)).WithMessage("middle")}),
 				diagnostic.NewNote().
 					WithMessage("end of line").
-					WithLabels([]diagnostic.Label{label(diagnostic.NewPrimary(0, files.NewRange(12, 12)).WithMessage("end of line"))}),
+					WithLabels([]diagnostic.Label{diagnostic.NewPrimary(0, files.NewRange(12, 12)).WithMessage("end of line")}),
 				diagnostic.NewNote().
 					WithMessage("end of line").
-					WithLabels([]diagnostic.Label{label(diagnostic.NewPrimary(0, files.NewRange(23, 23)).WithMessage("end of line"))}),
+					WithLabels([]diagnostic.Label{diagnostic.NewPrimary(0, files.NewRange(23, 23)).WithMessage("end of line")}),
 				diagnostic.NewNote().
 					WithMessage("end of file").
-					WithLabels([]diagnostic.Label{label(diagnostic.NewPrimary(0, files.NewRange(eof, eof)).WithMessage("end of file"))}),
+					WithLabels([]diagnostic.Label{diagnostic.NewPrimary(0, files.NewRange(eof, eof)).WithMessage("end of file")}),
 			}
 
 			return &testData{&file, diagnostics}
@@ -505,8 +501,8 @@ var snapshotCases = []snapshotCase{
 				diagnostic.NewError().
 					WithMessage("Unexpected token").
 					WithLabels([]diagnostic.Label{
-						label(diagnostic.NewPrimary(0, files.NewRange(4, 4)).WithMessage("Unexpected '{'")),
-						label(diagnostic.NewSecondary(0, files.NewRange(4, 4)).WithMessage("Expected '('")),
+						diagnostic.NewPrimary(0, files.NewRange(4, 4)).WithMessage("Unexpected '{'"),
+						diagnostic.NewSecondary(0, files.NewRange(4, 4)).WithMessage("Expected '('"),
 					}),
 			}
 
@@ -528,14 +524,14 @@ var snapshotCases = []snapshotCase{
 				diagnostic.NewError().
 					WithMessage("unknown builtin: `NATRAL`").
 					WithLabels([]diagnostic.Label{
-						label(diagnostic.NewPrimary(file_id1, files.NewRange(96, 102)).WithMessage("unknown builtin")),
+						diagnostic.NewPrimary(file_id1, files.NewRange(96, 102)).WithMessage("unknown builtin"),
 					}).
 					WithNotes([]string{"there is a builtin with a similar name: `NATURAL`"}),
 				// Unused parameter warning
 				diagnostic.NewWarning().
 					WithMessage("unused parameter pattern: `n₂`").
 					WithLabels([]diagnostic.Label{
-						label(diagnostic.NewPrimary(file_id1, files.NewRange(285, 289)).WithMessage("unused parameter")),
+						diagnostic.NewPrimary(file_id1, files.NewRange(285, 289)).WithMessage("unused parameter"),
 					}).
 					WithNotes([]string{"consider using a wildcard pattern: `_`"}),
 				// Unexpected type error
@@ -543,10 +539,10 @@ var snapshotCases = []snapshotCase{
 					WithMessage("unexpected type in application of `_+_`").
 					WithCode("E0001").
 					WithLabels([]diagnostic.Label{
-						label(diagnostic.NewPrimary(file_id2, files.NewRange(37, 44)).
-							WithMessage("expected `Nat`, found `String`")),
-						label(diagnostic.NewSecondary(file_id1, files.NewRange(130, 155)).
-							WithMessage("based on the definition of `_+_`")),
+						diagnostic.NewPrimary(file_id2, files.NewRange(37, 44)).
+							WithMessage("expected `Nat`, found `String`"),
+						diagnostic.NewSecondary(file_id1, files.NewRange(130, 155)).
+							WithMessage("based on the definition of `_+_`"),
 					}).
 					WithNotes([]string{unindent.Unindent("\n                            expected type `Nat`\n                               found type `String`\n                        ")}),
 			}
@@ -569,12 +565,12 @@ var snapshotCases = []snapshotCase{
 					WithMessage("`case` clauses have incompatible types").
 					WithCode("E0308").
 					WithLabels([]diagnostic.Label{
-						label(diagnostic.NewPrimary(file_id, files.NewRange(163, 166)).
-							WithMessage("expected `String`, found `Nat`")),
-						label(diagnostic.NewSecondary(file_id, files.NewRange(62, 166)).
-							WithMessage("`case` clauses have incompatible types")),
-						label(diagnostic.NewSecondary(file_id, files.NewRange(41, 47)).
-							WithMessage("expected type `String` found here")),
+						diagnostic.NewPrimary(file_id, files.NewRange(163, 166)).
+							WithMessage("expected `String`, found `Nat`"),
+						diagnostic.NewSecondary(file_id, files.NewRange(62, 166)).
+							WithMessage("`case` clauses have incompatible types"),
+						diagnostic.NewSecondary(file_id, files.NewRange(41, 47)).
+							WithMessage("expected type `String` found here"),
 					}).
 					WithNotes([]string{unindent.Unindent("\n                            expected type `String`\n                               found type `Nat`\n                        ")}),
 				// Incompatible match clause error
@@ -582,18 +578,18 @@ var snapshotCases = []snapshotCase{
 					WithMessage("`case` clauses have incompatible types").
 					WithCode("E0308").
 					WithLabels([]diagnostic.Label{
-						label(diagnostic.NewPrimary(file_id, files.NewRange(328, 331)).
-							WithMessage("expected `String`, found `Nat`")),
-						label(diagnostic.NewSecondary(file_id, files.NewRange(211, 331)).
-							WithMessage("`case` clauses have incompatible types")),
-						label(diagnostic.NewSecondary(file_id, files.NewRange(258, 268)).
-							WithMessage("this is found to be of type `String`")),
-						label(diagnostic.NewSecondary(file_id, files.NewRange(284, 290)).
-							WithMessage("this is found to be of type `String`")),
-						label(diagnostic.NewSecondary(file_id, files.NewRange(306, 312)).
-							WithMessage("this is found to be of type `String`")),
-						label(diagnostic.NewSecondary(file_id, files.NewRange(186, 192)).
-							WithMessage("expected type `String` found here")),
+						diagnostic.NewPrimary(file_id, files.NewRange(328, 331)).
+							WithMessage("expected `String`, found `Nat`"),
+						diagnostic.NewSecondary(file_id, files.NewRange(211, 331)).
+							WithMessage("`case` clauses have incompatible types"),
+						diagnostic.NewSecondary(file_id, files.NewRange(258, 268)).
+							WithMessage("this is found to be of type `String`"),
+						diagnostic.NewSecondary(file_id, files.NewRange(284, 290)).
+							WithMessage("this is found to be of type `String`"),
+						diagnostic.NewSecondary(file_id, files.NewRange(306, 312)).
+							WithMessage("this is found to be of type `String`"),
+						diagnostic.NewSecondary(file_id, files.NewRange(186, 192)).
+							WithMessage("expected type `String` found here"),
 					}).
 					WithNotes([]string{unindent.Unindent("\n                            expected type `String`\n                               found type `Nat`\n                        ")}),
 			}
@@ -614,14 +610,14 @@ var snapshotCases = []snapshotCase{
 					WithCode("E0308").
 					WithLabels([]diagnostic.Label{
 						// this secondary label is before the primary label to test the locus calculation (see issue #259)
-						label(diagnostic.NewSecondary(0, files.NewRange(89, 134)).
-							WithMessage("this is found to be of type `Result<ByteIndex, LineIndexOutOfBoundsError>`")),
-						label(diagnostic.NewPrimary(0, files.NewRange(230, 351)).
-							WithMessage("expected enum `Result`, found struct `LineIndexOutOfBoundsError`")),
-						label(diagnostic.NewSecondary(0, files.NewRange(8, 362)).
-							WithMessage("`match` arms have incompatible types")),
-						label(diagnostic.NewSecondary(0, files.NewRange(167, 195)).
-							WithMessage("this is found to be of type `Result<ByteIndex, LineIndexOutOfBoundsError>`")),
+						diagnostic.NewSecondary(0, files.NewRange(89, 134)).
+							WithMessage("this is found to be of type `Result<ByteIndex, LineIndexOutOfBoundsError>`"),
+						diagnostic.NewPrimary(0, files.NewRange(230, 351)).
+							WithMessage("expected enum `Result`, found struct `LineIndexOutOfBoundsError`"),
+						diagnostic.NewSecondary(0, files.NewRange(8, 362)).
+							WithMessage("`match` arms have incompatible types"),
+						diagnostic.NewSecondary(0, files.NewRange(167, 195)).
+							WithMessage("this is found to be of type `Result<ByteIndex, LineIndexOutOfBoundsError>`"),
 					}).
 					WithNotes([]string{unindent.Unindent("\n                            expected type `Result<ByteIndex, LineIndexOutOfBoundsError>`\n                               found type `LineIndexOutOfBoundsError`\n                        ")}),
 			}
@@ -642,17 +638,17 @@ var snapshotCases = []snapshotCase{
 				diagnostic.NewWarning().
 					WithMessage("unknown weapon `DogJaw`").
 					WithLabels([]diagnostic.Label{
-						label(diagnostic.NewPrimary(file_id, files.NewRange(29, 35)).WithMessage("the weapon")),
+						diagnostic.NewPrimary(file_id, files.NewRange(29, 35)).WithMessage("the weapon"),
 					}),
 				diagnostic.NewWarning().
 					WithMessage("unknown condition `attack-cooldown`").
 					WithLabels([]diagnostic.Label{
-						label(diagnostic.NewPrimary(file_id, files.NewRange(58, 73)).WithMessage("the condition")),
+						diagnostic.NewPrimary(file_id, files.NewRange(58, 73)).WithMessage("the condition"),
 					}),
 				diagnostic.NewWarning().
 					WithMessage("unknown field `Foo`").
 					WithLabels([]diagnostic.Label{
-						label(diagnostic.NewPrimary(file_id, files.NewRange(75, 78)).WithMessage("the field")),
+						diagnostic.NewPrimary(file_id, files.NewRange(75, 78)).WithMessage("the field"),
 					}),
 			}
 
@@ -682,7 +678,7 @@ var snapshotCases = []snapshotCase{
 
 			labels := []diagnostic.Label{}
 			for _, range_ := range hello_ranges {
-				labels = append(labels, *diagnostic.NewPrimary(file_id, range_))
+				labels = append(labels, diagnostic.NewPrimary(file_id, range_))
 			}
 			diagnostics := []*diagnostic.Diagnostic{
 				diagnostic.NewWarning().WithMessage("tab test").WithLabels(labels),
@@ -707,8 +703,8 @@ var snapshotCases = []snapshotCase{
 					WithCode("E0703").
 					WithMessage("invalid ABI: found `路濫狼á́́`").
 					WithLabels([]diagnostic.Label{
-						label(diagnostic.NewPrimary(0, files.NewRange(len(prefix), len(prefix)+len(abi))).
-							WithMessage("invalid ABI")),
+						diagnostic.NewPrimary(0, files.NewRange(len(prefix), len(prefix)+len(abi))).
+							WithMessage("invalid ABI"),
 					}).
 					WithNotes([]string{unindent.Unindent("\n                            valid ABIs:\n                              - aapcs\n                              - amdgpu-kernel\n                              - C\n                              - cdecl\n                              - efiapi\n                              - fastcall\n                              - msp430-interrupt\n                              - platform-intrinsic\n                              - ptx-kernel\n                              - Rust\n                              - rust-call\n                              - rust-intrinsic\n                              - stdcall\n                              - system\n                              - sysv64\n                              - thiscall\n                              - unadjusted\n                              - vectorcall\n                              - win64\n                              - x86-interrupt\n                        ")}),
 				diagnostic.NewError().
@@ -736,25 +732,25 @@ var snapshotCases = []snapshotCase{
 					WithCode("E01").
 					WithMessage("cow may not jump during new moon.").
 					WithLabels([]diagnostic.Label{
-						label(diagnostic.NewPrimary(0, files.NewRange(invalid_start, invalid_end)).WithMessage("Invalid jump")),
+						diagnostic.NewPrimary(0, files.NewRange(invalid_start, invalid_end)).WithMessage("Invalid jump"),
 					}),
 				diagnostic.NewNote().
 					WithMessage("invalid unicode range").
 					WithLabels([]diagnostic.Label{
-						label(diagnostic.NewSecondary(0, files.NewRange(invalid_start, len("🐄"))).
-							WithMessage("Cow range does not start at boundary.")),
+						diagnostic.NewSecondary(0, files.NewRange(invalid_start, len("🐄"))).
+							WithMessage("Cow range does not start at boundary."),
 					}),
 				diagnostic.NewNote().
 					WithMessage("invalid unicode range").
 					WithLabels([]diagnostic.Label{
-						label(diagnostic.NewSecondary(0, files.NewRange(len("🐄🌑"), len("🐄🌑🐄")-1)).
-							WithMessage("Cow range does not end at boundary.")),
+						diagnostic.NewSecondary(0, files.NewRange(len("🐄🌑"), len("🐄🌑🐄")-1)).
+							WithMessage("Cow range does not end at boundary."),
 					}),
 				diagnostic.NewNote().
 					WithMessage("invalid unicode range").
 					WithLabels([]diagnostic.Label{
-						label(diagnostic.NewSecondary(0, files.NewRange(invalid_start, len("🐄🌑🐄")-1)).
-							WithMessage("Cow does not start or end at boundary.")),
+						diagnostic.NewSecondary(0, files.NewRange(invalid_start, len("🐄🌑🐄")-1)).
+							WithMessage("Cow does not start or end at boundary."),
 					}),
 			}
 
@@ -773,10 +769,10 @@ var snapshotCases = []snapshotCase{
 					WithCode("ParserWarning").
 					WithMessage("The strict mode declaration in the body of function `foo` is redundant, as the outer scope is already in strict mode").
 					WithLabels([]diagnostic.Label{
-						label(diagnostic.NewPrimary(0, files.NewRange(45, 57)).
-							WithMessage("This strict mode declaration is redundant")),
-						label(diagnostic.NewSecondary(0, files.NewRange(0, 12)).
-							WithMessage("Strict mode is first declared here")),
+						diagnostic.NewPrimary(0, files.NewRange(45, 57)).
+							WithMessage("This strict mode declaration is redundant"),
+						diagnostic.NewSecondary(0, files.NewRange(0, 12)).
+							WithMessage("Strict mode is first declared here"),
 					}),
 			}
 
@@ -827,16 +823,16 @@ var snapshotCases = []snapshotCase{
 					WithMessage("empty elseif block").
 					WithCode("empty_if").
 					WithLabels([]diagnostic.Label{
-						label(diagnostic.NewPrimary(file_id1, files.NewRange(0, 23))),
-						label(diagnostic.NewSecondary(file_id1, files.NewRange(15, 21)).
-							WithMessage("content should be in here")),
+						diagnostic.NewPrimary(file_id1, files.NewRange(0, 23)),
+						diagnostic.NewSecondary(file_id1, files.NewRange(15, 21)).
+							WithMessage("content should be in here"),
 					}),
 				diagnostic.NewError().
 					WithMessage("mismatched types").
 					WithCode("E0308").
 					WithLabels([]diagnostic.Label{
-						label(diagnostic.NewPrimary(file_id2, files.NewRange(17, 80)).WithMessage("expected (), found integer")),
-						label(diagnostic.NewSecondary(file_id2, files.NewRange(55, 55)).WithMessage("missing whitespace")),
+						diagnostic.NewPrimary(file_id2, files.NewRange(17, 80)).WithMessage("expected (), found integer"),
+						diagnostic.NewSecondary(file_id2, files.NewRange(55, 55)).WithMessage("missing whitespace"),
 					}).
 					WithNotes([]string{
 						"note:\texpected type `()`\n\tfound type `{integer}`",
@@ -864,21 +860,21 @@ var snapshotCases = []snapshotCase{
 				diagnostic.NewError().
 					WithMessage("Unknown attribute macro").
 					WithLabels([]diagnostic.Label{
-						label(diagnostic.NewPrimary(file_id, files.NewRange(2, 5)).
-							WithMessage("No attribute macro `foo` known")),
+						diagnostic.NewPrimary(file_id, files.NewRange(2, 5)).
+							WithMessage("No attribute macro `foo` known"),
 					}),
 				diagnostic.NewError().
 					WithMessage("Missing argument for format").
 					WithLabels([]diagnostic.Label{
-						label(diagnostic.NewPrimary(file_id, files.NewRange(55, 58)).
-							WithMessage("No instance of std::fmt::Display exists for type Foo")),
-						label(diagnostic.NewSecondary(file_id, files.NewRange(42, 44)).
-							WithMessage("Unable to use `{}`-directive to display `Foo`")),
+						diagnostic.NewPrimary(file_id, files.NewRange(55, 58)).
+							WithMessage("No instance of std::fmt::Display exists for type Foo"),
+						diagnostic.NewSecondary(file_id, files.NewRange(42, 44)).
+							WithMessage("Unable to use `{}`-directive to display `Foo`"),
 					}),
 				diagnostic.NewError().
 					WithMessage("Syntax error").
 					WithLabels([]diagnostic.Label{
-						label(diagnostic.NewPrimary(file_id, files.NewRange(79, 79)).WithMessage("Missing a semicolon")),
+						diagnostic.NewPrimary(file_id, files.NewRange(79, 79)).WithMessage("Missing a semicolon"),
 					}),
 			}
 

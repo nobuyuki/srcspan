@@ -47,8 +47,8 @@ type Label struct {
 	Message string `json:"message"`
 }
 
-func NewLabel(style LabelStyle, file_id int, range_ files.Range) *Label {
-	return &Label{
+func NewLabel(style LabelStyle, file_id int, range_ files.Range) Label {
+	return Label{
 		Style:   style,
 		FileId:  file_id,
 		Range:   range_,
@@ -59,19 +59,19 @@ func NewLabel(style LabelStyle, file_id int, range_ files.Range) *Label {
 // Create a new label with a style of [`LabelStyle::Primary`].
 //
 // [`LabelStyle::Primary`]: LabelStyle::Primary
-func NewPrimary(file_id int, range_ files.Range) *Label {
+func NewPrimary(file_id int, range_ files.Range) Label {
 	return NewLabel(Primary, file_id, range_)
 }
 
 // Create a new label with a style of [`LabelStyle::Secondary`].
 //
 // [`LabelStyle::Secondary`]: LabelStyle::Secondary
-func NewSecondary(file_id int, range_ files.Range) *Label {
+func NewSecondary(file_id int, range_ files.Range) Label {
 	return NewLabel(Secondary, file_id, range_)
 }
 
 // Add a message to the diagnostic.
-func (l *Label) WithMessage(message string) *Label {
+func (l Label) WithMessage(message string) Label {
 	l.Message = message
 	return l
 }

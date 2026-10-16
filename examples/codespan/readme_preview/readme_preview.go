@@ -101,12 +101,12 @@ func run() error {
 		WithMessage("`case` clauses have incompatible types").
 		WithCode("E0308").
 		WithLabels([]diagnostic.Label{
-			*diagnostic.NewPrimary(0, files.NewRange(328, 331)).WithMessage("expected `String`, found `Nat`"),
-			*diagnostic.NewSecondary(0, files.NewRange(211, 331)).WithMessage("`case` clauses have incompatible types"),
-			*diagnostic.NewSecondary(0, files.NewRange(258, 268)).WithMessage("this is found to be of type `String`"),
-			*diagnostic.NewSecondary(0, files.NewRange(284, 290)).WithMessage("this is found to be of type `String`"),
-			*diagnostic.NewSecondary(0, files.NewRange(306, 312)).WithMessage("this is found to be of type `String`"),
-			*diagnostic.NewSecondary(0, files.NewRange(186, 192)).WithMessage("expected type `String` found here"),
+			diagnostic.NewPrimary(0, files.NewRange(328, 331)).WithMessage("expected `String`, found `Nat`"),
+			diagnostic.NewSecondary(0, files.NewRange(211, 331)).WithMessage("`case` clauses have incompatible types"),
+			diagnostic.NewSecondary(0, files.NewRange(258, 268)).WithMessage("this is found to be of type `String`"),
+			diagnostic.NewSecondary(0, files.NewRange(284, 290)).WithMessage("this is found to be of type `String`"),
+			diagnostic.NewSecondary(0, files.NewRange(306, 312)).WithMessage("this is found to be of type `String`"),
+			diagnostic.NewSecondary(0, files.NewRange(186, 192)).WithMessage("expected type `String` found here"),
 		}).
 		WithNotes([]string{unindent.Unindent(`
                 expected type ` + "`String`" + `

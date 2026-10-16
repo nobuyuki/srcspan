@@ -23,7 +23,7 @@ be ported to srcspan.
 | `snake_case` functions and fields | `CamelCase` methods and fields (`line_index` → `LineIndex`) |
 | `Type::new(...)` | `NewType(...)` |
 | Other associated constructors (`Diagnostic::error()`, `Label::primary(...)`) | `NewXxx(...)` functions (`diagnostic.NewError()`, `diagnostic.NewPrimary(...)`) |
-| Builder methods `with_xxx(self, ...)` | `WithXxx(...)` methods on a pointer, returning the pointer |
+| Builder methods `with_xxx(self, ...)` | `WithXxx(...)` methods on a pointer, returning the pointer (on a value for `Label`) |
 | `Result<T, Error>` | `(T, error)` |
 | `Option<String>` | `string`, where `""` means `None` |
 | `impl Display` / `impl ToString` / `impl Into<String>` arguments | `string` |
@@ -36,6 +36,29 @@ be ported to srcspan.
 | Default methods of a trait | `DefaultXxx` functions that implementations delegate to |
 | `enum` with data | An interface implemented by one type per variant (see the examples) |
 | The `serialization` feature (serde) | `encoding/json`, always available; the JSON is the same as serde_json's (see [Serialization](#serialization)) |
+
+### Why `FileId` is fixed to `int`
+
+In Rust, `Files::FileId` is an associated type (`Copy + PartialEq`), so a
+`&str` or a user-defined type can be used as a file id. A generic port would
+have to thread a type parameter through `Diagnostic`, `Label`, `Files`, and
+every `term.Emit*` function — the same scope as in Rust — but Go makes this
+noticeably heavier:
+
+- Go has no associated types, so the id type must be an explicit type
+  parameter (`Files[ID comparable]`) on every signature.
+- Go cannot infer type arguments from return types, so constructors such as
+  `diagnostic.NewError[int]()` would always need them spelled out.
+
+Using `any` as the id type would avoid generics but lose type safety
+(mismatches and non-comparable ids fail at run time). Fixing the id to `int`
+keeps the API simple; map other kinds of ids to `int` on your side, as
+`SimpleFiles` does.
+
+For the same reason, the associated types `Files::Name` (`Display`) and
+`Files::Source` (`AsRef<str>`) are fixed to `string`, and so is
+`SimpleFile<Name, Source>`. The renderer needs strings in the end, and a
+generic name such as `fmt.Stringer` would not even accept a plain `string`.
 
 
 ## Package layout
@@ -98,7 +121,7 @@ d := diagnostic.NewError().
 	WithMessage("expected `;`").
 	WithCode("E0001").
 	WithLabels([]diagnostic.Label{
-		*diagnostic.NewPrimary(file_id, files.NewRange(9, 9)).WithMessage("here"),
+		diagnostic.NewPrimary(file_id, files.NewRange(9, 9)).WithMessage("here"),
 	}).
 	WithNotes([]string{"add a semicolon"})
 
@@ -146,16 +169,16 @@ code in Go (and is rendered the same way).
 | `LabelStyle::{Primary, Secondary}` | `diagnostic.{Primary, Secondary}` (`LabelStyle`) | |
 | `Label<FileId>` | `diagnostic.Label` | |
 | `label.style` / `.file_id` / `.range` / `.message` | `label.Style` / `.FileId` / `.Range` / `.Message` | `Range` is a `files.Range`. |
-| `Label::new(style, file_id, range)` | `diagnostic.NewLabel(style, file_id, range)` | Returns `*Label`. |
+| `Label::new(style, file_id, range)` | `diagnostic.NewLabel(style, file_id, range)` | Returns a `Label` value. |
 | `Label::primary(file_id, range)` | `diagnostic.NewPrimary(file_id, range)` | |
 | `Label::secondary(file_id, range)` | `diagnostic.NewSecondary(file_id, range)` | |
-| `label.with_message(message)` | `label.WithMessage(message)` | |
+| `label.with_message(message)` | `label.WithMessage(message)` | Returns a modified copy, as `Label` is built by value like in Rust. `Diagnostic` uses a pointer builder instead, since Go cannot move a value and copies would share the `Labels` / `Notes` backing arrays. |
 | `Diagnostic<FileId>` | `diagnostic.Diagnostic` | |
 | `diagnostic.severity` / `.code` / `.message` / `.labels` / `.notes` | `d.Severity` / `.Code` / `.Message` / `.Labels` / `.Notes` | `Code` is a `string`; `""` means no code. |
 | `Diagnostic::new(severity)` | `diagnostic.NewDiagnostic(severity)` | Returns `*Diagnostic`. |
 | `Diagnostic::bug()` / `error()` / `warning()` / `note()` / `help()` | `diagnostic.NewBug()` / `NewError()` / `NewWarning()` / `NewNote()` / `NewHelp()` | |
 | `.with_code(code)` / `.with_message(message)` | `.WithCode(code)` / `.WithMessage(message)` | |
-| `.with_label(label)` / `.with_labels(labels)` | `.WithLabel(label)` / `.WithLabels(labels)` | Take `Label` values (dereference the result of `NewPrimary` etc.). |
+| `.with_label(label)` / `.with_labels(labels)` | `.WithLabel(label)` / `.WithLabels(labels)` | Take `Label` values. |
 | `.with_note(note)` / `.with_notes(notes)` | `.WithNote(note)` / `.WithNotes(notes)` | |
 | `.with_labels_iter(iter)` / `.with_notes_iter(iter)` | `.WithLabelsIter(seq)` / `.WithNotesIter(seq)` | Take an `iter.Seq` (`IntoIterator` in Rust); pass a slice with `slices.Values(xs)`. |
 
@@ -228,7 +251,7 @@ code in Go (and is rendered the same way).
 | `Styles` / `Styles::default()` | `term.Styles` / `term.DefaultColor()` | The fields are `*color.Color` (fatih/color) instead of `ColorSpec`. |
 | `Styles::no_color()` | `term.NoColor()` | |
 | `styles.header(severity)` / `styles.label(severity, style)` | `styles.Header(severity)` / `styles.Label(severity, style)` | |
-| `styles.header_message()` / `line_number()` / `note_bullet()` / `source_border()` | `styles.HeaderMessage_()` / `LineNumber_()` / `NoteBullet_()` / `SourceBorder_()` | Suffixed with `_`, since the fields have the same names. |
+| `styles.header_message()` / `line_number()` / `note_bullet()` / `source_border()` | `styles.HeaderMessage_()` / `LineNumber_()` / `NoteBullet_()` / `SourceBorder_()` | Suffixed with `_`, since Go does not allow a field and a method with the same name. These just return the exported fields, so reading `styles.HeaderMessage` etc. directly is equivalent (as in Rust, where the fields are also `pub`). The methods are kept for one-to-one correspondence; the fields keep the plain names so that struct literals read naturally. |
 | `StylesWriter::new(writer, &styles)` | `term.NewStylesWriter(writer, styles)` | Writes escape codes to `writer`. |
 | `StandardStream::stderr(ColorChoice::X)` (termcolor) | `term.NewStylesWriter(os.Stderr, styles)` with `styles.ColorOutput` set | |
 | `ColorChoice::Always` / `Auto` / `Never` | `term.ColorOutputForce` / `ColorOutputAuto` / `ColorOutputNone` | `Auto` follows fatih/color (`NO_COLOR`, `TERM=dumb`, whether stdout is a terminal). |

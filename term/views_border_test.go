@@ -26,7 +26,7 @@ func TestTrailingBorderWithoutNotes(t *testing.T) {
 	fs := files.NewSimpleFiles()
 	file_id := fs.Add("test", "abc\n")
 	d := diagnostic.NewError().WithMessage("message").WithLabel(
-		*diagnostic.NewPrimary(file_id, files.NewRange(0, 1)).WithMessage("label"),
+		diagnostic.NewPrimary(file_id, files.NewRange(0, 1)).WithMessage("label"),
 	)
 
 	assert.Equal(t,
@@ -45,7 +45,7 @@ func TestTrailingBorderWithNotes(t *testing.T) {
 	fs := files.NewSimpleFiles()
 	file_id := fs.Add("test", "abc\n")
 	d := diagnostic.NewError().WithMessage("message").WithLabel(
-		*diagnostic.NewPrimary(file_id, files.NewRange(0, 1)).WithMessage("label"),
+		diagnostic.NewPrimary(file_id, files.NewRange(0, 1)).WithMessage("label"),
 	).WithNote("note")
 
 	assert.Equal(t,
@@ -67,8 +67,8 @@ func TestTrailingBorderMultipleFiles(t *testing.T) {
 	file_id1 := fs.Add("one", "abc\n")
 	file_id2 := fs.Add("two", "def\n")
 	d := diagnostic.NewError().WithMessage("message").WithLabels([]diagnostic.Label{
-		*diagnostic.NewPrimary(file_id1, files.NewRange(0, 1)).WithMessage("first"),
-		*diagnostic.NewSecondary(file_id2, files.NewRange(0, 1)).WithMessage("second"),
+		diagnostic.NewPrimary(file_id1, files.NewRange(0, 1)).WithMessage("first"),
+		diagnostic.NewSecondary(file_id2, files.NewRange(0, 1)).WithMessage("second"),
 	})
 
 	assert.Equal(t,
@@ -101,7 +101,7 @@ func TestSkippedLineKeepsMultiLabelBorder(t *testing.T) {
 	start := strings.Index(source, "line10")
 	end := strings.Index(source, "line16") + len("line16")
 	d := diagnostic.NewError().WithMessage("message").WithLabel(
-		*diagnostic.NewPrimary(file_id, files.NewRange(start, end)).WithMessage("multi"),
+		diagnostic.NewPrimary(file_id, files.NewRange(start, end)).WithMessage("multi"),
 	)
 
 	out := emitString(t, &fs, d)
@@ -113,7 +113,7 @@ func TestAfterLabelLinesStopAtEndOfFile(t *testing.T) {
 	fs := files.NewSimpleFiles()
 	file_id := fs.Add("test", "abc\ndef")
 	d := diagnostic.NewError().WithMessage("message").WithLabel(
-		*diagnostic.NewPrimary(file_id, files.NewRange(4, 5)),
+		diagnostic.NewPrimary(file_id, files.NewRange(4, 5)),
 	)
 
 	config := DefaultConfig()
@@ -142,7 +142,7 @@ func TestMultiLineLabelAfterTabIndent(t *testing.T) {
 	start := strings.Index(source, "if")
 	end := strings.Index(source, "\t}") + len("\t}")
 	d := diagnostic.NewError().WithMessage("message").WithLabel(
-		*diagnostic.NewPrimary(file_id, files.NewRange(start, end)).WithMessage("block"),
+		diagnostic.NewPrimary(file_id, files.NewRange(start, end)).WithMessage("block"),
 	)
 
 	assert.Equal(t,
@@ -173,8 +173,8 @@ func TestShortDiagnosticPrimaryLabelsOnly(t *testing.T) {
 	fs := files.NewSimpleFiles()
 	file_id := fs.Add("test", "abc\ndef\n")
 	d := diagnostic.NewError().WithMessage("message").WithLabels([]diagnostic.Label{
-		*diagnostic.NewSecondary(file_id, files.NewRange(0, 1)),
-		*diagnostic.NewPrimary(file_id, files.NewRange(4, 5)),
+		diagnostic.NewSecondary(file_id, files.NewRange(0, 1)),
+		diagnostic.NewPrimary(file_id, files.NewRange(4, 5)),
 	}).WithNote("note")
 
 	assert.Equal(t,
@@ -193,7 +193,7 @@ func TestShortDiagnosticWithoutPrimaryLabels(t *testing.T) {
 	fs := files.NewSimpleFiles()
 	file_id := fs.Add("test", "abc\n")
 	d := diagnostic.NewError().WithMessage("message").WithLabel(
-		*diagnostic.NewSecondary(file_id, files.NewRange(0, 1)),
+		diagnostic.NewSecondary(file_id, files.NewRange(0, 1)),
 	)
 
 	assert.Equal(t,

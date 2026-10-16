@@ -18,7 +18,7 @@ func TestCaretAtEndOfLine(t *testing.T) {
 	fs := files.NewSimpleFiles()
 	file_id := fs.Add("test", source)
 	d := diagnostic.NewError().WithMessage("expected `;`").WithLabel(
-		*diagnostic.NewPrimary(file_id, files.NewRange(len(source), len(source))).WithMessage("here"),
+		diagnostic.NewPrimary(file_id, files.NewRange(len(source), len(source))).WithMessage("here"),
 	)
 
 	assert.Equal(t,
@@ -37,7 +37,7 @@ func TestCaretOnTab(t *testing.T) {
 	fs := files.NewSimpleFiles()
 	file_id := fs.Add("test", "a\tb")
 	d := diagnostic.NewError().WithMessage("message").WithLabel(
-		*diagnostic.NewPrimary(file_id, files.NewRange(1, 3)).WithMessage("tab and b"),
+		diagnostic.NewPrimary(file_id, files.NewRange(1, 3)).WithMessage("tab and b"),
 	)
 
 	assert.Equal(t,
@@ -57,8 +57,8 @@ func TestHangingLabelAtEndOfLine(t *testing.T) {
 	fs := files.NewSimpleFiles()
 	file_id := fs.Add("test", "abc")
 	d := diagnostic.NewError().WithMessage("message").WithLabels([]diagnostic.Label{
-		*diagnostic.NewPrimary(file_id, files.NewRange(0, 3)).WithMessage("whole"),
-		*diagnostic.NewSecondary(file_id, files.NewRange(3, 3)).WithMessage("end"),
+		diagnostic.NewPrimary(file_id, files.NewRange(0, 3)).WithMessage("whole"),
+		diagnostic.NewSecondary(file_id, files.NewRange(3, 3)).WithMessage("end"),
 	})
 
 	assert.Equal(t,
@@ -82,7 +82,7 @@ func TestLocusColumnCountsCharacters(t *testing.T) {
 	file_id := fs.Add("test", source)
 	start := strings.Index(source, "1")
 	d := diagnostic.NewError().WithMessage("message").WithLabel(
-		*diagnostic.NewPrimary(file_id, files.NewRange(start, start+1)),
+		diagnostic.NewPrimary(file_id, files.NewRange(start, start+1)),
 	)
 
 	assert.Contains(t, emitString(t, &fs, d), "┌─ test:1:11\n")
@@ -102,7 +102,7 @@ func TestMultiLineCaretStartAndEnd(t *testing.T) {
 	fs := files.NewSimpleFiles()
 	file_id := fs.Add("test", source)
 	d := diagnostic.NewError().WithMessage("message").WithLabels([]diagnostic.Label{
-		*diagnostic.NewPrimary(file_id, files.NewRange(2, 9)).WithMessage("primary"),
+		diagnostic.NewPrimary(file_id, files.NewRange(2, 9)).WithMessage("primary"),
 	})
 
 	config := DefaultConfig()
@@ -157,8 +157,8 @@ func TestCaretLineSwitchesStyleOnlyOnChange(t *testing.T) {
 	fs := files.NewSimpleFiles()
 	file_id := fs.Add("test", "abc def\n")
 	d := diagnostic.NewError().WithMessage("message").WithLabels([]diagnostic.Label{
-		*diagnostic.NewPrimary(file_id, files.NewRange(0, 3)),
-		*diagnostic.NewSecondary(file_id, files.NewRange(4, 7)),
+		diagnostic.NewPrimary(file_id, files.NewRange(0, 3)),
+		diagnostic.NewSecondary(file_id, files.NewRange(4, 7)),
 	})
 
 	w := &labelMarkerWriter{}
