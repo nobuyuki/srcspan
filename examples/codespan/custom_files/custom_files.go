@@ -219,7 +219,7 @@ func (m UnwantedGreetings) ToDiagnostic() *diagnostic.Diagnostic {
 	labels := []diagnostic.Label{}
 	for _, greeting := range m.Greetings {
 		labels = append(labels,
-			*diagnostic.NewPrimary(greeting.FileId, greeting.Range).WithMessage("a greeting"))
+			diagnostic.NewPrimary(greeting.FileId, greeting.Range).WithMessage("a greeting"))
 	}
 
 	return diagnostic.NewError().
@@ -239,7 +239,7 @@ func (m OverTheTopExclamations) ToDiagnostic() *diagnostic.Diagnostic {
 	labels := []diagnostic.Label{}
 	for _, exclamation := range m.Exclamations {
 		labels = append(labels,
-			*diagnostic.NewPrimary(exclamation.FileId, exclamation.Range).WithMessage("an exclamation"))
+			diagnostic.NewPrimary(exclamation.FileId, exclamation.Range).WithMessage("an exclamation"))
 	}
 
 	return diagnostic.NewError().

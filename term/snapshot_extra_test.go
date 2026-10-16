@@ -38,10 +38,10 @@ var extraSnapshotCases = []snapshotCase{
 				diagnostic.NewError().
 					WithMessage("mismatched types").
 					WithLabels([]diagnostic.Label{
-						label(diagnostic.NewPrimary(0, files.NewRange(24, 45)).
-							WithMessage("expected `u32`")),
-						label(diagnostic.NewSecondary(0, files.NewRange(55, 76)).
-							WithMessage("found `i32`")),
+						diagnostic.NewPrimary(0, files.NewRange(24, 45)).
+							WithMessage("expected `u32`"),
+						diagnostic.NewSecondary(0, files.NewRange(55, 76)).
+							WithMessage("found `i32`"),
 					}),
 			}
 

@@ -78,7 +78,7 @@ func main() {
 
 			diagnostic := diagnostic.NewError().
 				WithMessage("parse error").
-				WithLabel(*diagnostic.NewPrimary(file, files.NewRange(offset, offset)).WithMessage("parse error")).
+				WithLabel(diagnostic.NewPrimary(file, files.NewRange(offset, offset)).WithMessage("parse error")).
 				WithNotes([]string{fmt.Sprintf("expected: %s", expected(pe.expected))})
 
 			err := term.EmitToWriteStyle(writer, &config, &fs, diagnostic)

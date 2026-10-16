@@ -24,9 +24,9 @@ fizz₁ num = case (mod num 5) (mod num 3) of
 		WithMessage("`case` clauses have incompatible types").
 		WithCode("E0308").
 		WithLabels([]diagnostic.Label{
-			*diagnostic.NewPrimary(file_id, files.NewRange(163, 166)).WithMessage("expected `String`, found `Nat`"),
-			*diagnostic.NewSecondary(file_id, files.NewRange(62, 166)).WithMessage("`case` clauses have incompatible types"),
-			*diagnostic.NewSecondary(file_id, files.NewRange(41, 47)).WithMessage("expected type `String` found here"),
+			diagnostic.NewPrimary(file_id, files.NewRange(163, 166)).WithMessage("expected `String`, found `Nat`"),
+			diagnostic.NewSecondary(file_id, files.NewRange(62, 166)).WithMessage("`case` clauses have incompatible types"),
+			diagnostic.NewSecondary(file_id, files.NewRange(41, 47)).WithMessage("expected type `String` found here"),
 		}).
 		WithNotes([]string{"expected type `String`\n   found type `Nat`"})
 

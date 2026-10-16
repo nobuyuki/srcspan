@@ -102,13 +102,13 @@ fizz₂ num =
 	diagnostics := []*diagnostic.Diagnostic{
 		// Unknown builtin error
 		diagnostic.NewError().WithMessage("unknown builtin: `NATRAL`").
-			WithLabel(*diagnostic.NewPrimary(file_id1, files.NewRange(96, 102)).WithMessage("unknown builtin")).
+			WithLabel(diagnostic.NewPrimary(file_id1, files.NewRange(96, 102)).WithMessage("unknown builtin")).
 			WithNotes([]string{"there is a builtin with a similar name: `NATURAL`"}),
 
 		// Unused parameter warning
 		diagnostic.NewWarning().
 			WithMessage("unused parameter pattern: `n₂`").
-			WithLabel(*diagnostic.NewPrimary(file_id1, files.NewRange(285, 289)).WithMessage("unused parameter")).
+			WithLabel(diagnostic.NewPrimary(file_id1, files.NewRange(285, 289)).WithMessage("unused parameter")).
 			WithNotes([]string{"consider using a wildcard pattern: `_`"}),
 
 		// Unexpected type error
@@ -116,8 +116,8 @@ fizz₂ num =
 			WithMessage("unexpected type in application of `_+_`").
 			WithCode("E0001").
 			WithLabels([]diagnostic.Label{
-				*diagnostic.NewPrimary(file_id2, files.NewRange(37, 44)).WithMessage("expected `Nat`, found `String`"),
-				*diagnostic.NewSecondary(file_id1, files.NewRange(130, 155)).WithMessage("based on the definition of `_+_`"),
+				diagnostic.NewPrimary(file_id2, files.NewRange(37, 44)).WithMessage("expected `Nat`, found `String`"),
+				diagnostic.NewSecondary(file_id1, files.NewRange(130, 155)).WithMessage("based on the definition of `_+_`"),
 			}).
 			WithNotes([]string{unindent.Unindent(`
                     expected type ` + "`Nat`" + `
@@ -129,9 +129,9 @@ fizz₂ num =
 			WithMessage("`case` clauses have incompatible types").
 			WithCode("E0308").
 			WithLabels([]diagnostic.Label{
-				*diagnostic.NewPrimary(file_id3, files.NewRange(163, 166)).WithMessage("expected `String`, found `Nat`"),
-				*diagnostic.NewSecondary(file_id3, files.NewRange(62, 166)).WithMessage("`case` clauses have incompatible types"),
-				*diagnostic.NewSecondary(file_id3, files.NewRange(41, 47)).WithMessage("expected type `String` found here"),
+				diagnostic.NewPrimary(file_id3, files.NewRange(163, 166)).WithMessage("expected `String`, found `Nat`"),
+				diagnostic.NewSecondary(file_id3, files.NewRange(62, 166)).WithMessage("`case` clauses have incompatible types"),
+				diagnostic.NewSecondary(file_id3, files.NewRange(41, 47)).WithMessage("expected type `String` found here"),
 			}).
 			WithNotes([]string{unindent.Unindent(`
                     expected type ` + "`String`" + `
@@ -142,12 +142,12 @@ fizz₂ num =
 			WithMessage("`case` clauses have incompatible types").
 			WithCode("E0308").
 			WithLabels([]diagnostic.Label{
-				*diagnostic.NewPrimary(file_id3, files.NewRange(328, 331)).WithMessage("expected `String`, found `Nat`"),
-				*diagnostic.NewSecondary(file_id3, files.NewRange(211, 331)).WithMessage("`case` clauses have incompatible types"),
-				*diagnostic.NewSecondary(file_id3, files.NewRange(258, 268)).WithMessage("this is found to be of type `String`"),
-				*diagnostic.NewSecondary(file_id3, files.NewRange(284, 290)).WithMessage("this is found to be of type `String`"),
-				*diagnostic.NewSecondary(file_id3, files.NewRange(306, 312)).WithMessage("this is found to be of type `String`"),
-				*diagnostic.NewSecondary(file_id3, files.NewRange(186, 192)).WithMessage("expected type `String` found here"),
+				diagnostic.NewPrimary(file_id3, files.NewRange(328, 331)).WithMessage("expected `String`, found `Nat`"),
+				diagnostic.NewSecondary(file_id3, files.NewRange(211, 331)).WithMessage("`case` clauses have incompatible types"),
+				diagnostic.NewSecondary(file_id3, files.NewRange(258, 268)).WithMessage("this is found to be of type `String`"),
+				diagnostic.NewSecondary(file_id3, files.NewRange(284, 290)).WithMessage("this is found to be of type `String`"),
+				diagnostic.NewSecondary(file_id3, files.NewRange(306, 312)).WithMessage("this is found to be of type `String`"),
+				diagnostic.NewSecondary(file_id3, files.NewRange(186, 192)).WithMessage("expected type `String` found here"),
 			}).
 			WithNotes([]string{unindent.Unindent(`
                     expected type ` + "`String`" + `

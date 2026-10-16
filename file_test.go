@@ -167,7 +167,7 @@ func TestFilesInteroperability(t *testing.T) {
 	file_id := fs.Add("test", TEST_SOURCE1)
 
 	d := diagnostic.NewNote().WithMessage("middle").WithLabels([]diagnostic.Label{
-		*diagnostic.NewPrimary(file_id, NewSpan(4, 7).Range()).WithMessage("middle"),
+		diagnostic.NewPrimary(file_id, NewSpan(4, 7).Range()).WithMessage("middle"),
 	})
 
 	config := term.DefaultConfig()

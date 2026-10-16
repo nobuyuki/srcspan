@@ -23,7 +23,7 @@ be ported to srcspan.
 | `snake_case` functions and fields | `CamelCase` methods and fields (`line_index` → `LineIndex`) |
 | `Type::new(...)` | `NewType(...)` |
 | Other associated constructors (`Diagnostic::error()`, `Label::primary(...)`) | `NewXxx(...)` functions (`diagnostic.NewError()`, `diagnostic.NewPrimary(...)`) |
-| Builder methods `with_xxx(self, ...)` | `WithXxx(...)` methods on a pointer, returning the pointer |
+| Builder methods `with_xxx(self, ...)` | `WithXxx(...)` methods on a pointer, returning the pointer (on a value for `Label`) |
 | `Result<T, Error>` | `(T, error)` |
 | `Option<String>` | `string`, where `""` means `None` |
 | `impl Display` / `impl ToString` / `impl Into<String>` arguments | `string` |
@@ -121,7 +121,7 @@ d := diagnostic.NewError().
 	WithMessage("expected `;`").
 	WithCode("E0001").
 	WithLabels([]diagnostic.Label{
-		*diagnostic.NewPrimary(file_id, files.NewRange(9, 9)).WithMessage("here"),
+		diagnostic.NewPrimary(file_id, files.NewRange(9, 9)).WithMessage("here"),
 	}).
 	WithNotes([]string{"add a semicolon"})
 
@@ -169,16 +169,16 @@ code in Go (and is rendered the same way).
 | `LabelStyle::{Primary, Secondary}` | `diagnostic.{Primary, Secondary}` (`LabelStyle`) | |
 | `Label<FileId>` | `diagnostic.Label` | |
 | `label.style` / `.file_id` / `.range` / `.message` | `label.Style` / `.FileId` / `.Range` / `.Message` | `Range` is a `files.Range`. |
-| `Label::new(style, file_id, range)` | `diagnostic.NewLabel(style, file_id, range)` | Returns `*Label`. |
+| `Label::new(style, file_id, range)` | `diagnostic.NewLabel(style, file_id, range)` | Returns a `Label` value. |
 | `Label::primary(file_id, range)` | `diagnostic.NewPrimary(file_id, range)` | |
 | `Label::secondary(file_id, range)` | `diagnostic.NewSecondary(file_id, range)` | |
-| `label.with_message(message)` | `label.WithMessage(message)` | |
+| `label.with_message(message)` | `label.WithMessage(message)` | Returns a modified copy, as `Label` is built by value like in Rust. `Diagnostic` uses a pointer builder instead, since Go cannot move a value and copies would share the `Labels` / `Notes` backing arrays. |
 | `Diagnostic<FileId>` | `diagnostic.Diagnostic` | |
 | `diagnostic.severity` / `.code` / `.message` / `.labels` / `.notes` | `d.Severity` / `.Code` / `.Message` / `.Labels` / `.Notes` | `Code` is a `string`; `""` means no code. |
 | `Diagnostic::new(severity)` | `diagnostic.NewDiagnostic(severity)` | Returns `*Diagnostic`. |
 | `Diagnostic::bug()` / `error()` / `warning()` / `note()` / `help()` | `diagnostic.NewBug()` / `NewError()` / `NewWarning()` / `NewNote()` / `NewHelp()` | |
 | `.with_code(code)` / `.with_message(message)` | `.WithCode(code)` / `.WithMessage(message)` | |
-| `.with_label(label)` / `.with_labels(labels)` | `.WithLabel(label)` / `.WithLabels(labels)` | Take `Label` values (dereference the result of `NewPrimary` etc.). |
+| `.with_label(label)` / `.with_labels(labels)` | `.WithLabel(label)` / `.WithLabels(labels)` | Take `Label` values. |
 | `.with_note(note)` / `.with_notes(notes)` | `.WithNote(note)` / `.WithNotes(notes)` | |
 | `.with_labels_iter(iter)` / `.with_notes_iter(iter)` | `.WithLabelsIter(seq)` / `.WithNotesIter(seq)` | Take an `iter.Seq` (`IntoIterator` in Rust); pass a slice with `slices.Values(xs)`. |
 

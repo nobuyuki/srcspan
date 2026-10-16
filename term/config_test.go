@@ -24,7 +24,7 @@ func emitWithColorOutput(t *testing.T, color_output ColorOutput) (written, stdou
 	fs := files.NewSimpleFiles()
 	file_id := fs.Add("test", "abc")
 	d := diagnostic.NewError().WithMessage("message").WithLabel(
-		*diagnostic.NewPrimary(file_id, files.NewRange(0, 1)),
+		diagnostic.NewPrimary(file_id, files.NewRange(0, 1)),
 	)
 
 	styles := DefaultColor()

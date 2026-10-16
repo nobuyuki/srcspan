@@ -15,7 +15,7 @@ func ExampleDiagnostic_WithLabelsIter() {
 	// slice first.
 	labels := func(yield func(diagnostic.Label) bool) {
 		for _, range_ := range ranges {
-			if !yield(*diagnostic.NewPrimary(0, range_).WithMessage("a word")) {
+			if !yield(diagnostic.NewPrimary(0, range_).WithMessage("a word")) {
 				return
 			}
 		}

@@ -16,7 +16,7 @@ func TestUnsizedEmit(t *testing.T) {
 	fs := files.NewSimpleFiles()
 
 	file_id := fs.Add("test", "")
-	d := diagnostic.NewBug().WithLabel(*diagnostic.NewPrimary(file_id, files.NewRange(0, 0)))
+	d := diagnostic.NewBug().WithLabel(diagnostic.NewPrimary(file_id, files.NewRange(0, 0)))
 
 	config := DefaultConfig()
 	_, err := EmitIntoString(&config, &fs, d)
@@ -30,7 +30,7 @@ func TestEmitEndOfFile(t *testing.T) {
 	fs := files.NewSimpleFiles()
 	file_id := fs.Add("test", source)
 	d := diagnostic.NewError().WithMessage("expected `;`").WithLabel(
-		*diagnostic.NewPrimary(file_id, files.NewRange(len(source), len(source))).WithMessage("here"),
+		diagnostic.NewPrimary(file_id, files.NewRange(len(source), len(source))).WithMessage("here"),
 	)
 
 	config := DefaultConfig()
@@ -75,8 +75,8 @@ func TestNestedMultiLineLabels(t *testing.T) {
 	inner_end := strings.Index(source, "};") + 1
 
 	d := diagnostic.NewError().WithMessage("nested").WithLabels([]diagnostic.Label{
-		*diagnostic.NewPrimary(file_id, files.NewRange(0, len(source)-1)).WithMessage("outer"),
-		*diagnostic.NewSecondary(file_id, files.NewRange(inner_start, inner_end)).WithMessage("inner"),
+		diagnostic.NewPrimary(file_id, files.NewRange(0, len(source)-1)).WithMessage("outer"),
+		diagnostic.NewSecondary(file_id, files.NewRange(inner_start, inner_end)).WithMessage("inner"),
 	})
 
 	config := DefaultConfig()
@@ -108,7 +108,7 @@ func TestEmitToIoWrite(t *testing.T) {
 	fs := files.NewSimpleFiles()
 	file_id := fs.Add("test", "abc\n")
 	d := diagnostic.NewError().WithMessage("message").WithLabel(
-		*diagnostic.NewPrimary(file_id, files.NewRange(0, 1)).WithMessage("label"),
+		diagnostic.NewPrimary(file_id, files.NewRange(0, 1)).WithMessage("label"),
 	)
 
 	config := DefaultConfig()
