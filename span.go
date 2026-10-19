@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/nobuyuki/srcspan/files"
+	"srcspan/files"
 )
 
 type Span struct {

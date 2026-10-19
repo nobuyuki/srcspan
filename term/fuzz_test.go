@@ -3,8 +3,8 @@ package term
 import (
 	"testing"
 
-	"github.com/nobuyuki/srcspan/diagnostic"
-	"github.com/nobuyuki/srcspan/files"
+	"srcspan/diagnostic"
+	"srcspan/files"
 )
 
 // Builds labels from `data`, 3 bytes per label: the style and the two ends

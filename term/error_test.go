@@ -7,8 +7,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/nobuyuki/srcspan/diagnostic"
-	"github.com/nobuyuki/srcspan/files"
+	"srcspan/diagnostic"
+	"srcspan/files"
 )
 
 var errWriteFailed = errors.New("write failed")

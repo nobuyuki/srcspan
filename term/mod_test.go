@@ -7,8 +7,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/nobuyuki/srcspan/diagnostic"
-	"github.com/nobuyuki/srcspan/files"
+	"srcspan/diagnostic"
+	"srcspan/files"
 )
 
 // Test range of 0 to 0 and check does not crash

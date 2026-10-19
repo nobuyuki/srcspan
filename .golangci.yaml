@@ -261,7 +261,7 @@ formatters:
           replacement: 'any'
     goimports:
       local-prefixes:
-        - github.com/nobuyuki/srcspan
+        - srcspan
   exclusions:
     paths:
       - test/testdata_etc # test files

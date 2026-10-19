@@ -69,11 +69,11 @@ not the other way around).
 
 | Rust | Go import path |
 |---|---|
-| `codespan_reporting::diagnostic` | `github.com/nobuyuki/srcspan/diagnostic` |
-| `codespan_reporting::files` | `github.com/nobuyuki/srcspan/files` |
-| `codespan_reporting::term` | `github.com/nobuyuki/srcspan/term` |
-| `codespan` | `github.com/nobuyuki/srcspan` |
-| `codespan_lsp` | `github.com/nobuyuki/srcspan/lsp` |
+| `codespan_reporting::diagnostic` | `srcspan/diagnostic` |
+| `codespan_reporting::files` | `srcspan/files` |
+| `codespan_reporting::term` | `srcspan/term` |
+| `codespan` | `srcspan` |
+| `codespan_lsp` | `srcspan/lsp` |
 | `codespan_reporting::term::termcolor` (re-export of `termcolor`) | [`github.com/fatih/color`](https://github.com/fatih/color) (used by `term.Styles`) |
 
 
@@ -109,9 +109,9 @@ Go:
 import (
 	"os"
 
-	"github.com/nobuyuki/srcspan/diagnostic"
-	"github.com/nobuyuki/srcspan/files"
-	"github.com/nobuyuki/srcspan/term"
+	"srcspan/diagnostic"
+	"srcspan/files"
+	"srcspan/term"
 )
 
 fs := files.NewSimpleFiles()
@@ -161,7 +161,7 @@ serde_json in Rust:
 `Some("")` as a code in Rust is decoded as an empty `Code`, which means no
 code in Go (and is rendered the same way).
 
-## `codespan_reporting::diagnostic` → `github.com/nobuyuki/srcspan/diagnostic`
+## `codespan_reporting::diagnostic` → `srcspan/diagnostic`
 
 | Rust | Go | Notes |
 |---|---|---|
@@ -183,7 +183,7 @@ code in Go (and is rendered the same way).
 | `.with_labels_iter(iter)` / `.with_notes_iter(iter)` | `.WithLabelsIter(seq)` / `.WithNotesIter(seq)` | Take an `iter.Seq` (`IntoIterator` in Rust); pass a slice with `slices.Values(xs)`. |
 
 
-## `codespan_reporting::files` → `github.com/nobuyuki/srcspan/files`
+## `codespan_reporting::files` → `srcspan/files`
 
 | Rust | Go | Notes |
 |---|---|---|
@@ -217,7 +217,7 @@ code in Go (and is rendered the same way).
 | `str::is_char_boundary(i)` | `files.IsRuneBoundary(s, i)` | |
 
 
-## `codespan_reporting::term` → `github.com/nobuyuki/srcspan/term`
+## `codespan_reporting::term` → `srcspan/term`
 
 ### Emitting
 
@@ -265,7 +265,7 @@ code in Go (and is rendered the same way).
 | `RichDiagnostic::new(...)` / `ShortDiagnostic::new(...)` / `.render(files, renderer)` | `term.NewRichDiagnostic(...)` / `term.NewShortDiagnostic(...)` / `.Render(files, renderer)` | Rarely needed. |
 
 
-## `codespan` → `github.com/nobuyuki/srcspan`
+## `codespan` → `srcspan`
 
 | Rust | Go | Notes |
 |---|---|---|
@@ -293,7 +293,7 @@ code in Go (and is rendered the same way).
 | `files.source_slice(file_id, span)` | `fs.SourceSlice(file_id, span)` | |
 
 
-## `codespan_lsp` → `github.com/nobuyuki/srcspan/lsp`
+## `codespan_lsp` → `srcspan/lsp`
 
 | Rust | Go | Notes |
 |---|---|---|

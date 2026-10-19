@@ -17,9 +17,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/nobuyuki/srcspan/diagnostic"
-	"github.com/nobuyuki/srcspan/files"
-	"github.com/nobuyuki/srcspan/internal/unindent"
+	"srcspan/diagnostic"
+	"srcspan/files"
+	"srcspan/internal/unindent"
 )
 
 // (`tests/support/mod.rs::TestData` in Rust)

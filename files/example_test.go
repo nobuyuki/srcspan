@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"slices"
 
-	"github.com/nobuyuki/srcspan/files"
+	"srcspan/files"
 )
 
 func ExampleColumnIndex() {

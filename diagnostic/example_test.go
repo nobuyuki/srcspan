@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"slices"
 
-	"github.com/nobuyuki/srcspan/diagnostic"
-	"github.com/nobuyuki/srcspan/files"
+	"srcspan/diagnostic"
+	"srcspan/files"
 )
 
 func ExampleDiagnostic_WithLabelsIter() {
