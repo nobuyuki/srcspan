@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/nobuyuki/srcspan/files"
+	"srcspan/files"
 )
 
 func fuzzSeeds(f *testing.F) {

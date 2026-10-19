@@ -1,4 +1,4 @@
-module github.com/nobuyuki/srcspan
+module srcspan
 
 go 1.25.0
 

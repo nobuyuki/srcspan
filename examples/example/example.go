@@ -3,9 +3,9 @@ package main
 import (
 	"os"
 
-	"github.com/nobuyuki/srcspan/diagnostic"
-	"github.com/nobuyuki/srcspan/files"
-	"github.com/nobuyuki/srcspan/term"
+	"srcspan/diagnostic"
+	"srcspan/files"
+	"srcspan/term"
 )
 
 var content = []byte(`module FizzBuzz where

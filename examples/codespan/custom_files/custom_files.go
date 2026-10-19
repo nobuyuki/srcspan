@@ -18,9 +18,9 @@ import (
 	"os"
 	"slices"
 
-	"github.com/nobuyuki/srcspan/diagnostic"
-	"github.com/nobuyuki/srcspan/files"
-	"github.com/nobuyuki/srcspan/term"
+	"srcspan/diagnostic"
+	"srcspan/files"
+	"srcspan/term"
 )
 
 func main() {

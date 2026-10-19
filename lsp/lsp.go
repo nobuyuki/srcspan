@@ -7,7 +7,7 @@ package lsp
 import (
 	"unicode/utf16"
 
-	"github.com/nobuyuki/srcspan/files"
+	"srcspan/files"
 )
 
 // A position in a text document: a zero-based line and a zero-based

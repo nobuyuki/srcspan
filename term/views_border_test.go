@@ -8,8 +8,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/nobuyuki/srcspan/diagnostic"
-	"github.com/nobuyuki/srcspan/files"
+	"srcspan/diagnostic"
+	"srcspan/files"
 )
 
 func emitString(t *testing.T, fs files.Files, d *diagnostic.Diagnostic) string {

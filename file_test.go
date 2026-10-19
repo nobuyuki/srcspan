@@ -8,9 +8,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/nobuyuki/srcspan/diagnostic"
-	"github.com/nobuyuki/srcspan/files"
-	"github.com/nobuyuki/srcspan/term"
+	"srcspan/diagnostic"
+	"srcspan/files"
+	"srcspan/term"
 )
 
 const TEST_SOURCE1 = "foo\nbar\r\n\nbaz"

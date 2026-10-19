@@ -32,9 +32,9 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/nobuyuki/srcspan/diagnostic"
-	"github.com/nobuyuki/srcspan/files"
-	"github.com/nobuyuki/srcspan/term"
+	"srcspan/diagnostic"
+	"srcspan/files"
+	"srcspan/term"
 )
 
 var ops = map[string]func(int, int) int{

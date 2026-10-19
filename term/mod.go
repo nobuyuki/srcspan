@@ -8,8 +8,8 @@ import (
 	"io"
 	"strings"
 
-	"github.com/nobuyuki/srcspan/diagnostic"
-	"github.com/nobuyuki/srcspan/files"
+	"srcspan/diagnostic"
+	"srcspan/files"
 )
 
 func EmitIntoString(config *Config, files files.Files, diagnostic *diagnostic.Diagnostic) (string, error) {
