@@ -7,6 +7,12 @@ import (
 	"srcspan/files"
 )
 
+// A byte span in a source, half-open: [start, end).
+//
+// The diagnostic and term packages take [files.Range], not Span, so that
+// they do not depend on this package (as in Rust). Span is an optional
+// convenience type with helpers such as [Span.Merge]; convert it with
+// [Span.Range] when building a label, and back with [SpanFromRange].
 type Span struct {
 	start int
 	end   int
