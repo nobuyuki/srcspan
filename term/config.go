@@ -108,6 +108,20 @@ const (
 	Short
 )
 
+// Returns the variant name in Rust (e.g. "Rich"), as `Debug` does.
+func (s DisplayStyle) String() string {
+	switch s {
+	case Rich:
+		return "Rich"
+	case Medium:
+		return "Medium"
+	case Short:
+		return "Short"
+	default:
+		return fmt.Sprintf("DisplayStyle(%d)", int(s))
+	}
+}
+
 type ColorOutput int
 
 const (
@@ -265,7 +279,8 @@ func NoColor() *Styles {
 	}
 }
 
-func DefaultColor() *Styles {
+// The default styles. (`Styles::default()` in Rust)
+func DefaultStyles() *Styles {
 	// Default style
 
 	return &Styles{

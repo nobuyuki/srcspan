@@ -301,11 +301,11 @@ func (u *underlineStyle) labelStyle() *diagnostic.LabelStyle {
 
 type Renderer struct {
 	writer WriteStyle //io.Writer
-	config Config
+	config *Config
 }
 
 // Construct a renderer from the given writer and config.
-func NewRenderer(writer WriteStyle /*io.Writer*/, config Config) Renderer {
+func NewRenderer(writer WriteStyle /*io.Writer*/, config *Config) Renderer {
 	return Renderer{
 		writer: writer,
 		config: config,
@@ -324,7 +324,7 @@ func (r *Renderer) chars() Chars {
 func (r *Renderer) RenderHeader(
 	locus *locus,
 	severity diagnostic.Severity,
-	code *string,
+	code string,
 	message string,
 ) (err error) {
 	// Write locus
@@ -389,8 +389,8 @@ func (r *Renderer) RenderHeader(
 	// ```text
 	// [E0001]
 	// ```
-	if code != nil && *code != "" {
-		_, err = fmt.Fprintf(r, "[%s]", *code)
+	if code != "" {
+		_, err = fmt.Fprintf(r, "[%s]", code)
 		if err != nil {
 			return err
 		}

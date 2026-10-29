@@ -108,7 +108,7 @@ func TestErrors(t *testing.T) {
 
 	// An unknown file.
 	_, err = ByteIndexToPosition(&fs, 9, 0)
-	require.ErrorIs(t, err, files.FileMissingError("9"))
+	require.ErrorIs(t, err, files.FileMissingError{})
 }
 
 // A position just after the last character of a line is the end of the line.
@@ -183,7 +183,7 @@ func TestSpanAndRangeErrors(t *testing.T) {
 				_, err := PositionToByteIndex(&fs, 9, Position{})
 				return err
 			},
-			want: files.FileMissingError("9"),
+			want: files.FileMissingError{},
 		},
 	}
 	for _, tt := range tests {

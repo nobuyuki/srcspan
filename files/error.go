@@ -8,7 +8,7 @@ import (
 )
 
 // A required file is not in the file database.
-type FileMissingError string
+type FileMissingError struct{}
 
 func (FileMissingError) Error() string {
 	// write!(f, "file missing"),

@@ -155,7 +155,7 @@ fizz₂ num =
                 `)}),
 	}
 
-	styles := term.DefaultColor()
+	styles := term.DefaultStyles()
 	styles.ColorOutput = colorOutput
 	writer := term.NewStylesWriter(os.Stderr, styles)
 	config := term.DefaultConfig()

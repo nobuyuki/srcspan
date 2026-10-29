@@ -142,7 +142,7 @@ func run() error {
 		_, err := fmt.Fprintf(os.Stdout, svg_template, width, height, padding, font_size, content)
 		return err
 	case OptsStderr:
-		styles := term.DefaultColor()
+		styles := term.DefaultStyles()
 		styles.ColorOutput = opts.Color
 		writer := term.NewStylesWriter(os.Stderr, styles)
 		config := term.DefaultConfig()

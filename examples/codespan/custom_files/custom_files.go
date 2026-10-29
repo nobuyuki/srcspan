@@ -49,7 +49,7 @@ func main() {
 		},
 	}
 
-	styles := term.DefaultColor()
+	styles := term.DefaultStyles()
 	styles.ColorOutput = term.ColorOutputForce
 	writer := term.NewStylesWriter(os.Stderr, styles)
 	config := term.DefaultConfig()
@@ -130,7 +130,7 @@ func (fs *Files) Add(name string, source string) (int, bool) {
 // Get the file corresponding to the given id.
 func (fs *Files) get(file_id int) (*File, error) {
 	if file_id < 0 || file_id >= len(fs.files) {
-		return nil, files.FileMissingError(fmt.Sprint(file_id))
+		return nil, files.FileMissingError{}
 	}
 	return &fs.files[file_id], nil
 }

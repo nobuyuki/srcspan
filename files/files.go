@@ -287,7 +287,7 @@ func (fs *SimpleFiles) Add(name string, source string) int {
 // Get the file corresponding to the given id.
 func (fs *SimpleFiles) Get(file_id int) (*SimpleFile, error) {
 	if file_id < 0 || file_id >= len(fs.files) {
-		return nil, FileMissingError(fmt.Sprint(file_id))
+		return nil, FileMissingError{}
 	}
 	return &fs.files[file_id], nil
 }

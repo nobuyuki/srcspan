@@ -40,7 +40,7 @@ func NewRichDiagnostic(diagnostic *diagnostic.Diagnostic, config *Config) *RichD
 
 func (d *RichDiagnostic) Render(
 	files files.Files,
-	renderer Renderer,
+	renderer *Renderer,
 ) error {
 	// TODO: Make this data structure external, to allow for allocation reuse
 	labeled_files := []*labeledFile{}
@@ -331,11 +331,10 @@ func (d *RichDiagnostic) Render(
 	// ```text
 	// error[E0001]: unexpected type in `+` application
 	// ```
-	code := d.diagnostic.Code
 	err := renderer.RenderHeader(
 		nil,
 		d.diagnostic.Severity,
-		&code,
+		d.diagnostic.Code,
 		d.diagnostic.Message,
 	)
 	if err != nil {
@@ -597,19 +596,19 @@ type labeledLine struct {
 // Output a short diagnostic, with a line number, severity, and message.
 type ShortDiagnostic struct {
 	diagnostic *diagnostic.Diagnostic
-	showNotes  bool
+	show_notes bool
 }
 
-func NewShortDiagnostic(diagnostic *diagnostic.Diagnostic, showNotes bool) *ShortDiagnostic {
+func NewShortDiagnostic(diagnostic *diagnostic.Diagnostic, show_notes bool) *ShortDiagnostic {
 	return &ShortDiagnostic{
 		diagnostic: diagnostic,
-		showNotes:  showNotes,
+		show_notes: show_notes,
 	}
 }
 
 func (d *ShortDiagnostic) Render(
 	files files.Files,
-	renderer Renderer,
+	renderer *Renderer,
 ) error {
 	// Located headers
 	//
@@ -640,7 +639,7 @@ func (d *ShortDiagnostic) Render(
 				Location: loc,
 			},
 			d.diagnostic.Severity,
-			&d.diagnostic.Code,
+			d.diagnostic.Code,
 			d.diagnostic.Message,
 		)
 		if err != nil {
@@ -657,7 +656,7 @@ func (d *ShortDiagnostic) Render(
 		err := renderer.RenderHeader(
 			nil,
 			d.diagnostic.Severity,
-			&d.diagnostic.Code,
+			d.diagnostic.Code,
 			d.diagnostic.Message,
 		)
 		if err != nil {
@@ -665,7 +664,7 @@ func (d *ShortDiagnostic) Render(
 		}
 	}
 
-	if d.showNotes {
+	if d.show_notes {
 		// Additional notes
 		//
 		// ```text

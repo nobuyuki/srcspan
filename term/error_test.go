@@ -54,7 +54,7 @@ func TestEmitReturnsWriteErrors(t *testing.T) {
 
 		for limit := range len(full) {
 			w := &failingWriter{limit: limit}
-			err := EmitToString(w, &config, &fs, d)
+			err := EmitToIoWrite(w, &config, &fs, d)
 			require.ErrorIs(t, err, errWriteFailed, "style=%v limit=%d", style, limit)
 		}
 	}
@@ -74,7 +74,31 @@ func TestEmitFileMissing(t *testing.T) {
 
 		require.NotPanics(t, func() {
 			_, err := EmitIntoString(&config, &fs, d)
-			require.ErrorIs(t, err, files.FileMissingError("1"), "style=%v", style)
+			require.ErrorIs(t, err, files.FileMissingError{}, "style=%v", style)
 		})
 	}
+}
+
+// EmitToString appends to the builder, and appends nothing on an error, as
+// in Rust where the output is buffered before being pushed to the string.
+func TestEmitToStringAppends(t *testing.T) {
+	fs := files.NewSimpleFiles()
+	file_id := fs.Add("test", "abc\n")
+	config := DefaultConfig()
+
+	var out strings.Builder
+	out.WriteString("before\n")
+	ok := diagnostic.NewError().WithMessage("ok").WithLabel(
+		diagnostic.NewPrimary(file_id, files.NewRange(0, 1)),
+	)
+	require.NoError(t, EmitToString(&out, &config, &fs, ok))
+	want, err := EmitIntoString(&config, &fs, ok)
+	require.NoError(t, err)
+	require.Equal(t, "before\n"+want, out.String())
+
+	missing := diagnostic.NewError().WithMessage("missing").WithLabel(
+		diagnostic.NewPrimary(1, files.NewRange(0, 1)),
+	)
+	require.ErrorIs(t, EmitToString(&out, &config, &fs, missing), files.FileMissingError{})
+	require.Equal(t, "before\n"+want, out.String())
 }

@@ -164,7 +164,7 @@ func PositionToByteIndex(files files.Files, file_id int, position Position) (int
 }
 
 // Translates an LSP range into a byte span in a file.
-func RangeToByteSpan(files files.Files, file_id int, range_ Range) (fileRange, error) {
+func RangeToByteSpan(files files.Files, file_id int, range_ Range) (files.Range, error) {
 	start, err := PositionToByteIndex(files, file_id, range_.Start)
 	if err != nil {
 		return fileRange{}, err

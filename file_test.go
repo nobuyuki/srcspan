@@ -1,7 +1,6 @@
 package srcspan
 
 import (
-	"strconv"
 	"strings"
 	"testing"
 
@@ -196,7 +195,7 @@ func TestFilesFileMissing(t *testing.T) {
 	fs.Add("test", TEST_SOURCE1)
 
 	for _, file_id := range []int{-1, 1} {
-		missing := files.FileMissingError(strconv.Itoa(file_id))
+		missing := files.FileMissingError{}
 
 		require.ErrorIs(t, fs.Update(file_id, ""), missing)
 

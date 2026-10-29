@@ -67,7 +67,7 @@ func main() {
 
 	color := parseArgs()
 
-	styles := term.DefaultColor()
+	styles := term.DefaultStyles()
 	styles.ColorOutput = color
 	writer := term.NewStylesWriter(os.Stderr, styles)
 	config := term.DefaultConfig()

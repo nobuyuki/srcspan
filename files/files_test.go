@@ -1,7 +1,6 @@
 package files
 
 import (
-	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -80,7 +79,7 @@ func TestFileMissing(t *testing.T) {
 	fs.Add("test", TEST_SOURCE)
 
 	for _, file_id := range []int{-1, 1} {
-		missing := FileMissingError(strconv.Itoa(file_id))
+		missing := FileMissingError{}
 
 		_, err := fs.Get(file_id)
 		require.ErrorIs(t, err, missing)

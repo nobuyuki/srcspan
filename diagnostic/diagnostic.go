@@ -4,6 +4,7 @@
 package diagnostic
 
 import (
+	"fmt"
 	"iter"
 	"slices"
 
@@ -21,12 +22,28 @@ const (
 	Bug     Severity = 4
 )
 
+// Returns the variant name in Rust (e.g. "Error"), as `Debug` does.
+func (s Severity) String() string {
+	if text, err := s.MarshalText(); err == nil {
+		return string(text)
+	}
+	return fmt.Sprintf("Severity(%d)", int(s))
+}
+
 type LabelStyle int
 
 const (
 	Primary   LabelStyle = 0
 	Secondary LabelStyle = 1
 )
+
+// Returns the variant name in Rust (e.g. "Primary"), as `Debug` does.
+func (l LabelStyle) String() string {
+	if text, err := l.MarshalText(); err == nil {
+		return string(text)
+	}
+	return fmt.Sprintf("LabelStyle(%d)", int(l))
+}
 
 // A label describing an underlined region of code associated with a
 // diagnostic.

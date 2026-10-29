@@ -12,6 +12,8 @@ import (
 	"srcspan/files"
 )
 
+// Emit a diagnostic as plain text, without styling, into a new string.
+// (`emit_into_string` in Rust)
 func EmitIntoString(config *Config, files files.Files, diagnostic *diagnostic.Diagnostic) (string, error) {
 	var writer strings.Builder
 
@@ -23,13 +25,22 @@ func EmitIntoString(config *Config, files files.Files, diagnostic *diagnostic.Di
 	return writer.String(), nil
 }
 
-func EmitToString(writer io.Writer, config *Config, files files.Files, diagnostic *diagnostic.Diagnostic) error {
-	return emitWithStyle(
-		newPlainWriter(writer),
+// Emit a diagnostic as plain text, without styling, appending it to the
+// given string builder. Nothing is appended if an error occurs.
+// (`emit_to_string` in Rust, which takes a `&mut String`)
+func EmitToString(writer *strings.Builder, config *Config, files files.Files, diagnostic *diagnostic.Diagnostic) error {
+	var buffer strings.Builder
+	err := emitWithStyle(
+		newPlainWriter(&buffer),
 		config,
 		files,
 		diagnostic,
 	)
+	if err != nil {
+		return err
+	}
+	writer.WriteString(buffer.String())
+	return nil
 }
 
 // Emit a diagnostic to the given writer as plain text, without styling.
@@ -43,6 +54,8 @@ func EmitToIoWrite(writer io.Writer, config *Config, files files.Files, diagnost
 	)
 }
 
+// Emit a diagnostic to the given writer, with the styles of the writer.
+// (`emit_to_write_style` in Rust)
 func EmitToWriteStyle(writer WriteStyle, config *Config, files files.Files, diagnostic *diagnostic.Diagnostic) error {
 	return emitWithStyle(writer, config, files, diagnostic)
 }
@@ -62,15 +75,15 @@ func Emit(writer io.Writer, config *Config, files files.Files, diagnostic *diagn
 }
 
 func emitWithStyle(writer WriteStyle, config *Config, files files.Files, diagnostic *diagnostic.Diagnostic) error {
-	renderer := NewRenderer(writer, *config)
+	renderer := NewRenderer(writer, config)
 
 	switch config.DisplayStyle {
 	case Rich:
-		return NewRichDiagnostic(diagnostic, config).Render(files, renderer)
+		return NewRichDiagnostic(diagnostic, config).Render(files, &renderer)
 	case Medium:
-		return NewShortDiagnostic(diagnostic, true).Render(files, renderer)
+		return NewShortDiagnostic(diagnostic, true).Render(files, &renderer)
 	case Short:
-		return NewShortDiagnostic(diagnostic, false).Render(files, renderer)
+		return NewShortDiagnostic(diagnostic, false).Render(files, &renderer)
 	default:
 		panic(fmt.Sprintf("Unknown DisplayStyle: %v", config.DisplayStyle))
 	}

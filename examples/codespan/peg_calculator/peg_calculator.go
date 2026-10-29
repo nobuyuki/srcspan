@@ -66,7 +66,7 @@ func main() {
 		fs := files.NewSimpleFiles()
 		file := fs.Add("<repl>", os.Args[1])
 
-		styles := term.DefaultColor()
+		styles := term.DefaultStyles()
 		//	styles.ColorOutput = colorOutput
 		writer := term.NewStylesWriter(os.Stderr, styles)
 		config := term.DefaultConfig()
