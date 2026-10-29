@@ -11,45 +11,40 @@ import (
 )
 
 // Configures how a diagnostic is rendered.
-
 type Config struct {
-	/// The display style to use when rendering diagnostics.
-	/// Defaults to: [`DisplayStyle::Rich`].
+	// The display style to use when rendering diagnostics.
+	// Defaults to: [Rich].
 	DisplayStyle DisplayStyle
 
-	/// Column width of tabs.
-	/// Defaults to: `4`.
+	// Column width of tabs.
+	// Defaults to: `4`.
 	TabWidth int
 
-	/// Characters to use when rendering the diagnostic.
+	// Characters to use when rendering the diagnostic.
 	Chars Chars
 
-	/// The minimum number of lines to be shown after the line on
-	/// which a multiline [`Label`] begins.
-	///
-	/// Defaults to: `3`.
-	///
-	/// [`Label`]: crate::diagnostic::Label
+	// The minimum number of lines to be shown after the line on
+	// which a multiline [diagnostic.Label] begins.
+	//
+	// Defaults to: `3`.
 	StartContextLines int
 
-	/// The minimum number of lines to be shown before the line on
-	/// which a multiline [`Label`] ends.
-	///
-	/// Defaults to: `1`.
-	///
-	/// [`Label`]: crate::diagnostic::Label
+	// The minimum number of lines to be shown before the line on
+	// which a multiline [diagnostic.Label] ends.
+	//
+	// Defaults to: `1`.
 	EndContextLines int
 
-	/// The minimum number of lines before a label that should be
-	/// included for context.
-	///
-	/// Defaults to: `0`.
+	// The minimum number of lines before a label that should be
+	// included for context.
+	//
+	// Defaults to: `0`.
 	BeforeLabelLines int
 
-	/// The minimum number of lines after a label that should be
-	/// included for context.
-	///
-	/// Defaults to: `0`.
+	// The minimum number of lines after a label that should be
+	// included for context.
+	//
+	// Defaults to: `0`.
 	AfterLabelLines int
 }
 
@@ -69,42 +64,36 @@ func DefaultConfig() Config {
 type DisplayStyle int
 
 const (
-	/// Output a richly formatted diagnostic, with source code previews.
-	///
-	/// ```text
-	/// error[E0001]: unexpected type in `+` application
-	///   ┌─ test:2:9
-	///   │
-	/// 2 │ (+ test "")
-	///   │         ^^ expected `Int` but found `String`
-	///   │
-	///   = expected type `Int`
-	///        found type `String`
-	///
-	/// error[E0002]: Bad config found
-	///
-	/// ```
+	// Output a richly formatted diagnostic, with source code previews.
+	//
+	//	error[E0001]: unexpected type in `+` application
+	//	  ┌─ test:2:9
+	//	  │
+	//	2 │ (+ test "")
+	//	  │         ^^ expected `Int` but found `String`
+	//	  │
+	//	  = expected type `Int`
+	//	       found type `String`
+	//
+	//	error[E0002]: Bad config found
+	//
 	Rich DisplayStyle = iota
 
-	/// Output a condensed diagnostic, with a line number,
-	/// severity, message and notes (if any).
-	///
-	/// ```text
-	/// test:2:9: error[E0001]: unexpected type in `+` application
-	/// = expected type `Int`
-	///      found type `String`
-	///
-	/// error[E0002]: Bad config found
-	/// ```
+	// Output a condensed diagnostic, with a line number,
+	// severity, message and notes (if any).
+	//
+	//	test:2:9: error[E0001]: unexpected type in `+` application
+	//	= expected type `Int`
+	//	     found type `String`
+	//
+	//	error[E0002]: Bad config found
 	Medium
 
-	/// Output a short diagnostic, with a line number, severity,
-	/// and message.
-	///
-	/// ```text
-	/// test:2:9: error[E0001]: unexpected type in `+` application
-	/// error[E0002]: Bad config found
-	/// ```
+	// Output a short diagnostic, with a line number, severity,
+	// and message.
+	//
+	//	test:2:9: error[E0001]: unexpected type in `+` application
+	//	error[E0002]: Bad config found
 	Short
 )
 
@@ -133,64 +122,64 @@ const (
 type Styles struct {
 	ColorOutput ColorOutput
 
-	/// The style to use when rendering bug headers.
-	/// Defaults to `fg:red bold intense`.
+	// The style to use when rendering bug headers.
+	// Defaults to `fg:red bold intense`.
 	HeaderBug *color.Color
 
-	/// The style to use when rendering error headers.
-	/// Defaults to `fg:red bold intense`.
+	// The style to use when rendering error headers.
+	// Defaults to `fg:red bold intense`.
 	HeaderError *color.Color
 
-	/// The style to use when rendering warning headers.
-	/// Defaults to `fg:yellow bold intense`.
+	// The style to use when rendering warning headers.
+	// Defaults to `fg:yellow bold intense`.
 	HeaderWarning *color.Color
 
-	/// The style to use when rendering note headers.
-	/// Defaults to `fg:green bold intense`.
+	// The style to use when rendering note headers.
+	// Defaults to `fg:green bold intense`.
 	HeaderNote *color.Color
 
-	/// The style to use when rendering help headers.
-	/// Defaults to `fg:cyan bold intense`.
+	// The style to use when rendering help headers.
+	// Defaults to `fg:cyan bold intense`.
 	HeaderHelp *color.Color
 
-	/// The style to use when the main diagnostic message.
-	/// Defaults to `bold intense`.
+	// The style to use when the main diagnostic message.
+	// Defaults to `bold intense`.
 	HeaderMessage *color.Color
 
-	/// The style to use when rendering bug labels.
-	/// Defaults to `fg:red`.
+	// The style to use when rendering bug labels.
+	// Defaults to `fg:red`.
 	PrimaryLabelBug *color.Color
 
-	/// The style to use when rendering error labels.
-	/// Defaults to `fg:red`.
+	// The style to use when rendering error labels.
+	// Defaults to `fg:red`.
 	PrimaryLabelError *color.Color
 
-	/// The style to use when rendering warning labels.
-	/// Defaults to `fg:yellow`.
+	// The style to use when rendering warning labels.
+	// Defaults to `fg:yellow`.
 	PrimaryLabelWarning *color.Color
 
-	/// The style to use when rendering note labels.
-	/// Defaults to `fg:green`.
+	// The style to use when rendering note labels.
+	// Defaults to `fg:green`.
 	PrimaryLabelNote *color.Color
 
-	/// The style to use when rendering help labels.
-	/// Defaults to `fg:cyan`.
+	// The style to use when rendering help labels.
+	// Defaults to `fg:cyan`.
 	PrimaryLabelHelp *color.Color
 
-	/// The style to use when rendering secondary labels.
-	/// Defaults `fg:blue` (or `fg:cyan` on windows).
+	// The style to use when rendering secondary labels.
+	// Defaults `fg:blue` (or `fg:cyan` on windows).
 	SecondaryLabel *color.Color
 
-	/// The style to use when rendering the line numbers.
-	/// Defaults `fg:blue` (or `fg:cyan` on windows).
+	// The style to use when rendering the line numbers.
+	// Defaults `fg:blue` (or `fg:cyan` on windows).
 	LineNumber *color.Color
 
-	/// The style to use when rendering the source code borders.
-	/// Defaults `fg:blue` (or `fg:cyan` on windows).
+	// The style to use when rendering the source code borders.
+	// Defaults `fg:blue` (or `fg:cyan` on windows).
 	SourceBorder *color.Color
 
-	/// The style to use when rendering the note bullets.
-	/// Defaults `fg:blue` (or `fg:cyan` on windows).
+	// The style to use when rendering the note bullets.
+	// Defaults `fg:blue` (or `fg:cyan` on windows).
 	NoteBullet *color.Color
 }
 
@@ -306,7 +295,7 @@ func DefaultStyles() *Styles {
 	}
 }
 
-// A [`WriteStyle`](crate::term::renderer::WriteStyle) implementation that applies custom [`Styles`]
+// A [WriteStyle] implementation that applies custom [Styles]
 // using termcolor.
 //
 // Use this to render diagnostics with custom colors
@@ -455,70 +444,70 @@ where
 
 // Characters to use when rendering the diagnostic.
 //
-// By using [`Chars::ascii()`] you can switch to an ASCII-only format
+// By using [Ascii] you can switch to an ASCII-only format
 // suitable for rendering on terminals that do not support box drawing
 // characters.
 type Chars struct {
-	/// The characters to use for the top-left border of the snippet.
-	/// Defaults to: `"┌─"` or `"-->"` with [`Chars::ascii()`].
+	// The characters to use for the top-left border of the snippet.
+	// Defaults to: `"┌─"` or `"-->"` with [Ascii].
 	SnippetStart string
-	/// The character to use for the left border of the source.
-	/// Defaults to: `'│'` or `'|'` with [`Chars::ascii()`].
+	// The character to use for the left border of the source.
+	// Defaults to: `'│'` or `'|'` with [Ascii].
 	SourceBorderLeft rune
-	/// The character to use for the left border break of the source.
-	/// Defaults to: `'·'` or `'.'` with [`Chars::ascii()`].
+	// The character to use for the left border break of the source.
+	// Defaults to: `'·'` or `'.'` with [Ascii].
 	SourceBorderLeftBreak rune
 
-	/// The character to use for the note bullet.
-	/// Defaults to: `'='`.
+	// The character to use for the note bullet.
+	// Defaults to: `'='`.
 	NoteBullet rune
 
-	/// The character to use for marking a single-line primary label.
-	/// Defaults to: `'^'`.
+	// The character to use for marking a single-line primary label.
+	// Defaults to: `'^'`.
 	SinglePrimaryCaret rune
 
-	/// The character to use for marking a single-line secondary label.
-	/// Defaults to: `'-'`.
+	// The character to use for marking a single-line secondary label.
+	// Defaults to: `'-'`.
 	SingleSecondaryCaret rune
 
-	/// The character to use for marking the start of a multi-line primary label.
-	/// Defaults to: `'^'`.
+	// The character to use for marking the start of a multi-line primary label.
+	// Defaults to: `'^'`.
 	MultiPrimaryCaretStart rune
 
-	/// The character to use for marking the end of a multi-line primary label.
-	/// Defaults to: `'^'`.
+	// The character to use for marking the end of a multi-line primary label.
+	// Defaults to: `'^'`.
 	MultiPrimaryCaretEnd rune
 
-	/// The character to use for marking the start of a multi-line secondary label.
-	/// Defaults to: `'\''`.
+	// The character to use for marking the start of a multi-line secondary label.
+	// Defaults to: `'\''`.
 	MultiSecondaryCaretStart rune
 
-	/// The character to use for marking the end of a multi-line secondary label.
-	/// Defaults to: `'\''`.
+	// The character to use for marking the end of a multi-line secondary label.
+	// Defaults to: `'\''`.
 	MultiSecondaryCaretEnd rune
 
-	/// The character to use for the top-left corner of a multi-line label.
-	/// Defaults to: `'╭'` or `'/'` with [`Chars::ascii()`].
+	// The character to use for the top-left corner of a multi-line label.
+	// Defaults to: `'╭'` or `'/'` with [Ascii].
 	MultiTopLeft rune
 
-	/// The character to use for the top of a multi-line label.
-	/// Defaults to: `'─'` or `'-'` with [`Chars::ascii()`].
+	// The character to use for the top of a multi-line label.
+	// Defaults to: `'─'` or `'-'` with [Ascii].
 	MultiTop rune
 
-	/// The character to use for the bottom-left corner of a multi-line label.
-	/// Defaults to: `'╰'` or `'\'` with [`Chars::ascii()`].
+	// The character to use for the bottom-left corner of a multi-line label.
+	// Defaults to: `'╰'` or `'\'` with [Ascii].
 	MultiBottomLeft rune
 
-	/// The character to use when marking the bottom of a multi-line label.
-	/// Defaults to: `'─'` or `'-'` with [`Chars::ascii()`].
+	// The character to use when marking the bottom of a multi-line label.
+	// Defaults to: `'─'` or `'-'` with [Ascii].
 	MultiBottom rune
 
-	/// The character to use for the left of a multi-line label.
-	/// Defaults to: `'│'` or `'|'` with [`Chars::ascii()`].
+	// The character to use for the left of a multi-line label.
+	// Defaults to: `'│'` or `'|'` with [Ascii].
 	MultiLeft rune
 
-	/// The character to use for the left of a pointer underneath a caret.
-	/// Defaults to: `'│'` or `'|'` with [`Chars::ascii()`].
+	// The character to use for the left of a pointer underneath a caret.
+	// Defaults to: `'│'` or `'|'` with [Ascii].
 	PointerLeft rune
 }
 

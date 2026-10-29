@@ -87,7 +87,7 @@ func main() {
 		`expected type 'String'
    found type 'Nat'`})
 
-	writer := term.NewStylesWriter(os.Stdout, term.DefaultColor())
+	writer := term.NewStylesWriter(os.Stdout, term.DefaultStyles())
 	config := term.DefaultConfig()
 
 	err := term.EmitToWriteStyle(writer, &config, &fs, diagnostic)
@@ -110,6 +110,7 @@ go run ./examples/codespan/term/term.go
 
 ```
 More examples of using `srcspan` can be found in the `examples` directory.
+See [Using srcspan](./docs/usage.md) for a short guide.
 
 
 ## Packages
