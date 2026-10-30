@@ -1,6 +1,6 @@
 // Package term is the terminal back-end for emitting diagnostics.
 //
-// (`codespan_reporting::term` in Rust)
+// This package corresponds to the `codespan_reporting::term` module in Rust.
 package term
 
 import (

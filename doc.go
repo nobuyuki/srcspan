@@ -25,6 +25,4 @@
 //
 // See docs/porting-from-rust.md in the repository for how the Rust API maps
 // to this one.
-//
-// (`codespan` in Rust)
 package srcspan

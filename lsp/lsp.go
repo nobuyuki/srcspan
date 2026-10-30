@@ -1,7 +1,7 @@
 // Package lsp provides utilities for translating from srcspan types into
 // Language Server Protocol (LSP) types.
 //
-// (`codespan_lsp` in Rust)
+// This package corresponds to the `codespan_lsp` crate in Rust.
 package lsp
 
 import (

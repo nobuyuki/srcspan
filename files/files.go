@@ -14,7 +14,7 @@
 // use-cases, such as an implementation that accesses the file system
 // directly (and caches the line start locations).
 //
-// (`codespan_reporting::files` in Rust)
+// This package corresponds to the `codespan_reporting::files` module in Rust.
 package files
 
 import (
