@@ -10,13 +10,13 @@
 //
 //   - This package corresponds to the codespan crate: [Span], and [Files], a
 //     database of source files.
-//   - [srcspan/files] provides the Files interface,
+//   - [github.com/nobuyuki/srcspan/files] provides the Files interface,
 //     through which diagnostics read source files, and its simple
 //     implementations SimpleFile and SimpleFiles.
-//   - [srcspan/diagnostic] provides the diagnostic data
+//   - [github.com/nobuyuki/srcspan/diagnostic] provides the diagnostic data
 //     structures.
-//   - [srcspan/term] renders diagnostics to a terminal.
-//   - [srcspan/lsp] translates byte indices and spans
+//   - [github.com/nobuyuki/srcspan/term] renders diagnostics to a terminal.
+//   - [github.com/nobuyuki/srcspan/lsp] translates byte indices and spans
 //     into Language Server Protocol positions and ranges (codespan-lsp).
 //
 // A diagnostic is built with diagnostic.NewError (or NewWarning, ...) and its

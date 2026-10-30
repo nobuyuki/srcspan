@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"srcspan/files"
+	"github.com/nobuyuki/srcspan/files"
 )
 
 // (`codespan_lsp::tests::position` in Rust)

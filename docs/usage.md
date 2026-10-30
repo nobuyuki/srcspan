@@ -26,9 +26,9 @@ import (
 	"os"
 	"strings"
 
-	"srcspan/diagnostic"
-	"srcspan/files"
-	"srcspan/term"
+	"github.com/nobuyuki/srcspan/diagnostic"
+	"github.com/nobuyuki/srcspan/files"
+	"github.com/nobuyuki/srcspan/term"
 )
 
 func main() {
@@ -221,7 +221,7 @@ for a complete implementation.
 - **JSON**: `Diagnostic`, `Label`, `files.Range` and `srcspan.Span`
   marshal to and from JSON with `encoding/json`, in the same format as
   `serde_json` in Rust.
-- **Language Server Protocol**: the `srcspan/lsp` package converts
+- **Language Server Protocol**: the `github.com/nobuyuki/srcspan/lsp` package converts
   byte offsets and ranges to LSP positions and ranges, and back
   (`ByteIndexToPosition`, `ByteSpanToRange`, `PositionToByteIndex`,
   `RangeToByteSpan`).

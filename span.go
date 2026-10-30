@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"srcspan/files"
+	"github.com/nobuyuki/srcspan/files"
 )
 
 // A byte span in a source, half-open: [start, end).

@@ -7,7 +7,7 @@ import (
 
 	"github.com/fatih/color"
 
-	"srcspan/diagnostic"
+	"github.com/nobuyuki/srcspan/diagnostic"
 )
 
 // Configures how a diagnostic is rendered.

@@ -8,8 +8,8 @@ import (
 	"io"
 	"strings"
 
-	"srcspan/diagnostic"
-	"srcspan/files"
+	"github.com/nobuyuki/srcspan/diagnostic"
+	"github.com/nobuyuki/srcspan/files"
 )
 
 // Emit a diagnostic as plain text, without styling, into a new string.

@@ -18,24 +18,11 @@ This is a Go module that features functionality similar to Rust's
 a similar interface as `codespan`.
 
 
-## Status
-
-The API is not stable yet. Until it is, the module path is
-intentionally set to `srcspan` (instead of
-`github.com/nobuyuki/srcspan`), so `go get` does not work and the
-module is not published on pkg.go.dev.
-
-To try it, clone the repository and point your module at it with a
-`replace` directive:
+## Installation
 
 ```sh
-git clone https://github.com/nobuyuki/srcspan ../srcspan
-go mod edit -require=srcspan@v0.0.0 -replace=srcspan=../srcspan
+go get github.com/nobuyuki/srcspan
 ```
-
-Import the packages as `srcspan/diagnostic`, `srcspan/files`,
-`srcspan/term`, and so on. Expect breaking changes; the module path
-will change to `github.com/nobuyuki/srcspan` once the API is stable.
 
 
 ## Example
@@ -45,9 +32,9 @@ package main
 import (
 	"os"
 
-	"srcspan/diagnostic"
-	"srcspan/files"
-	"srcspan/term"
+	"github.com/nobuyuki/srcspan/diagnostic"
+	"github.com/nobuyuki/srcspan/files"
+	"github.com/nobuyuki/srcspan/term"
 )
 
 var content = []byte(`module FizzBuzz where
@@ -117,13 +104,13 @@ See [Using srcspan](./docs/usage.md) for a short guide.
 
 The packages follow the structure of the original Rust crates:
 
-- `srcspan/files`, `srcspan/diagnostic` and
-  `srcspan/term` correspond to `codespan-reporting`. The
+- `github.com/nobuyuki/srcspan/files`, `github.com/nobuyuki/srcspan/diagnostic` and
+  `github.com/nobuyuki/srcspan/term` correspond to `codespan-reporting`. The
   `files.Files` interface corresponds to the `Files` trait, and
   `files.SimpleFile` / `files.SimpleFiles` to its simple implementations.
-- `srcspan` corresponds to `codespan`: `Span` and a `Files`
+- `github.com/nobuyuki/srcspan` corresponds to `codespan`: `Span` and a `Files`
   database that also implements `files.Files`.
-- `srcspan/lsp` corresponds to `codespan-lsp`: it
+- `github.com/nobuyuki/srcspan/lsp` corresponds to `codespan-lsp`: it
   translates byte indices and spans into Language Server Protocol positions
   and ranges.
 

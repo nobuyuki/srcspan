@@ -10,8 +10,8 @@ import (
 
 	"github.com/mattn/go-runewidth"
 
-	"srcspan/diagnostic"
-	"srcspan/files"
+	"github.com/nobuyuki/srcspan/diagnostic"
+	"github.com/nobuyuki/srcspan/files"
 )
 
 // A writer that can apply styling for different parts of a diagnostic renderer.

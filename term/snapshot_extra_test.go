@@ -14,9 +14,9 @@ package term
 import (
 	"testing"
 
-	"srcspan/diagnostic"
-	"srcspan/files"
-	"srcspan/internal/unindent"
+	"github.com/nobuyuki/srcspan/diagnostic"
+	"github.com/nobuyuki/srcspan/files"
+	"github.com/nobuyuki/srcspan/internal/unindent"
 )
 
 func TestExtraSnapshots(t *testing.T) {
