@@ -69,11 +69,11 @@ not the other way around).
 
 | Rust | Go import path |
 |---|---|
-| `codespan_reporting::diagnostic` | `srcspan/diagnostic` |
-| `codespan_reporting::files` | `srcspan/files` |
-| `codespan_reporting::term` | `srcspan/term` |
-| `codespan` | `srcspan` |
-| `codespan_lsp` | `srcspan/lsp` |
+| `codespan_reporting::diagnostic` | `github.com/nobuyuki/srcspan/diagnostic` |
+| `codespan_reporting::files` | `github.com/nobuyuki/srcspan/files` |
+| `codespan_reporting::term` | `github.com/nobuyuki/srcspan/term` |
+| `codespan` | `github.com/nobuyuki/srcspan` |
+| `codespan_lsp` | `github.com/nobuyuki/srcspan/lsp` |
 | `codespan_reporting::term::termcolor` (re-export of `termcolor`) | [`github.com/fatih/color`](https://github.com/fatih/color) (used by `term.Styles`) |
 
 
@@ -109,9 +109,9 @@ Go:
 import (
 	"os"
 
-	"srcspan/diagnostic"
-	"srcspan/files"
-	"srcspan/term"
+	"github.com/nobuyuki/srcspan/diagnostic"
+	"github.com/nobuyuki/srcspan/files"
+	"github.com/nobuyuki/srcspan/term"
 )
 
 fs := files.NewSimpleFiles()
@@ -125,7 +125,7 @@ d := diagnostic.NewError().
 	}).
 	WithNotes([]string{"add a semicolon"})
 
-styles := term.DefaultColor()
+styles := term.DefaultStyles()
 styles.ColorOutput = term.ColorOutputForce
 writer := term.NewStylesWriter(os.Stderr, styles)
 config := term.DefaultConfig()
@@ -161,11 +161,11 @@ serde_json in Rust:
 `Some("")` as a code in Rust is decoded as an empty `Code`, which means no
 code in Go (and is rendered the same way).
 
-## `codespan_reporting::diagnostic` → `srcspan/diagnostic`
+## `codespan_reporting::diagnostic` → `github.com/nobuyuki/srcspan/diagnostic`
 
 | Rust | Go | Notes |
 |---|---|---|
-| `Severity::{Bug, Error, Warning, Note, Help}` | `diagnostic.{Bug, Error, Warning, Note, Help}` (`Severity`) | Ordered in the same way (`Bug > Error > ... > Help`). |
+| `Severity::{Bug, Error, Warning, Note, Help}` | `diagnostic.{Bug, Error, Warning, Note, Help}` (`Severity`) | Ordered in the same way (`Bug > Error > ... > Help`). `String()` returns the variant name, as `Debug` does in Rust (also for `LabelStyle` and `term.DisplayStyle`). |
 | `LabelStyle::{Primary, Secondary}` | `diagnostic.{Primary, Secondary}` (`LabelStyle`) | |
 | `Label<FileId>` | `diagnostic.Label` | |
 | `label.style` / `.file_id` / `.range` / `.message` | `label.Style` / `.FileId` / `.Range` / `.Message` | `Range` is a `files.Range`. |
@@ -183,7 +183,7 @@ code in Go (and is rendered the same way).
 | `.with_labels_iter(iter)` / `.with_notes_iter(iter)` | `.WithLabelsIter(seq)` / `.WithNotesIter(seq)` | Take an `iter.Seq` (`IntoIterator` in Rust); pass a slice with `slices.Values(xs)`. |
 
 
-## `codespan_reporting::files` → `srcspan/files`
+## `codespan_reporting::files` → `github.com/nobuyuki/srcspan/files`
 
 | Rust | Go | Notes |
 |---|---|---|
@@ -205,7 +205,7 @@ code in Go (and is rendered the same way).
 | `SimpleFiles::new()` | `files.NewSimpleFiles()` | |
 | `files.add(name, source)` | `fs.Add(name, source)` | Returns the file id (`int`). |
 | `files.get(file_id)` | `fs.Get(file_id)` | Returns `(*SimpleFile, error)`. |
-| `Error::FileMissing` | `files.FileMissingError` | Holds the file id as a string. |
+| `Error::FileMissing` | `files.FileMissingError{}` | Check with `errors.Is(err, files.FileMissingError{})`. |
 | `Error::IndexTooLarge { given, max }` | `files.IndexTooLargeError{Given, Max}` | |
 | `Error::LineTooLarge { given, max }` | `files.LineTooLargeError{Given, Max}` | |
 | `Error::ColumnTooLarge { given, max }` | `files.ColumnTooLargeError{Given, Max}` | |
@@ -217,14 +217,14 @@ code in Go (and is rendered the same way).
 | `str::is_char_boundary(i)` | `files.IsRuneBoundary(s, i)` | |
 
 
-## `codespan_reporting::term` → `srcspan/term`
+## `codespan_reporting::term` → `github.com/nobuyuki/srcspan/term`
 
 ### Emitting
 
 | Rust | Go | Notes |
 |---|---|---|
 | `emit_into_string(config, files, diagnostic)` | `term.EmitIntoString(config, files, diagnostic)` | Returns `(string, error)`. |
-| `emit_to_string(&mut String, config, files, diagnostic)` | `term.EmitToString(io.Writer, config, files, diagnostic)` | Plain text, to any `io.Writer`. |
+| `emit_to_string(&mut String, config, files, diagnostic)` | `term.EmitToString(*strings.Builder, config, files, diagnostic)` | Plain text, appended to the builder; nothing is appended on an error. |
 | `emit_to_io_write(&mut io::Write, config, files, diagnostic)` | `term.EmitToIoWrite(io.Writer, config, files, diagnostic)` | Plain text. |
 | `emit_to_write_style(&mut WriteStyle, config, files, diagnostic)` | `term.EmitToWriteStyle(WriteStyle, config, files, diagnostic)` | |
 | `emit(...)` (deprecated) | `term.Emit(io.Writer, ...)` | Plain text. |
@@ -248,7 +248,7 @@ code in Go (and is rendered the same way).
 |---|---|---|
 | `trait WriteStyle` | `term.WriteStyle` (interface) | `io.Writer` plus `SetHeader`, `SetHeaderMessage`, `SetLineNumber`, `SetNoteBullet`, `SetSourceBorder`, `SetLabel` and `Reset`. |
 | `GeneralWrite` / `GeneralWriteResult` | `io.Writer` / `error` | |
-| `Styles` / `Styles::default()` | `term.Styles` / `term.DefaultColor()` | The fields are `*color.Color` (fatih/color) instead of `ColorSpec`. |
+| `Styles` / `Styles::default()` | `term.Styles` / `term.DefaultStyles()` | The fields are `*color.Color` (fatih/color) instead of `ColorSpec`. |
 | `Styles::no_color()` | `term.NoColor()` | |
 | `styles.header(severity)` / `styles.label(severity, style)` | `styles.Header(severity)` / `styles.Label(severity, style)` | |
 | `styles.header_message()` / `line_number()` / `note_bullet()` / `source_border()` | `styles.HeaderMessage_()` / `LineNumber_()` / `NoteBullet_()` / `SourceBorder_()` | Suffixed with `_`, since Go does not allow a field and a method with the same name. These just return the exported fields, so reading `styles.HeaderMessage` etc. directly is equivalent (as in Rust, where the fields are also `pub`). The methods are kept for one-to-one correspondence; the fields keep the plain names so that struct literals read naturally. |
@@ -261,11 +261,11 @@ code in Go (and is rendered the same way).
 
 | Rust | Go | Notes |
 |---|---|---|
-| `Renderer::new(writer, config)` | `term.NewRenderer(writer, config)` | Rarely needed. As in Rust, only the constructor, the `Render*` methods (`render_header`, `render_snippet_*`, ...) and the `WriteStyle` methods are public. |
-| `RichDiagnostic::new(...)` / `ShortDiagnostic::new(...)` / `.render(files, renderer)` | `term.NewRichDiagnostic(...)` / `term.NewShortDiagnostic(...)` / `.Render(files, renderer)` | Rarely needed. |
+| `Renderer::new(writer, &config)` | `term.NewRenderer(writer, &config)` | Rarely needed. As in Rust, only the constructor, the `Render*` methods (`render_header`, `render_snippet_*`, ...) and the `WriteStyle` methods are public. |
+| `RichDiagnostic::new(...)` / `ShortDiagnostic::new(...)` / `.render(files, renderer)` | `term.NewRichDiagnostic(...)` / `term.NewShortDiagnostic(...)` / `.Render(files, &renderer)` | Rarely needed. |
 
 
-## `codespan` → `srcspan`
+## `codespan` → `github.com/nobuyuki/srcspan`
 
 | Rust | Go | Notes |
 |---|---|---|
@@ -293,7 +293,7 @@ code in Go (and is rendered the same way).
 | `files.source_slice(file_id, span)` | `fs.SourceSlice(file_id, span)` | |
 
 
-## `codespan_lsp` → `srcspan/lsp`
+## `codespan_lsp` → `github.com/nobuyuki/srcspan/lsp`
 
 | Rust | Go | Notes |
 |---|---|---|

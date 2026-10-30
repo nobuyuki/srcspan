@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"srcspan/files"
+	"github.com/nobuyuki/srcspan/files"
 )
 
 func Test(t *testing.T) {
@@ -43,4 +43,12 @@ func TestWithLabelsIter(t *testing.T) {
 func TestWithNotesIter(t *testing.T) {
 	d := NewError().WithNote("first").WithNotesIter(strings.SplitSeq("second\nthird", "\n"))
 	assert.Equal(t, []string{"first", "second", "third"}, d.Notes)
+}
+
+func TestString(t *testing.T) {
+	assert.Equal(t, "Error", Error.String())
+	assert.Equal(t, "Help", Help.String())
+	assert.Equal(t, "Severity(9)", Severity(9).String())
+	assert.Equal(t, "Secondary", Secondary.String())
+	assert.Equal(t, "LabelStyle(9)", LabelStyle(9).String())
 }

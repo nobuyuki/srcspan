@@ -1,13 +1,13 @@
 // Package lsp provides utilities for translating from srcspan types into
 // Language Server Protocol (LSP) types.
 //
-// (`codespan_lsp` in Rust)
+// This package corresponds to the `codespan_lsp` crate in Rust.
 package lsp
 
 import (
 	"unicode/utf16"
 
-	"srcspan/files"
+	"github.com/nobuyuki/srcspan/files"
 )
 
 // A position in a text document: a zero-based line and a zero-based
@@ -164,7 +164,7 @@ func PositionToByteIndex(files files.Files, file_id int, position Position) (int
 }
 
 // Translates an LSP range into a byte span in a file.
-func RangeToByteSpan(files files.Files, file_id int, range_ Range) (fileRange, error) {
+func RangeToByteSpan(files files.Files, file_id int, range_ Range) (files.Range, error) {
 	start, err := PositionToByteIndex(files, file_id, range_.Start)
 	if err != nil {
 		return fileRange{}, err

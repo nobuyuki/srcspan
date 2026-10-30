@@ -10,8 +10,8 @@ import (
 
 	"github.com/mattn/go-runewidth"
 
-	"srcspan/diagnostic"
-	"srcspan/files"
+	"github.com/nobuyuki/srcspan/diagnostic"
+	"github.com/nobuyuki/srcspan/files"
 )
 
 // A writer that can apply styling for different parts of a diagnostic renderer.
@@ -34,7 +34,7 @@ type WriteStyle interface {
 	Reset() error
 }
 
-// A [`WriteStyle`] implementation that ignores all styling
+// A [WriteStyle] implementation that ignores all styling
 // calls. useful for non color output.
 //
 // Available on all targets
@@ -111,9 +111,7 @@ type locus struct {
 
 // Single-line label, with an optional message.
 //
-// ```text
-// ^^^^^^^^^ blah blah
-// ```
+//	^^^^^^^^^ blah blah
 type singleLabel struct {
 	LabelStyle diagnostic.LabelStyle
 	Range      files.Range
@@ -252,60 +250,57 @@ func (u *underlineStyle) labelStyle() *diagnostic.LabelStyle {
 	return &u.LabelStyle
 }
 
-/// A renderer of display list entries.
-///
-/// The following diagram gives an overview of each of the parts of the renderer's output:
-///
-/// ```text
-///                     ┌ outer gutter
-///                     │ ┌ left border
-///                     │ │ ┌ inner gutter
-///                     │ │ │   ┌─────────────────────────── source ─────────────────────────────┐
-///                     │ │ │   │                                                                │
-///                  ┌────────────────────────────────────────────────────────────────────────────
-///        header ── │ error[0001]: oh noes, a cupcake has occurred!
-/// snippet start ── │    ┌─ test:9:0
-/// snippet empty ── │    │
-///  snippet line ── │  9 │   ╭ Cupcake ipsum dolor. Sit amet marshmallow topping cheesecake
-///  snippet line ── │ 10 │   │ muffin. Halvah croissant candy canes bonbon candy. Apple pie jelly
-///                  │    │ ╭─│─────────^
-/// snippet break ── │    · │ │
-///  snippet line ── │ 33 │ │ │ Muffin danish chocolate soufflé pastry icing bonbon oat cake.
-///  snippet line ── │ 34 │ │ │ Powder cake jujubes oat cake. Lemon drops tootsie roll marshmallow
-///                  │    │ │ ╰─────────────────────────────^ blah blah
-/// snippet break ── │    · │
-///  snippet line ── │ 38 │ │   Brownie lemon drops chocolate jelly-o candy canes. Danish marzipan
-///  snippet line ── │ 39 │ │   jujubes soufflé carrot cake marshmallow tiramisu caramels candy canes.
-///                  │    │ │           ^^^^^^^^^^^^^^^^^^^ -------------------- blah blah
-///                  │    │ │           │
-///                  │    │ │           blah blah
-///                  │    │ │           note: this is a note
-///  snippet line ── │ 40 │ │   Fruitcake jelly-o danish toffee. Tootsie roll pastry cheesecake
-///  snippet line ── │ 41 │ │   soufflé marzipan. Chocolate bar oat cake jujubes lollipop pastry
-///  snippet line ── │ 42 │ │   cupcake. Candy canes cupcake toffee gingerbread candy canes muffin
-///                  │    │ │                                ^^^^^^^^^^^^^^^^^^ blah blah
-///                  │    │ ╰──────────^ blah blah
-/// snippet break ── │    ·
-///  snippet line ── │ 82 │     gingerbread toffee chupa chups chupa chups jelly-o cotton candy.
-///                  │    │                 ^^^^^^                         ------- blah blah
-/// snippet empty ── │    │
-///  snippet note ── │    = blah blah
-///  snippet note ── │    = blah blah blah
-///                  │      blah blah
-///  snippet note ── │    = blah blah blah
-///                  │      blah blah
-///         empty ── │
-/// ```
-///
-/// > Filler text from <http://www.cupcakeipsum.com>
-
+// A renderer of display list entries.
+//
+// The following diagram gives an overview of each of the parts of the renderer's output:
+//
+//	                    ┌ outer gutter
+//	                    │ ┌ left border
+//	                    │ │ ┌ inner gutter
+//	                    │ │ │   ┌─────────────────────────── source ─────────────────────────────┐
+//	                    │ │ │   │                                                                │
+//	                 ┌────────────────────────────────────────────────────────────────────────────
+//	       header ── │ error[0001]: oh noes, a cupcake has occurred!
+//	snippet start ── │    ┌─ test:9:0
+//	snippet empty ── │    │
+//	 snippet line ── │  9 │   ╭ Cupcake ipsum dolor. Sit amet marshmallow topping cheesecake
+//	 snippet line ── │ 10 │   │ muffin. Halvah croissant candy canes bonbon candy. Apple pie jelly
+//	                 │    │ ╭─│─────────^
+//	snippet break ── │    · │ │
+//	 snippet line ── │ 33 │ │ │ Muffin danish chocolate soufflé pastry icing bonbon oat cake.
+//	 snippet line ── │ 34 │ │ │ Powder cake jujubes oat cake. Lemon drops tootsie roll marshmallow
+//	                 │    │ │ ╰─────────────────────────────^ blah blah
+//	snippet break ── │    · │
+//	 snippet line ── │ 38 │ │   Brownie lemon drops chocolate jelly-o candy canes. Danish marzipan
+//	 snippet line ── │ 39 │ │   jujubes soufflé carrot cake marshmallow tiramisu caramels candy canes.
+//	                 │    │ │           ^^^^^^^^^^^^^^^^^^^ -------------------- blah blah
+//	                 │    │ │           │
+//	                 │    │ │           blah blah
+//	                 │    │ │           note: this is a note
+//	 snippet line ── │ 40 │ │   Fruitcake jelly-o danish toffee. Tootsie roll pastry cheesecake
+//	 snippet line ── │ 41 │ │   soufflé marzipan. Chocolate bar oat cake jujubes lollipop pastry
+//	 snippet line ── │ 42 │ │   cupcake. Candy canes cupcake toffee gingerbread candy canes muffin
+//	                 │    │ │                                ^^^^^^^^^^^^^^^^^^ blah blah
+//	                 │    │ ╰──────────^ blah blah
+//	snippet break ── │    ·
+//	 snippet line ── │ 82 │     gingerbread toffee chupa chups chupa chups jelly-o cotton candy.
+//	                 │    │                 ^^^^^^                         ------- blah blah
+//	snippet empty ── │    │
+//	 snippet note ── │    = blah blah
+//	 snippet note ── │    = blah blah blah
+//	                 │      blah blah
+//	 snippet note ── │    = blah blah blah
+//	                 │      blah blah
+//	        empty ── │
+//
+// Filler text from http://www.cupcakeipsum.com
 type Renderer struct {
 	writer WriteStyle //io.Writer
-	config Config
+	config *Config
 }
 
 // Construct a renderer from the given writer and config.
-func NewRenderer(writer WriteStyle /*io.Writer*/, config Config) Renderer {
+func NewRenderer(writer WriteStyle /*io.Writer*/, config *Config) Renderer {
 	return Renderer{
 		writer: writer,
 		config: config,
@@ -318,13 +313,11 @@ func (r *Renderer) chars() Chars {
 
 // Diagnostic header, with severity, code, and message.
 //
-// ```text
-// error[E0001]: unexpected type in `+` application
-// ```
+//	error[E0001]: unexpected type in `+` application
 func (r *Renderer) RenderHeader(
 	locus *locus,
 	severity diagnostic.Severity,
-	code *string,
+	code string,
 	message string,
 ) (err error) {
 	// Write locus
@@ -389,8 +382,8 @@ func (r *Renderer) RenderHeader(
 	// ```text
 	// [E0001]
 	// ```
-	if code != nil && *code != "" {
-		_, err = fmt.Fprintf(r, "[%s]", *code)
+	if code != "" {
+		_, err = fmt.Fprintf(r, "[%s]", code)
 		if err != nil {
 			return err
 		}
@@ -429,9 +422,7 @@ func (r *Renderer) RenderEmpty() error {
 
 // Top left border and locus.
 //
-// ```text
-// ┌─ test:2:9
-// ```
+//	┌─ test:2:9
 func (r *Renderer) RenderSnippetStart(
 	outer_padding int,
 	locus *locus,
@@ -476,12 +467,9 @@ func (r *Renderer) RenderSnippetStart(
 
 // A line of source code.
 //
-// ```text
-// 10 │   │ muffin. Halvah croissant candy canes bonbon candy. Apple pie jelly
+//	10 │   │ muffin. Halvah croissant candy canes bonbon candy. Apple pie jelly
 //
-//	│ ╭─│─────────^
-//
-// ```
+//		│ ╭─│─────────^
 func (r *Renderer) RenderSnippetSource(
 	outer_padding int,
 	line_number int,
@@ -1147,9 +1135,7 @@ func (r *Renderer) RenderSnippetSource(
 
 // An empty source line, for providing additional whitespace to source snippets.
 //
-// ```text
-// │ │ │
-// ```
+//	│ │ │
 func (r *Renderer) RenderSnippetEmpty(
 	outer_padding int,
 	severity diagnostic.Severity,
@@ -1179,9 +1165,7 @@ func (r *Renderer) RenderSnippetEmpty(
 
 // A broken source line, for labeling skipped sections of source.
 //
-// ```text
-// · │ │
-// ```
+//	· │ │
 func (r *Renderer) RenderSnippetBreak(
 	outer_padding int,
 	severity diagnostic.Severity,
@@ -1211,12 +1195,9 @@ func (r *Renderer) RenderSnippetBreak(
 
 // Additional notes.
 //
-// ```text
-// = expected type `Int`
+//	= expected type `Int`
 //
-//	found type `String`
-//
-// ```
+//		found type `String`
 func (r *Renderer) RenderSnippetNote(
 	outer_padding int,
 	message string,
@@ -1462,11 +1443,7 @@ func (r *Renderer) caretPointers(
 
 // The left of a multi-line label.
 //
-// ```text
-//
 //	│
-//
-// ```
 func (r *Renderer) labelMultiLeft(
 	severity diagnostic.Severity,
 	label_style diagnostic.LabelStyle,
@@ -1517,11 +1494,7 @@ func (r *Renderer) labelMultiLeft(
 
 // The top-left of a multi-line label.
 //
-// ```text
-//
 //	╭
-//
-// ```
 func (r *Renderer) labelMultiTopLeft(
 	severity diagnostic.Severity,
 	label_style diagnostic.LabelStyle,
@@ -1551,11 +1524,7 @@ func (r *Renderer) labelMultiTopLeft(
 
 // The bottom left of a multi-line label.
 //
-// ```text
-//
 //	╰
-//
-// ```
 func (r *Renderer) labelMultiBottomLeft(
 	severity diagnostic.Severity,
 	label_style diagnostic.LabelStyle,
@@ -1585,9 +1554,7 @@ func (r *Renderer) labelMultiBottomLeft(
 
 // Multi-line label top.
 //
-// ```text
-// ─────────────^
-// ```
+//	─────────────^
 func (r *Renderer) labelMultiTopCaret(
 	severity diagnostic.Severity,
 	label_style diagnostic.LabelStyle,
@@ -1646,9 +1613,7 @@ func (r *Renderer) labelMultiTopCaret(
 
 // Multi-line label bottom, with a message.
 //
-// ```text
-// ─────────────^ expected `Int` but found `String`
-// ```
+//	─────────────^ expected `Int` but found `String`
 func (r *Renderer) labelMultiBottomCaret(
 	severity diagnostic.Severity,
 	label_style diagnostic.LabelStyle,

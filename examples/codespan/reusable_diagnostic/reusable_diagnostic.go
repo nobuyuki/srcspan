@@ -14,11 +14,11 @@ import (
 	"fmt"
 	"os"
 
-	"srcspan/diagnostic"
-	"srcspan/files"
-	"srcspan/term"
+	"github.com/nobuyuki/srcspan/diagnostic"
+	"github.com/nobuyuki/srcspan/files"
+	"github.com/nobuyuki/srcspan/term"
 
-	"srcspan/internal/unindent"
+	"github.com/nobuyuki/srcspan/internal/unindent"
 )
 
 var colorChoice string
@@ -67,7 +67,7 @@ func main() {
 
 	color := parseArgs()
 
-	styles := term.DefaultColor()
+	styles := term.DefaultStyles()
 	styles.ColorOutput = color
 	writer := term.NewStylesWriter(os.Stderr, styles)
 	config := term.DefaultConfig()

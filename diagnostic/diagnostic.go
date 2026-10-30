@@ -1,13 +1,15 @@
 // Package diagnostic provides diagnostic data structures.
 //
-// (`codespan_reporting::diagnostic` in Rust)
+// This package corresponds to the `codespan_reporting::diagnostic` module in
+// Rust.
 package diagnostic
 
 import (
+	"fmt"
 	"iter"
 	"slices"
 
-	"srcspan/files"
+	"github.com/nobuyuki/srcspan/files"
 )
 
 // A severity level for diagnostic messages.
@@ -21,12 +23,28 @@ const (
 	Bug     Severity = 4
 )
 
+// Returns the variant name in Rust (e.g. "Error"), as `Debug` does.
+func (s Severity) String() string {
+	if text, err := s.MarshalText(); err == nil {
+		return string(text)
+	}
+	return fmt.Sprintf("Severity(%d)", int(s))
+}
+
 type LabelStyle int
 
 const (
 	Primary   LabelStyle = 0
 	Secondary LabelStyle = 1
 )
+
+// Returns the variant name in Rust (e.g. "Primary"), as `Debug` does.
+func (l LabelStyle) String() string {
+	if text, err := l.MarshalText(); err == nil {
+		return string(text)
+	}
+	return fmt.Sprintf("LabelStyle(%d)", int(l))
+}
 
 // A label describing an underlined region of code associated with a
 // diagnostic.
@@ -47,6 +65,7 @@ type Label struct {
 	Message string `json:"message"`
 }
 
+// Create a new label.
 func NewLabel(style LabelStyle, file_id int, range_ files.Range) Label {
 	return Label{
 		Style:   style,
@@ -56,16 +75,12 @@ func NewLabel(style LabelStyle, file_id int, range_ files.Range) Label {
 	}
 }
 
-// Create a new label with a style of [`LabelStyle::Primary`].
-//
-// [`LabelStyle::Primary`]: LabelStyle::Primary
+// Create a new label with a style of [Primary].
 func NewPrimary(file_id int, range_ files.Range) Label {
 	return NewLabel(Primary, file_id, range_)
 }
 
-// Create a new label with a style of [`LabelStyle::Secondary`].
-//
-// [`LabelStyle::Secondary`]: LabelStyle::Secondary
+// Create a new label with a style of [Secondary].
 func NewSecondary(file_id int, range_ files.Range) Label {
 	return NewLabel(Secondary, file_id, range_)
 }
@@ -80,9 +95,8 @@ func (l Label) WithMessage(message string) Label {
 // errors and warnings to the user.
 //
 // The position of a Diagnostic is considered to be the position of
-// the [`Label`] that has the earliest starting position and has the
+// the [Label] that has the earliest starting position and has the
 // highest style which appears in all the labels of the diagnostic.
-
 type Diagnostic struct {
 	// The overall severity of the diagnostic
 	Severity Severity `json:"severity"`
@@ -121,37 +135,27 @@ func NewDiagnostic(severity Severity) *Diagnostic {
 	}
 }
 
-// Create a new diagnostic with a severity of [`Severity::Bug`].
-//
-// [`Severity::Bug`]: Severity::Bug
+// Create a new diagnostic with a severity of [Bug].
 func NewBug() *Diagnostic {
 	return NewDiagnostic(Bug)
 }
 
-// Create a new diagnostic with a severity of [`Severity::Error`].
-//
-// [`Severity::Error`]: Severity::Error
+// Create a new diagnostic with a severity of [Error].
 func NewError() *Diagnostic {
 	return NewDiagnostic(Error)
 }
 
-// Create a new diagnostic with a severity of [`Severity::Warning`].
-//
-// [`Severity::Warning`]: Severity::Warning
+// Create a new diagnostic with a severity of [Warning].
 func NewWarning() *Diagnostic {
 	return NewDiagnostic(Warning)
 }
 
-// Create a new diagnostic with a severity of [`Severity::Note`].
-//
-// [`Severity::Note`]: Severity::Note
+// Create a new diagnostic with a severity of [Note].
 func NewNote() *Diagnostic {
 	return NewDiagnostic(Note)
 }
 
-// Create a new diagnostic with a severity of [`Severity::Help`].
-//
-// [`Severity::Help`]: Severity::Help
+// Create a new diagnostic with a severity of [Help].
 func NewHelp() *Diagnostic {
 	return NewDiagnostic(Help)
 }

@@ -32,9 +32,9 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"srcspan/diagnostic"
-	"srcspan/files"
-	"srcspan/term"
+	"github.com/nobuyuki/srcspan/diagnostic"
+	"github.com/nobuyuki/srcspan/files"
+	"github.com/nobuyuki/srcspan/term"
 )
 
 var ops = map[string]func(int, int) int{
@@ -66,7 +66,7 @@ func main() {
 		fs := files.NewSimpleFiles()
 		file := fs.Add("<repl>", os.Args[1])
 
-		styles := term.DefaultColor()
+		styles := term.DefaultStyles()
 		//	styles.ColorOutput = colorOutput
 		writer := term.NewStylesWriter(os.Stderr, styles)
 		config := term.DefaultConfig()

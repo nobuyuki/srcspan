@@ -12,7 +12,7 @@ func TestErrorMessages(t *testing.T) {
 		err      error
 		expected string
 	}{
-		{FileMissingError("1"), "file missing"},
+		{FileMissingError{}, "file missing"},
 		{IndexTooLargeError{Given: 3, Max: 8}, "invalid index 3, maximum index is 8"},
 		{LineTooLargeError{Given: 5, Max: 3}, "invalid line 5, maximum line is 3"},
 		{ColumnTooLargeError{Given: 9, Max: 4}, "invalid column 9, maximum column 4"},

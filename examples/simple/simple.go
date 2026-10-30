@@ -3,9 +3,9 @@ package main
 import (
 	"os"
 
-	"srcspan/diagnostic"
-	"srcspan/files"
-	"srcspan/term"
+	"github.com/nobuyuki/srcspan/diagnostic"
+	"github.com/nobuyuki/srcspan/files"
+	"github.com/nobuyuki/srcspan/term"
 )
 
 var data = []byte(`# This is a TOML document.
@@ -96,7 +96,7 @@ func main() {
 	// We now set up the writer and configuration, and then finally render the
 	// diagnostic to standard error.
 
-	writer := term.NewStylesWriter(os.Stdout, term.DefaultColor())
+	writer := term.NewStylesWriter(os.Stdout, term.DefaultStyles())
 	config := term.DefaultConfig()
 
 	for _, diagnostic := range diagnostics {

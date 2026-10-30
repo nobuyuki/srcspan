@@ -8,8 +8,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"srcspan/diagnostic"
-	"srcspan/files"
+	"github.com/nobuyuki/srcspan/diagnostic"
+	"github.com/nobuyuki/srcspan/files"
 )
 
 func emitWithColorOutput(t *testing.T, color_output ColorOutput) (written, stdout string) {
@@ -27,7 +27,7 @@ func emitWithColorOutput(t *testing.T, color_output ColorOutput) (written, stdou
 		diagnostic.NewPrimary(file_id, files.NewRange(0, 1)),
 	)
 
-	styles := DefaultColor()
+	styles := DefaultStyles()
 	styles.ColorOutput = color_output
 
 	var buf bytes.Buffer
@@ -60,4 +60,11 @@ func TestStylesWriterNone(t *testing.T) {
 	assert.Contains(t, written, "error: message")
 	assert.Empty(t, stdout)
 	assert.False(t, color.NoColor, "global color.NoColor must not be modified")
+}
+
+func TestDisplayStyleString(t *testing.T) {
+	assert.Equal(t, "Rich", Rich.String())
+	assert.Equal(t, "Medium", Medium.String())
+	assert.Equal(t, "Short", Short.String())
+	assert.Equal(t, "DisplayStyle(9)", DisplayStyle(9).String())
 }

@@ -12,11 +12,11 @@ import (
 	"fmt"
 	"os"
 
-	"srcspan/diagnostic"
-	"srcspan/files"
-	term "srcspan/term"
+	"github.com/nobuyuki/srcspan/diagnostic"
+	"github.com/nobuyuki/srcspan/files"
+	term "github.com/nobuyuki/srcspan/term"
 
-	"srcspan/internal/unindent"
+	"github.com/nobuyuki/srcspan/internal/unindent"
 )
 
 var colorChoice string
@@ -155,7 +155,7 @@ fizz₂ num =
                 `)}),
 	}
 
-	styles := term.DefaultColor()
+	styles := term.DefaultStyles()
 	styles.ColorOutput = colorOutput
 	writer := term.NewStylesWriter(os.Stderr, styles)
 	config := term.DefaultConfig()

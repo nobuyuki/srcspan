@@ -6,7 +6,7 @@ package srcspan_test
 import (
 	"fmt"
 
-	"srcspan"
+	"github.com/nobuyuki/srcspan"
 )
 
 func ExampleFiles_Name() {

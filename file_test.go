@@ -1,16 +1,15 @@
 package srcspan
 
 import (
-	"strconv"
 	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"srcspan/diagnostic"
-	"srcspan/files"
-	"srcspan/term"
+	"github.com/nobuyuki/srcspan/diagnostic"
+	"github.com/nobuyuki/srcspan/files"
+	"github.com/nobuyuki/srcspan/term"
 )
 
 const TEST_SOURCE1 = "foo\nbar\r\n\nbaz"
@@ -196,7 +195,7 @@ func TestFilesFileMissing(t *testing.T) {
 	fs.Add("test", TEST_SOURCE1)
 
 	for _, file_id := range []int{-1, 1} {
-		missing := files.FileMissingError(strconv.Itoa(file_id))
+		missing := files.FileMissingError{}
 
 		require.ErrorIs(t, fs.Update(file_id, ""), missing)
 
