@@ -97,7 +97,15 @@ go run ./examples/codespan/term/term.go
 
 ```
 More examples of using `srcspan` can be found in the `examples` directory.
-See [Using srcspan](./docs/usage.md) for a short guide.
+
+
+## Documentation
+
+- [Using srcspan](./docs/usage.md): a short guide to building and
+  emitting diagnostics, configuring the output, and choosing a `Files`
+  implementation.
+- [Porting from Rust](./docs/porting-from-rust.md): how the Rust API of
+  `codespan` / `codespan-reporting` maps to the Go API.
 
 
 ## Packages
@@ -116,9 +124,6 @@ The packages follow the structure of the original Rust crates:
 
 As in Rust, the `codespan-reporting` side does not depend on the
 `codespan` side.
-
-See [Porting from Rust](./docs/porting-from-rust.md) for how the Rust API
-maps to the Go API.
 
 
 ## License
